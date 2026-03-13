@@ -1,0 +1,208 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}SOLE DROP — Premium Sneakers{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{% static 'css/main.css' %}"/>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+{# ── NAVBAR ── #}
+<nav id="navbar">
+  <div class="nav-inner">
+    <button class="hamburger" id="menuToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <a href="{% url 'products:home' %}" class="logo">SOLE<span>DROP</span></a>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="{% url 'products:home' %}" {% if request.resolver_match.url_name == 'home' %}class="active"{% endif %}>Home</a></li>
+      <li><a href="{% url 'products:deals' %}" {% if request.resolver_match.url_name == 'deals' %}class="active"{% endif %}>Deals</a></li>
+      <li><a href="{% url 'products:product_list' %}" {% if request.resolver_match.url_name == 'product_list' %}class="active"{% endif %}>Shop</a></li>
+      {% if user.is_authenticated %}
+        <li><a href="{% url 'accounts:profile' %}" {% if request.resolver_match.url_name == 'profile' %}class="active"{% endif %}>Account</a></li>
+      {% else %}
+        <li><a href="{% url 'accounts:login' %}">Login</a></li>
+      {% endif %}
+    </ul>
+
+    <div class="nav-actions">
+      {# Search toggle #}
+      <button class="icon-btn" id="searchToggle" title="Search">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+
+      {# Wishlist #}
+      <a href="{% url 'accounts:wishlist' %}" class="icon-btn" title="Wishlist">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        {# Populate with: {{ request.user.wishlist.count }} or pass wishlist_count in context #}
+        {% if wishlist_count %}
+          <span class="badge">{{ wishlist_count }}</span>
+        {% endif %}
+      </a>
+
+      {# Cart #}
+      <button class="icon-btn" id="cartToggle" title="Cart">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        {# cart_count passed from context processor or view context #}
+        <span class="badge" id="cartBadge">{{ cart_count|default:0 }}</span>
+      </button>
+    </div>
+  </div>
+
+  {# Search Bar — submits GET to product list #}
+  <div class="search-bar" id="searchBar">
+    <form action="{% url 'products:product_list' %}" method="GET">
+      <input type="text" name="search" placeholder="Search sneakers, brands, styles…"
+             value="{{ request.GET.search }}" autocomplete="off"/>
+      <button type="submit">Search</button>
+    </form>
+  </div>
+</nav>
+
+{# ── DJANGO MESSAGES (flash alerts) ── #}
+{% if messages %}
+  <div class="messages-container">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+        <button class="alert-close" onclick="this.parentElement.remove()">✕</button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+{# ── PAGE CONTENT ── #}
+{% block content %}{% endblock %}
+
+{# ── CART SIDEBAR ── #}
+{# Cart items rendered server-side; JS handles open/close only #}
+<div class="cart-overlay" id="cartOverlay"></div>
+<aside class="cart-sidebar" id="cartSidebar">
+  <div class="cart-head">
+    <h3>Your Bag</h3>
+    <button id="cartClose">✕</button>
+  </div>
+
+  <div class="cart-body" id="cartBody">
+    {% if cart_items %}
+      {% for item in cart_items %}
+        <div class="cart-item" id="cartItem-{{ item.id }}">
+          <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}"/>
+          <div>
+            <p class="cart-item-name">{{ item.product.name }}</p>
+            <p class="cart-item-meta">{{ item.product.brand }} · Size {{ item.size }}</p>
+            <div class="qty-row">
+              {# POST to cart:update — JS submits these forms via fetch #}
+              <form class="qty-form" data-item="{{ item.id }}" data-action="decrease">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="decrease"/>
+                <input type="hidden" name="item_id" value="{{ item.id }}"/>
+                <button type="submit" class="qty-btn">−</button>
+              </form>
+              <span class="qty-num">{{ item.quantity }}</span>
+              <form class="qty-form" data-item="{{ item.id }}" data-action="increase">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="increase"/>
+                <input type="hidden" name="item_id" value="{{ item.id }}"/>
+                <button type="submit" class="qty-btn">+</button>
+              </form>
+            </div>
+            {# Remove form #}
+            <form action="{% url 'cart:remove' item.id %}" method="POST" class="remove-form">
+              {% csrf_token %}
+              <button type="submit" class="cart-remove">Remove</button>
+            </form>
+          </div>
+          <span class="cart-item-price">₹{{ item.total_price }}</span>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="cart-empty">
+        <div class="cart-empty-icon">👟</div>
+        <p>Your bag is empty</p>
+        <a href="{% url 'products:product_list' %}" class="btn-ghost" style="margin-top:16px;display:inline-block">Browse Sneakers</a>
+      </div>
+    {% endif %}
+  </div>
+
+  {% if cart_items %}
+    <div class="cart-foot">
+      <div class="cart-total-row">
+        <span>Subtotal</span>
+        <span>₹{{ cart_total }}</span>
+      </div>
+      <p class="cart-note">Shipping & taxes calculated at checkout</p>
+      <a href="{% url 'orders:checkout' %}" class="btn-primary w100">Checkout</a>
+      <button class="btn-ghost w100" id="cartContinue">Continue Shopping</button>
+    </div>
+  {% endif %}
+</aside>
+
+{# ── FOOTER ── #}
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo footer-logo">SOLE<span>DROP</span></div>
+      <p>India's premier destination for authentic sneakers. Limited drops, guaranteed legit.</p>
+      <div class="footer-social">
+        <a href="#">IG</a><a href="#">TW</a><a href="#">YT</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="{% url 'products:product_list' %}">All Sneakers</a></li>
+        <li><a href="{% url 'products:product_list' %}?category=Nike">Nike</a></li>
+        <li><a href="{% url 'products:product_list' %}?category=Adidas">Adidas</a></li>
+        <li><a href="{% url 'products:product_list' %}?category=Jordan">Jordan</a></li>
+        <li><a href="{% url 'products:deals' %}">Deals</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <ul>
+        {% if user.is_authenticated %}
+          <li><a href="{% url 'accounts:profile' %}">My Profile</a></li>
+          <li><a href="{% url 'orders:order_list' %}">My Orders</a></li>
+          <li><a href="{% url 'accounts:wishlist' %}">Wishlist</a></li>
+          <li><a href="{% url 'accounts:logout' %}">Logout</a></li>
+        {% else %}
+          <li><a href="{% url 'accounts:login' %}">Login</a></li>
+          <li><a href="{% url 'accounts:register' %}">Register</a></li>
+        {% endif %}
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Help</h4>
+      <ul>
+        <li><a href="#">Size Guide</a></li>
+        <li><a href="#">Shipping Info</a></li>
+        <li><a href="#">Returns</a></li>
+        <li><a href="#">Contact Us</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 SoleDrop. All rights reserved.</span>
+    <span>Privacy · Terms · Cookies</span>
+  </div>
+</footer>
+
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

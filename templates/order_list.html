@@ -1,0 +1,35 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block title %}My Orders — SOLE DROP{% endblock %}
+{% block content %}
+<div class="page-hero">
+  <div class="breadcrumb"><a href="{% url 'products:home' %}">Home</a><span>›</span><a href="{% url 'accounts:profile' %}">Account</a><span>›</span><span>My Orders</span></div>
+  <h1 class="page-hero-title">My Orders</h1>
+</div>
+<div style="max-width:900px;margin:0 auto;padding:48px 80px">
+  {% for order in orders %}
+    <div class="order-card">
+      <div class="order-head">
+        <span class="order-id">#{{ order.order_number }}</span>
+        <span class="order-status status-{{ order.status }}">{{ order.get_status_display }}</span>
+      </div>
+      <p class="order-items">
+        {% for item in order.items.all %}
+          {{ item.product.name }} (Size {{ item.size }}) × {{ item.quantity }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+      </p>
+      <div class="order-footer">
+        <span>{{ order.created_at|date:"M j, Y" }}</span>
+        <span class="order-total">₹{{ order.total_amount }}</span>
+      </div>
+      <a href="{% url 'orders:order_detail' order.id %}" style="font-size:.75rem;color:var(--accent);display:inline-block;margin-top:10px;letter-spacing:.08em;text-transform:uppercase">View Details →</a>
+    </div>
+  {% empty %}
+    <div style="text-align:center;padding:80px 0">
+      <div style="font-size:3rem;margin-bottom:16px">📦</div>
+      <h3 style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--mid)">No orders yet</h3>
+      <a href="{% url 'products:product_list' %}" class="btn-primary" style="margin-top:24px;display:inline-block">Start Shopping</a>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

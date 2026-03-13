@@ -1,0 +1,279 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}{{ product.name }} — SOLE DROP{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <div class="breadcrumb">
+    <a href="{% url 'products:home' %}">Home</a><span>›</span>
+    <a href="{% url 'products:product_list' %}">Shop</a><span>›</span>
+    <a href="{% url 'products:product_list' %}?category={{ product.brand }}">{{ product.brand }}</a><span>›</span>
+    <span>{{ product.name }}</span>
+  </div>
+</div>
+
+<div class="product-detail">
+
+  {# ── IMAGE GALLERY ── #}
+  <div class="product-imgs">
+    <div class="img-main">
+      <img src="{% if product.image %}{{ product.image.url }}{% else %}https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80{% endif %}"
+           alt="{{ product.name }}" id="mainImg"/>
+    </div>
+    <div class="img-thumbs">
+      {# product.images = related ProductImage model #}
+      {% for img in product.images.all %}
+        <div class="img-thumb {% if forloop.first %}active{% endif %}"
+             onclick="switchImg('{{ img.image.url }}', this)">
+          <img src="{{ img.image.url }}" alt="{{ product.name }} {{ forloop.counter }}"/>
+        </div>
+      {% empty %}
+        {# Fallback if no extra images #}
+        <div class="img-thumb active">
+          <img src="{% if product.image %}{{ product.image.url }}{% else %}https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80{% endif %}" alt="{{ product.name }}"/>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# ── PRODUCT INFO ── #}
+  <div class="product-info-wrap">
+    <p class="product-detail-brand">{{ product.brand }}</p>
+    <h1 class="product-detail-name">{{ product.name }}</h1>
+
+    <div class="product-detail-rating">
+      <span class="stars">
+        {% for i in "12345" %}
+          {% if forloop.counter <= product.avg_rating %}★{% else %}☆{% endif %}
+        {% endfor %}
+      </span>
+      <span>{{ product.avg_rating }} · {{ product.review_count }} reviews</span>
+      <span style="color:{% if product.in_stock %}var(--green){% else %}var(--accent){% endif %}">
+        {% if product.in_stock %}✓ In Stock{% else %}✗ Out of Stock{% endif %}
+      </span>
+    </div>
+
+    <div class="product-detail-price">
+      <span class="detail-price">₹{{ product.price }}</span>
+      {% if product.old_price %}
+        <span class="detail-old-price">₹{{ product.old_price }}</span>
+        <span class="detail-discount">
+          {% widthratio product.price product.old_price 100 as pct %}
+          {{ 100|add:"-"|add:pct }}% OFF
+        </span>
+      {% endif %}
+    </div>
+
+    {# ── ADD TO CART FORM ── #}
+    <form action="{% url 'cart:add' product.id %}" method="POST" id="addToCartForm">
+      {% csrf_token %}
+      <input type="hidden" name="product_id" value="{{ product.id }}"/>
+
+      {# Size Selection #}
+      <p class="option-label">
+        Select Size
+        <a href="#" style="color:var(--accent);font-size:.7rem;margin-left:10px">Size Guide</a>
+      </p>
+      <div class="size-grid">
+        {% for size in product.available_sizes.all %}
+          <label class="size-label">
+            <input type="radio" name="size" value="{{ size.value }}"
+                   {% if not size.in_stock %}disabled{% endif %} required/>
+            <span class="size-btn {% if not size.in_stock %}out{% endif %}">{{ size.value }}</span>
+          </label>
+        {% empty %}
+          {# Fallback static sizes #}
+          {% for s in "6,7,7.5,8,9,10,11"|split:"," %}
+            <label class="size-label">
+              <input type="radio" name="size" value="{{ s }}" required/>
+              <span class="size-btn">{{ s }}</span>
+            </label>
+          {% endfor %}
+        {% endfor %}
+      </div>
+      <p class="form-error" id="sizeError" style="display:none">Please select a size first</p>
+
+      {# Color Selection #}
+      {% if product.colors.all %}
+        <p class="option-label">Color</p>
+        <div class="color-grid">
+          {% for color in product.colors.all %}
+            <label title="{{ color.name }}">
+              <input type="radio" name="color" value="{{ color.id }}" style="display:none"/>
+              <div class="color-swatch" style="background:{{ color.hex_code }}"
+                   onclick="this.previousElementSibling.checked=true;document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('active'));this.classList.add('active')">
+              </div>
+            </label>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {# Quantity #}
+      <p class="option-label">Quantity</p>
+      <div class="qty-wrapper">
+        <button type="button" class="qty-btn" onclick="changeQty(-1)">−</button>
+        <span class="qty-num" id="detailQty">1</span>
+        <input type="hidden" name="quantity" id="qtyInput" value="1"/>
+        <button type="button" class="qty-btn" onclick="changeQty(1)">+</button>
+      </div>
+
+      <div class="detail-actions">
+        {% if product.in_stock %}
+          <button type="submit" class="btn-primary">Add to Cart</button>
+        {% else %}
+          <button type="button" class="btn-primary" disabled style="opacity:.4;cursor:not-allowed">Out of Stock</button>
+        {% endif %}
+
+        {# Wishlist toggle #}
+        <form action="{% url 'accounts:wishlist_toggle' product.id %}" method="POST" style="display:inline">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}"/>
+          <button type="submit" class="wish-icon {% if product.id in wishlist_ids %}liked{% endif %}">
+            {% if product.id in wishlist_ids %}♥{% else %}♡{% endif %}
+          </button>
+        </form>
+      </div>
+    </form>
+
+    {# ── TABS ── #}
+    <div class="detail-tabs">
+      <div class="tab-heads">
+        <button class="tab-head active" onclick="switchTab('desc', this)">Description</button>
+        <button class="tab-head" onclick="switchTab('specs', this)">Specs</button>
+        <button class="tab-head" onclick="switchTab('reviews', this)">Reviews ({{ product.review_count }})</button>
+      </div>
+
+      <div class="tab-pane active" id="tab-desc">
+        <p>{{ product.description }}</p>
+        <p style="margin-top:16px">
+          🚚 Free shipping on orders over ₹4,999<br>
+          🔄 Easy 30-day returns<br>
+          ✅ 100% Authentic — every pair verified
+        </p>
+      </div>
+
+      <div class="tab-pane" id="tab-specs">
+        <table style="width:100%;border-collapse:collapse">
+          <tr><td class="spec-label">Brand</td><td>{{ product.brand }}</td></tr>
+          <tr><td class="spec-label">SKU</td><td>{{ product.sku }}</td></tr>
+          <tr><td class="spec-label">Category</td><td>{{ product.category }}</td></tr>
+          <tr><td class="spec-label">Rating</td><td>{{ product.avg_rating }}/5</td></tr>
+          <tr><td class="spec-label">Availability</td>
+            <td style="color:{% if product.in_stock %}var(--green){% else %}var(--accent){% endif %}">
+              {% if product.in_stock %}In Stock{% else %}Out of Stock{% endif %}
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="tab-pane" id="tab-reviews">
+        {# Reviews from: product.reviews.all() passed as context #}
+        {% for review in reviews %}
+          <div class="review-item">
+            <div class="review-meta">
+              <span class="stars" style="font-size:.85rem">
+                {% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}
+              </span>
+              <span class="reviewer">{{ review.user.get_full_name|default:review.user.username }}</span>
+              <span class="review-date">{{ review.created_at|date:"M j, Y" }}</span>
+            </div>
+            <p>{{ review.comment }}</p>
+          </div>
+        {% empty %}
+          <p style="color:var(--light);padding:20px 0">No reviews yet. Be the first!</p>
+        {% endfor %}
+
+        {# Submit a review — only for authenticated, verified purchasers #}
+        {% if user.is_authenticated and can_review %}
+          <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border)">
+            <h4 style="margin-bottom:16px;font-size:.9rem;letter-spacing:.1em;text-transform:uppercase;color:var(--light)">Write a Review</h4>
+            <form action="{% url 'products:add_review' product.slug %}" method="POST">
+              {% csrf_token %}
+              <div class="form-group">
+                <label>Rating</label>
+                <div class="star-select">
+                  {% for i in "12345" %}
+                    <label>
+                      <input type="radio" name="rating" value="{{ forloop.counter }}" required/>
+                      <span>★</span>
+                    </label>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Comment</label>
+                <textarea name="comment" rows="3" placeholder="Share your experience…"
+                          style="width:100%;background:var(--dark);border:1px solid var(--border);color:var(--white);padding:12px 16px;font-family:inherit;resize:vertical;outline:none"></textarea>
+              </div>
+              <button type="submit" class="btn-primary">Submit Review</button>
+            </form>
+          </div>
+        {% elif user.is_authenticated and not can_review %}
+          <p style="color:var(--light);font-size:.82rem;margin-top:16px">
+            Only verified purchasers can leave a review.
+          </p>
+        {% else %}
+          <p style="color:var(--light);font-size:.82rem;margin-top:16px">
+            <a href="{% url 'accounts:login' %}?next={{ request.path }}" style="color:var(--accent)">Login</a> to write a review.
+          </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{# ── RELATED PRODUCTS ── #}
+{% if related_products %}
+  <section class="dark-section">
+    <div class="section-head">
+      <p class="eyebrow">You May Also Like</p>
+      <h2 class="section-title">Related Drops</h2>
+    </div>
+    <div class="products-grid">
+      {% for p in related_products %}
+        {% include "products/_product_card.html" with product=p %}
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function switchImg(url, el) {
+    document.getElementById('mainImg').src = url;
+    document.querySelectorAll('.img-thumb').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+  function changeQty(d) {
+    const el = document.getElementById('detailQty');
+    const inp = document.getElementById('qtyInput');
+    const v = Math.max(1, parseInt(el.textContent) + d);
+    el.textContent = v; inp.value = v;
+  }
+  function switchTab(tab, btn) {
+    document.querySelectorAll('.tab-head').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + tab).classList.add('active');
+  }
+  // Highlight selected size button
+  document.querySelectorAll('input[name="size"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+      radio.nextElementSibling.classList.add('active');
+    });
+  });
+  // Validate size before add-to-cart
+  document.getElementById('addToCartForm')?.addEventListener('submit', e => {
+    if (!document.querySelector('input[name="size"]:checked')) {
+      e.preventDefault();
+      document.getElementById('sizeError').style.display = 'block';
+      document.querySelector('.size-grid').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+</script>
+{% endblock %}

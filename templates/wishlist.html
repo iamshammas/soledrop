@@ -1,0 +1,25 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block title %}Wishlist — SOLE DROP{% endblock %}
+{% block content %}
+<div class="page-hero">
+  <div class="breadcrumb"><a href="{% url 'products:home' %}">Home</a><span>›</span><span>Wishlist</span></div>
+  <h1 class="page-hero-title">My Wishlist</h1>
+</div>
+<div class="wishlist-page">
+  {% if wishlist_products %}
+    <p style="color:var(--light);margin-bottom:24px;font-size:.88rem">{{ wishlist_products|length }} item{{ wishlist_products|length|pluralize }} saved</p>
+    <div class="products-grid">
+      {% for product in wishlist_products %}
+        {% include "products/_product_card.html" with product=product %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="wishlist-empty">
+      <h3>Your wishlist is empty</h3>
+      <p>Browse the shop and hit ♡ on any sneaker to save it here.</p>
+      <a href="{% url 'products:product_list' %}" class="btn-primary" style="margin-top:24px;display:inline-block">Browse Sneakers</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

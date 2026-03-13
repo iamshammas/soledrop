@@ -1,0 +1,70 @@
+{# templates/products/_product_card.html #}
+{# Include with: {% include "products/_product_card.html" with product=product %} #}
+{% load static %}
+
+<div class="product-card">
+  <div class="card-img-wrap">
+    {% if product.image %}
+      <img class="card-img" src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy"/>
+    {% else %}
+      <img class="card-img" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80" alt="{{ product.name }}" loading="lazy"/>
+    {% endif %}
+
+    {% if product.badge %}
+      <span class="card-badge {{ product.badge }}">{{ product.badge|upper }}</span>
+    {% endif %}
+
+    {% if not product.in_stock %}
+      <span class="card-badge out">Out of Stock</span>
+    {% endif %}
+
+    <div class="card-actions">
+      {% if product.in_stock %}
+        {# Quick-add to cart — POST to cart:add #}
+        <form action="{% url 'cart:add' product.id %}" method="POST" class="quick-add-form">
+          {% csrf_token %}
+          <input type="hidden" name="product_id" value="{{ product.id }}"/>
+          {# No size selected on quick-add — redirect to detail page for size selection #}
+          <button type="button" class="quick-add-btn"
+                  onclick="window.location='{% url 'products:product_detail' product.slug %}'">
+            Select Size
+          </button>
+        </form>
+      {% else %}
+        <button disabled style="opacity:.4;cursor:not-allowed;flex:1;padding:10px;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;background:var(--gray);border:none;color:var(--light)">
+          Out of Stock
+        </button>
+      {% endif %}
+
+      {# Wishlist toggle — POST to accounts:wishlist_toggle #}
+      <form action="{% url 'accounts:wishlist_toggle' product.id %}" method="POST" class="wish-form">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path }}"/>
+        <button type="submit" class="wish-btn {% if product.id in wishlist_ids %}liked{% endif %}">
+          {% if product.id in wishlist_ids %}♥{% else %}♡{% endif %}
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card-info">
+    <p class="card-brand">{{ product.brand }}</p>
+    <a href="{% url 'products:product_detail' product.slug %}">
+      <p class="card-name">{{ product.name }}</p>
+    </a>
+    <div class="card-price-row">
+      <span class="card-price">₹{{ product.price }}</span>
+      {% if product.old_price %}
+        <span class="card-old-price">₹{{ product.old_price }}</span>
+      {% endif %}
+    </div>
+    <div class="card-rating">
+      {% with rating=product.avg_rating %}
+        {% for i in "12345" %}
+          {% if forloop.counter <= rating %}★{% else %}☆{% endif %}
+        {% endfor %}
+      {% endwith %}
+      ({{ product.review_count }})
+    </div>
+  </div>
+</div>

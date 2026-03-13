@@ -1,0 +1,103 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Deals of the Month — SOLE DROP{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <div class="breadcrumb">
+    <a href="{% url 'products:home' %}">Home</a><span>›</span>
+    <span>Deals of the Month</span>
+  </div>
+  <h1 class="page-hero-title">Deals of the Month</h1>
+</div>
+
+<div class="deals-page">
+
+  {# ── HERO DEAL BANNER ── #}
+  {# Pass: active_deal = Deal.objects.filter(is_active=True).first() #}
+  <div class="deals-hero">
+    <div class="deals-hero-content">
+      <p class="eyebrow">🔥 Limited Time</p>
+      <h2 class="deal-title">
+        {% if active_deal %}{{ active_deal.headline }}{% else %}UP TO 40% OFF{% endif %}
+      </h2>
+      <p style="color:var(--light);line-height:1.7;max-width:380px">
+        {% if active_deal %}
+          {{ active_deal.description }}
+        {% else %}
+          Our biggest sale of the season. Premium Nike, Adidas, and Jordan silhouettes at prices you won't find anywhere else.
+        {% endif %}
+      </p>
+      <div class="deal-timer" id="dealTimer"
+           data-end="{% if active_deal %}{{ active_deal.end_date|date:'c' }}{% else %}2025-04-30T23:59:59{% endif %}">
+      </div>
+      <a href="{% url 'products:product_list' %}?stock=sale" class="btn-primary">Shop All Sale</a>
+    </div>
+    <div class="deals-hero-img" style="overflow:hidden;max-height:420px">
+      {% if active_deal and active_deal.image %}
+        <img src="{{ active_deal.image.url }}" alt="Deal" style="width:100%;height:420px;object-fit:cover"/>
+      {% else %}
+        <img src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=800&q=80"
+             alt="Deal" style="width:100%;height:420px;object-fit:cover"/>
+      {% endif %}
+    </div>
+  </div>
+
+  {# ── SALE PRODUCTS ── #}
+  {# Pass: sale_products = Product.objects.filter(badge='sale') #}
+  <div class="section-head" style="margin-top:64px">
+    <p class="eyebrow">On Sale Now</p>
+    <h2 class="section-title">Sale Picks</h2>
+  </div>
+  <div class="products-grid">
+    {% for product in sale_products %}
+      {% include "products/_product_card.html" with product=product %}
+    {% empty %}
+      <p style="color:var(--light);padding:40px;grid-column:1/-1">No sale products right now. Check back soon!</p>
+    {% endfor %}
+  </div>
+
+  {# ── NEW ARRIVALS ── #}
+  <div class="section-head" style="margin-top:80px">
+    <p class="eyebrow">Just Dropped</p>
+    <h2 class="section-title">New Arrivals</h2>
+  </div>
+  <div class="products-grid">
+    {% for product in new_products %}
+      {% include "products/_product_card.html" with product=product %}
+    {% empty %}
+      <p style="color:var(--light);padding:40px;grid-column:1/-1">No new arrivals yet.</p>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Countdown timer — reads data-end attribute
+  const timerEl = document.getElementById('dealTimer');
+  if (timerEl) {
+    const endDate = new Date(timerEl.dataset.end);
+    function tick() {
+      const diff = endDate - new Date();
+      if (diff <= 0) { timerEl.innerHTML = '<span style="color:var(--accent)">Deal Ended</span>'; return; }
+      const d = Math.floor(diff/86400000);
+      const h = Math.floor((diff%86400000)/3600000);
+      const m = Math.floor((diff%3600000)/60000);
+      const s = Math.floor((diff%60000)/1000);
+      timerEl.innerHTML = `
+        <div class="timer-unit"><span>${d}</span><label>Days</label></div>
+        <div class="timer-sep">:</div>
+        <div class="timer-unit"><span>${String(h).padStart(2,'0')}</span><label>Hrs</label></div>
+        <div class="timer-sep">:</div>
+        <div class="timer-unit"><span>${String(m).padStart(2,'0')}</span><label>Min</label></div>
+        <div class="timer-sep">:</div>
+        <div class="timer-unit"><span>${String(s).padStart(2,'0')}</span><label>Sec</label></div>`;
+    }
+    tick(); setInterval(tick, 1000);
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,167 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block title %}Checkout — SOLE DROP{% endblock %}
+{% block content %}
+
+<div class="page-hero">
+  <div class="breadcrumb">
+    <a href="{% url 'products:home' %}">Home</a><span>›</span>
+    <a href="{% url 'cart:detail' %}">Cart</a><span>›</span>
+    <span>Checkout</span>
+  </div>
+  <h1 class="page-hero-title">Checkout</h1>
+</div>
+
+<div class="checkout-layout">
+
+  {# ── LEFT: FORM ── #}
+  <div>
+    <form action="{% url 'orders:checkout' %}" method="POST" id="checkoutForm">
+      {% csrf_token %}
+
+      <h3 class="checkout-title">Shipping Details</h3>
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-error" style="margin-bottom:20px">
+          {% for e in form.non_field_errors %}{{ e }}{% endfor %}
+        </div>
+      {% endif %}
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" name="first_name" value="{{ form.first_name.value|default:user.first_name }}" required/>
+          {% if form.first_name.errors %}<p class="form-error">{{ form.first_name.errors.0 }}</p>{% endif %}
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" name="last_name" value="{{ form.last_name.value|default:user.last_name }}" required/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" value="{{ form.email.value|default:user.email }}" required/>
+        {% if form.email.errors %}<p class="form-error">{{ form.email.errors.0 }}</p>{% endif %}
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" name="phone" value="{{ form.phone.value|default:user.profile.phone }}" required/>
+      </div>
+      <div class="form-group">
+        <label>Address Line 1</label>
+        <input type="text" name="address_line1" value="{{ form.address_line1.value|default:'' }}" placeholder="123 MG Road" required/>
+      </div>
+      <div class="form-group">
+        <label>Address Line 2 <span style="color:var(--mid)">(optional)</span></label>
+        <input type="text" name="address_line2" value="{{ form.address_line2.value|default:'' }}" placeholder="Apartment, floor, etc."/>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>City</label>
+          <input type="text" name="city" value="{{ form.city.value|default:'' }}" placeholder="Bangalore" required/>
+        </div>
+        <div class="form-group">
+          <label>State</label>
+          <input type="text" name="state" value="{{ form.state.value|default:'' }}" placeholder="Karnataka" required/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>PIN Code</label>
+          <input type="text" name="pin_code" value="{{ form.pin_code.value|default:'' }}" placeholder="560001" required/>
+        </div>
+        <div class="form-group">
+          <label>Country</label>
+          <input type="text" name="country" value="{{ form.country.value|default:'India' }}"/>
+        </div>
+      </div>
+
+      <h3 class="checkout-title" style="margin-top:40px">Payment Method</h3>
+      <div class="payment-methods">
+        <label class="payment-method active" onclick="selectPay(this)">
+          <input type="radio" name="payment_method" value="upi" checked style="display:none"/>
+          <div style="font-size:1.4rem">📱</div><p>UPI</p>
+        </label>
+        <label class="payment-method" onclick="selectPay(this)">
+          <input type="radio" name="payment_method" value="card" style="display:none"/>
+          <div style="font-size:1.4rem">💳</div><p>Card</p>
+        </label>
+        <label class="payment-method" onclick="selectPay(this)">
+          <input type="radio" name="payment_method" value="cod" style="display:none"/>
+          <div style="font-size:1.4rem">💵</div><p>Cash on Delivery</p>
+        </label>
+        <label class="payment-method" onclick="selectPay(this)">
+          <input type="radio" name="payment_method" value="netbanking" style="display:none"/>
+          <div style="font-size:1.4rem">🏦</div><p>Net Banking</p>
+        </label>
+      </div>
+
+      {# Coupon Code #}
+      <h3 class="checkout-title" style="margin-top:32px">Coupon Code</h3>
+      <div style="display:flex;gap:10px;margin-bottom:8px">
+        <input type="text" name="coupon_code" id="couponInput"
+               value="{{ applied_coupon.code|default:'' }}"
+               placeholder="Enter coupon code (e.g. FIRST10)"
+               style="flex:1;background:var(--dark);border:1px solid var(--border);color:var(--white);padding:12px 16px;font-family:inherit;outline:none"/>
+        {# Coupon applied via separate form POST to orders:apply_coupon #}
+        <button type="button" class="btn-outline" onclick="applyCoupon()">Apply</button>
+      </div>
+      {% if applied_coupon %}
+        <p style="color:var(--green);font-size:.78rem">✓ {{ applied_coupon.code }} applied — saving ₹{{ discount_amount }}</p>
+      {% endif %}
+      {% if coupon_error %}
+        <p style="color:var(--accent);font-size:.78rem">{{ coupon_error }}</p>
+      {% endif %}
+
+      <button type="submit" class="btn-primary w100" style="margin-top:32px;padding:18px;font-size:.9rem">
+        Place Order — ₹{{ final_total }}
+      </button>
+      <a href="{% url 'cart:detail' %}" class="btn-ghost w100" style="margin-top:10px;text-align:center;display:block">← Back to Cart</a>
+    </form>
+  </div>
+
+  {# ── RIGHT: SUMMARY ── #}
+  <div class="checkout-summary">
+    <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.06em;margin-bottom:20px">Order Summary</h3>
+    {% for item in cart_items %}
+      <div class="checkout-item">
+        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}"/>
+        <div class="checkout-item-info">
+          <p class="checkout-item-name">{{ item.product.name }}</p>
+          <p class="checkout-item-meta">{{ item.product.brand }} · Size {{ item.size }} · Qty {{ item.quantity }}</p>
+        </div>
+        <span class="checkout-item-price">₹{{ item.total_price }}</span>
+      </div>
+    {% endfor %}
+    <div class="summary-row"><span>Subtotal</span><span>₹{{ cart_subtotal }}</span></div>
+    <div class="summary-row"><span>Shipping</span><span>{% if cart_subtotal >= 4999 %}<span style="color:var(--green)">Free</span>{% else %}₹199{% endif %}</span></div>
+    {% if applied_coupon %}
+      <div class="summary-row"><span>Discount ({{ applied_coupon.code }})</span><span style="color:var(--green)">−₹{{ discount_amount }}</span></div>
+    {% endif %}
+    <div class="summary-row total"><span>Total</span><span>₹{{ final_total }}</span></div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function selectPay(label) {
+    document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
+    label.classList.add('active');
+    label.querySelector('input').checked = true;
+  }
+  function applyCoupon() {
+    const code = document.getElementById('couponInput').value.trim();
+    if (!code) return;
+    // Submit coupon via POST, Django handles redirect back with discount applied
+    const f = document.createElement('form');
+    f.method = 'POST'; f.action = '{% url "orders:apply_coupon" %}';
+    f.innerHTML = `<input name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
+                   <input name="coupon_code" value="${code}"/>
+                   <input name="next" value="{{ request.path }}"/>`;
+    document.body.appendChild(f); f.submit();
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}My Account — SOLE DROP{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <div class="breadcrumb">
+    <a href="{% url 'products:home' %}">Home</a><span>›</span>
+    <span>My Account</span>
+  </div>
+  <h1 class="page-hero-title">My Account</h1>
+</div>
+
+<div class="profile-layout">
+
+  {# ── SIDEBAR ── #}
+  <aside>
+    <div class="profile-avatar">{{ user.first_name.0|upper }}{{ user.last_name.0|upper }}</div>
+    <p class="profile-name">{{ user.get_full_name|default:user.username }}</p>
+    <p class="profile-email">{{ user.email }}</p>
+    <ul class="profile-nav">
+      <li><a href="{% url 'accounts:profile' %}" {% if active_tab == 'dashboard' %}class="active"{% endif %}>Dashboard</a></li>
+      <li><a href="{% url 'orders:order_list' %}" {% if active_tab == 'orders' %}class="active"{% endif %}>My Orders</a></li>
+      <li><a href="{% url 'accounts:profile_edit' %}" {% if active_tab == 'settings' %}class="active"{% endif %}>Profile Settings</a></li>
+      <li><a href="{% url 'accounts:wishlist' %}" {% if active_tab == 'wishlist' %}class="active"{% endif %}>Wishlist</a></li>
+      <li>
+        <form action="{% url 'accounts:logout' %}" method="POST" style="display:inline">
+          {% csrf_token %}
+          <button type="submit">Logout</button>
+        </form>
+      </li>
+    </ul>
+  </aside>
+
+  {# ── DASHBOARD ── #}
+  <div>
+    <div class="profile-section active">
+      <h2>Dashboard</h2>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:36px">
+        <div class="feature-card" style="text-align:center">
+          <div class="feature-icon">📦</div>
+          <h3>{{ order_count }}</h3>
+          <p>Total Orders</p>
+        </div>
+        <div class="feature-card" style="text-align:center">
+          <div class="feature-icon">♥</div>
+          <h3>{{ wishlist_count }}</h3>
+          <p>Wishlist Items</p>
+        </div>
+        <div class="feature-card" style="text-align:center">
+          <div class="feature-icon">🛒</div>
+          <h3>{{ cart_count }}</h3>
+          <p>Cart Items</p>
+        </div>
+      </div>
+
+      <h3 style="font-size:.9rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:16px">Recent Orders</h3>
+
+      {% for order in recent_orders %}
+        <div class="order-card">
+          <div class="order-head">
+            <span class="order-id">#{{ order.order_number }}</span>
+            <span class="order-status status-{{ order.status }}">{{ order.get_status_display }}</span>
+          </div>
+          <p class="order-items">
+            {% for item in order.items.all|slice:":2" %}
+              {{ item.product.name }} (Size {{ item.size }}) × {{ item.quantity }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            {% if order.items.count > 2 %}+ {{ order.items.count|add:"-2" }} more{% endif %}
+          </p>
+          <div class="order-footer">
+            <span>{{ order.created_at|date:"M j, Y" }}</span>
+            <span class="order-total">₹{{ order.total_amount }}</span>
+          </div>
+          <a href="{% url 'orders:order_detail' order.id %}" style="font-size:.75rem;color:var(--accent);display:inline-block;margin-top:8px">View Details →</a>
+        </div>
+      {% empty %}
+        <div style="padding:40px;text-align:center;background:var(--dark);color:var(--light)">
+          <p>No orders yet.</p>
+          <a href="{% url 'products:product_list' %}" class="btn-primary" style="margin-top:16px;display:inline-block">Start Shopping</a>
+        </div>
+      {% endfor %}
+
+      {% if order_count > 3 %}
+        <a href="{% url 'orders:order_list' %}" style="display:inline-block;margin-top:16px;color:var(--accent);font-size:.82rem;letter-spacing:.1em;text-transform:uppercase">View All Orders →</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

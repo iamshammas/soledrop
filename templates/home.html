@@ -1,0 +1,198 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}SOLE DROP — Home{% endblock %}
+
+{% block content %}
+
+{# ── HERO SLIDER ── #}
+{# Pass: hero_slides = list of {tag, title, subtitle, cta_url, image} or use static #}
+<section class="hero">
+  <div class="hero-slides" id="heroSlides">
+
+    {% if hero_slides %}
+      {% for slide in hero_slides %}
+        <div class="hero-slide {% if forloop.first %}active{% endif %}"
+             style="background-image:url('{{ slide.image.url }}')">
+          <div class="hero-content">
+            <p class="hero-tag">{{ slide.tag }}</p>
+            <h1 class="hero-title">{{ slide.title|safe }}</h1>
+            <p class="hero-sub">{{ slide.subtitle }}</p>
+            <div class="hero-btns">
+              <a href="{{ slide.cta_url }}" class="btn-primary">{{ slide.cta_label|default:"Shop Now" }}</a>
+              <a href="{% url 'products:deals' %}" class="btn-outline">View Deals</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      {# Static fallback while you build the model #}
+      <div class="hero-slide active" style="background-image:url('https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1600&q=80')">
+        <div class="hero-content">
+          <p class="hero-tag">New Drop · 2025</p>
+          <h1 class="hero-title">EVERY STEP<br><em>COUNTS</em></h1>
+          <p class="hero-sub">The most hyped sneakers, delivered to your door. Limited drops, exclusive collabs.</p>
+          <div class="hero-btns">
+            <a href="{% url 'products:product_list' %}" class="btn-primary">Shop Now</a>
+            <a href="{% url 'products:deals' %}" class="btn-outline">View Deals</a>
+          </div>
+        </div>
+      </div>
+      <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=1600&q=80')">
+        <div class="hero-content">
+          <p class="hero-tag">Nike Collection</p>
+          <h1 class="hero-title">AIR FORCE<br><em>HERITAGE</em></h1>
+          <p class="hero-sub">Classic silhouettes reimagined for the modern street.</p>
+          <div class="hero-btns">
+            <a href="{% url 'products:product_list' %}?category=Nike" class="btn-primary">Shop Nike</a>
+            <a href="{% url 'products:deals' %}" class="btn-outline">View Deals</a>
+          </div>
+        </div>
+      </div>
+      <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1556906781-9a412961a28c?w=1600&q=80')">
+        <div class="hero-content">
+          <p class="hero-tag">Jordan Brand</p>
+          <h1 class="hero-title">BORN TO<br><em>FLY</em></h1>
+          <p class="hero-sub">The Jumpman. Iconic since '85. Cop the latest retros now.</p>
+          <div class="hero-btns">
+            <a href="{% url 'products:product_list' %}?category=Jordan" class="btn-primary">Shop Jordan</a>
+            <a href="{% url 'products:deals' %}" class="btn-outline">View Deals</a>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="hero-dots" id="heroDots"></div>
+  <button class="hero-arrow left" id="heroPrev">&#8592;</button>
+  <button class="hero-arrow right" id="heroNext">&#8594;</button>
+</section>
+
+{# ── MARQUEE ── #}
+<div class="marquee-bar">
+  <div class="marquee-track">
+    <span>FREE SHIPPING OVER ₹4999</span><span>·</span>
+    <span>NEW DROPS EVERY FRIDAY</span><span>·</span>
+    <span>100% AUTHENTIC GUARANTEED</span><span>·</span>
+    <span>EASY 30-DAY RETURNS</span><span>·</span>
+    <span>FREE SHIPPING OVER ₹4999</span><span>·</span>
+    <span>NEW DROPS EVERY FRIDAY</span><span>·</span>
+    <span>100% AUTHENTIC GUARANTEED</span><span>·</span>
+    <span>EASY 30-DAY RETURNS</span><span>·</span>
+  </div>
+</div>
+
+{# ── CATEGORIES / BRANDS ── #}
+{# Pass: categories = list of {name, slug, image} from Category model #}
+<section class="section">
+  <div class="section-head">
+    <p class="eyebrow">Browse</p>
+    <h2 class="section-title">Shop by Brand</h2>
+  </div>
+  <div class="categories-grid">
+    {% if categories %}
+      {% for cat in categories %}
+        <a href="{% url 'products:product_list' %}?category={{ cat.slug }}" class="cat-card"
+           style="background-image:url('{{ cat.image.url }}')">
+          <div class="cat-overlay"><span>{{ cat.name }}</span></div>
+        </a>
+      {% endfor %}
+    {% else %}
+      {# Static fallback #}
+      <a href="{% url 'products:product_list' %}?category=Nike" class="cat-card"
+         style="background-image:url('https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80')">
+        <div class="cat-overlay"><span>Nike</span></div>
+      </a>
+      <a href="{% url 'products:product_list' %}?category=Adidas" class="cat-card"
+         style="background-image:url('https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=600&q=80')">
+        <div class="cat-overlay"><span>Adidas</span></div>
+      </a>
+      <a href="{% url 'products:product_list' %}?category=Jordan" class="cat-card"
+         style="background-image:url('https://images.unsplash.com/photo-1556906781-9a412961a28c?w=600&q=80')">
+        <div class="cat-overlay"><span>Jordan</span></div>
+      </a>
+      <a href="{% url 'products:product_list' %}?category=New+Balance" class="cat-card"
+         style="background-image:url('https://images.unsplash.com/photo-1539185441755-769473a23570?w=600&q=80')">
+        <div class="cat-overlay"><span>New Balance</span></div>
+      </a>
+      <a href="{% url 'products:product_list' %}?category=Puma" class="cat-card"
+         style="background-image:url('https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=600&q=80')">
+        <div class="cat-overlay"><span>Puma</span></div>
+      </a>
+      <a href="{% url 'products:product_list' %}" class="cat-card cat-all">
+        <div class="cat-overlay"><span>View All →</span></div>
+      </a>
+    {% endif %}
+  </div>
+</section>
+
+{# ── FEATURED PRODUCTS ── #}
+{# Pass: featured_products = Product.objects.filter(is_featured=True)[:8] #}
+<section class="dark-section">
+  <div class="section-head">
+    <p class="eyebrow">Featured</p>
+    <h2 class="section-title">Best Drops</h2>
+  </div>
+  <div class="products-grid">
+    {% for product in featured_products %}
+      {% include "products/_product_card.html" with product=product %}
+    {% empty %}
+      <p style="color:var(--light);padding:40px;grid-column:1/-1">No featured products yet.</p>
+    {% endfor %}
+  </div>
+  <div style="text-align:center;margin-top:48px">
+    <a href="{% url 'products:product_list' %}" class="btn-primary">View All Products</a>
+  </div>
+</section>
+
+{# ── DEAL BANNER ── #}
+{# Pass: deal = Deal.objects.filter(is_active=True).first() #}
+<section class="deal-banner">
+  <div class="deal-content">
+    <p class="eyebrow">Limited Time</p>
+    <h2 class="deal-title">DEAL OF THE<br>MONTH</h2>
+    <p class="deal-sub">
+      {% if deal %}{{ deal.description }}{% else %}Up to 40% off on selected Nike, Adidas & Jordan silhouettes. Don't sleep on these drops.{% endif %}
+    </p>
+    {# end_date passed as ISO string for JS countdown #}
+    <div class="deal-timer" id="dealTimer"
+         data-end="{% if deal %}{{ deal.end_date|date:'c' }}{% else %}2025-04-30T23:59:59{% endif %}">
+    </div>
+    <a href="{% url 'products:deals' %}" class="btn-primary">Grab the Deal</a>
+  </div>
+  <div class="deal-image">
+    {% if deal and deal.image %}
+      <img src="{{ deal.image.url }}" alt="Deal sneaker"/>
+    {% else %}
+      <img src="https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?w=700&q=80" alt="Deal sneaker"/>
+    {% endif %}
+  </div>
+</section>
+
+{# ── FEATURES ROW ── #}
+<section class="section">
+  <div class="features-row">
+    <div class="feature-card">
+      <div class="feature-icon">🚚</div>
+      <h3>Free Shipping</h3>
+      <p>On all orders above ₹4,999</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">✅</div>
+      <h3>100% Authentic</h3>
+      <p>Every pair verified genuine</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔄</div>
+      <h3>Easy Returns</h3>
+      <p>30-day hassle-free returns</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3>Secure Payment</h3>
+      <p>UPI, Cards, COD accepted</p>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
