@@ -1,18 +1,41 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
+from django.contrib.auth import authenticate, login
+from .models import CustomUser
 
 # Create your views here.
 
 def user_registration(request):
     if request.method == 'POST':
-        # Handle user registration logic here
-        pass
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        phone_number = request.POST.get('phone')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+        if password1 != password2:
+            return render(request, 'register.html', {'error': 'Passwords do not match.'})
+        # Create the user
+        user = CustomUser.objects.create_user(
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            phone_number=phone_number,
+            password=password1
+        )
+        if user is not None:
+            user.save()
+            return render(request, 'login.html', {'success': 'Account created successfully. Please log in.'})
     return render(request, 'register.html')
 
 
 def user_login(request):
     if request.method == 'POST':
-        # Handle user login logic here
-        pass
+        email = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, email=email, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('accounts:home')  # Redirect to a success page.
     return render(request, 'login.html')
 
 def home(request):

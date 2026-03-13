@@ -16,18 +16,18 @@
   <div class="nav-inner">
     <button class="hamburger" id="menuToggle" aria-label="Toggle menu">
       <span></span><span></span><span></span>
-    </button>
+    </button>`
 
-    <a href="# url 'products:home' #" class="logo">SOLE<span>DROP</span></a>
+    <a href="{% url 'products:home' %}" class="logo">SOLE<span>DROP</span></a>
 
     <ul class="nav-links" id="navLinks">
-      <li><a href="# url 'products:home' #" {% if request.resolver_match.url_name == 'home' %}class="active"{% endif %}>Home</a></li>
+      <li><a href="{% url 'products:home' %}" {% if request.resolver_match.url_name == 'home' %}class="active"{% endif %}>Home</a></li>
       <li><a href="# url 'products:deals' #" {% if request.resolver_match.url_name == 'deals' %}class="active"{% endif %}>Deals</a></li>
-      <li><a href="# url 'products:product_list' #" {% if request.resolver_match.url_name == 'product_list' %}class="active"{% endif %}>Shop</a></li>
+      <li><a href="{% url 'products:product_list' %}" {% if request.resolver_match.url_name == 'product_list' %}class="active"{% endif %}>Shop</a></li>
       {% if user.is_authenticated %}
         <li><a href="# url 'accounts:profile' #" {% if request.resolver_match.url_name == 'profile' %}class="active"{% endif %}>Account</a></li>
       {% else %}
-        <li><a href="# url 'accounts:login' #"">Login</a></li>
+        <li><a href="{% url 'accounts:login' %}">Login</a></li>
       {% endif %}
     </ul>
 
@@ -165,7 +165,7 @@
     <div class="footer-col">
       <h4>Shop</h4>
       <ul>
-        <li><a href="# url 'products:product_list' #">All Sneakers</a></li>
+        <li><a href="{% url 'products:product_list' %}">All Sneakers</a></li>
         <li><a href="# url 'products:product_list' #?category=Nike">Nike</a></li>
         <li><a href="# url 'products:product_list' #?category=Adidas">Adidas</a></li>
         <li><a href="# url 'products:product_list' #?category=Jordan">Jordan</a></li>
@@ -181,8 +181,8 @@
           <li><a href="# url 'accounts:wishlist' #">Wishlist</a></li>
           <li><a href="# url 'accounts:logout' #">Logout</a></li>
         {% else %}
-          <li><a href="# url 'accounts:login' #">Login</a></li>
-          <li><a href="# url 'accounts:register' #">Register</a></li>
+          <li><a href="{% url 'accounts:login' %}">Login</a></li>
+          <li><a href="{% url 'accounts:register' %}">Register</a></li>
         {% endif %}
       </ul>
     </div>

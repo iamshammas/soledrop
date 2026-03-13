@@ -1,4 +1,4 @@
-{% extends "base/base.html" %}
+{% extends "base.html" %}
 {% load static %}
 
 {% block title %}Shop — SOLE DROP{% endblock %}
@@ -26,7 +26,7 @@
       <h3>Brand</h3>
       <ul>
         <li>
-          <a href="{% url 'products:product_list' %}{% if request.GET.sort %}?sort={{ request.GET.sort }}{% endif %}"
+          <a href="# url 'products:product_list' #{% if request.GET.sort %}?sort={{ request.GET.sort }}{% endif %}"
              {% if not current_category %}class="active"{% endif %}>
             All
           </a>
@@ -126,7 +126,7 @@
       <span>Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ paginator.count }} products</span>
       {% if request.GET.search %}
         <span>Results for "<strong>{{ request.GET.search }}</strong>"
-          <a href="{% url 'products:product_list' %}" style="color:var(--accent);font-size:.78rem;margin-left:6px">Clear ✕</a>
+          <a href="# url 'products:product_list' #" style="color:var(--accent);font-size:.78rem;margin-left:6px">Clear ✕</a>
         </span>
       {% endif %}
     </div>
@@ -138,7 +138,7 @@
       {% empty %}
         <div style="grid-column:1/-1;padding:60px;text-align:center;color:var(--light)">
           <p style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--mid)">No sneakers found</p>
-          <a href="{% url 'products:product_list' %}" class="btn-primary" style="margin-top:20px;display:inline-block">Clear Filters</a>
+          <a href="# url 'products:product_list' #" class="btn-primary" style="margin-top:20px;display:inline-block">Clear Filters</a>
         </div>
       {% endfor %}
     </div>

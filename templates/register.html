@@ -15,7 +15,7 @@
       </div>
     {% endif %}
 
-    <form action="# url 'accounts:register' #" method="POST">
+    <form action="{% url 'accounts:register' %}" method="POST">
       {% csrf_token %}
 
       <div class="form-row">
@@ -96,7 +96,7 @@
 
     <p class="auth-footer">
       Already have an account?
-      <a href="{% url 'login' %}">Sign in</a>
+      <a href="{% url 'accounts:login' %}">Sign in</a>
     </p>
   </div>
 </div>
