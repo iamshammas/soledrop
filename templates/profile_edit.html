@@ -1,4 +1,4 @@
-{% extends "base/base.html" %}
+{% extends "base.html" %}
 {% load static %}
 {% block title %}Edit Profile — SOLE DROP{% endblock %}
 {% block content %}
@@ -13,7 +13,7 @@
     <p class="profile-email">{{ user.email }}</p>
     <ul class="profile-nav">
       <li><a href="{% url 'accounts:profile' %}">Dashboard</a></li>
-      <li><a href="{% url 'orders:order_list' %}">My Orders</a></li>
+      <li><a href="# url 'orders:order_list' #">My Orders</a></li>
       <li><a href="{% url 'accounts:profile_edit' %}" class="active">Profile Settings</a></li>
       <li><a href="{% url 'accounts:wishlist' %}">Wishlist</a></li>
       <li><form action="{% url 'accounts:logout' %}" method="POST" style="display:inline">{% csrf_token %}<button type="submit">Logout</button></form></li>
@@ -43,11 +43,11 @@
         </div>
         <div class="form-group">
           <label>Phone</label>
-          <input type="tel" name="phone" value="{{ form.phone.value|default:user.profile.phone }}" placeholder="+91 98765 43210"/>
+          <input type="tel" name="phone" value="{{ form.phone.value|default:user.phone_number }}" placeholder="+91 98765 43210"/>
         </div>
         <div class="form-group">
           <label>Default Shipping Address</label>
-          <input type="text" name="address" value="{{ form.address.value|default:user.profile.address }}" placeholder="123 MG Road, Bangalore, 560001"/>
+          <input type="text" name="address" value="{{ form.address.value|default:user.addresses.first }}" placeholder="123 MG Road, Bangalore, 560001"/>
         </div>
         <button type="submit" class="btn-primary">Save Changes</button>
       </form>

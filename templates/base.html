@@ -22,10 +22,10 @@
 
     <ul class="nav-links" id="navLinks">
       <li><a href="{% url 'products:home' %}" {% if request.resolver_match.url_name == 'home' %}class="active"{% endif %}>Home</a></li>
-      <li><a href="# url 'products:deals' #" {% if request.resolver_match.url_name == 'deals' %}class="active"{% endif %}>Deals</a></li>
+      <li><a href="{% url 'products:deals' %}" {% if request.resolver_match.url_name == 'deals' %}class="active"{% endif %}>Deals</a></li>
       <li><a href="{% url 'products:product_list' %}" {% if request.resolver_match.url_name == 'product_list' %}class="active"{% endif %}>Shop</a></li>
       {% if user.is_authenticated %}
-        <li><a href="# url 'accounts:profile' #" {% if request.resolver_match.url_name == 'profile' %}class="active"{% endif %}>Account</a></li>
+        <li><a href="{% url 'accounts:profile' %}" {% if request.resolver_match.url_name == 'profile' %}class="active"{% endif %}>Account</a></li>
       {% else %}
         <li><a href="{% url 'accounts:login' %}">Login</a></li>
       {% endif %}

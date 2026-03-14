@@ -40,3 +40,18 @@ def user_login(request):
 
 def home(request):
     return render(request, 'home.html')
+
+def profile(request):  
+    return render(request, 'profile.html')
+
+def profile_edit(request):
+    # Placeholder for profile edit logic
+    return render(request, 'profile_edit.html')
+
+def wishlist(request):
+    # Placeholder for wishlist logic
+    return render(request, 'wishlist.html')
+
+def user_logout(request):
+    # Placeholder for logout logic
+    return redirect('accounts:home')
