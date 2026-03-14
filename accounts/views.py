@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login,logout
 from .models import CustomUser
 
 # Create your views here.
@@ -53,5 +53,9 @@ def wishlist(request):
     return render(request, 'wishlist.html')
 
 def user_logout(request):
-    # Placeholder for logout logic
+    logout(request)
     return redirect('accounts:home')
+
+def change_password(request):
+    # Placeholder for change password logic
+    return render(request, 'change_password.html')
