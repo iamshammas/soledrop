@@ -21,12 +21,12 @@
     <div class="card-actions">
       {% if product.in_stock %}
         {# Quick-add to cart — POST to cart:add #}
-        <form action="{% url 'cart:add' product.id %}" method="POST" class="quick-add-form">
+        <form action="# url 'cart:add' product.id #" method="POST" class="quick-add-form">
           {% csrf_token %}
           <input type="hidden" name="product_id" value="{{ product.id }}"/>
           {# No size selected on quick-add — redirect to detail page for size selection #}
           <button type="button" class="quick-add-btn"
-                  onclick="window.location='{% url 'products:product_detail' product.slug %}'">
+                  onclick="window.location='# url 'products:product_detail' product.slug #'">
             Select Size
           </button>
         </form>
@@ -37,7 +37,7 @@
       {% endif %}
 
       {# Wishlist toggle — POST to accounts:wishlist_toggle #}
-      <form action="{% url 'accounts:wishlist_toggle' product.id %}" method="POST" class="wish-form">
+      <form action="# url 'accounts:wishlist_toggle' product.id #" method="POST" class="wish-form">
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ request.path }}"/>
         <button type="submit" class="wish-btn {% if product.id in wishlist_ids %}liked{% endif %}">
@@ -49,11 +49,11 @@
 
   <div class="card-info">
     <p class="card-brand">{{ product.brand }}</p>
-    <a href="{% url 'products:product_detail' product.slug %}">
+    <a href="# url 'products:product_detail' product.slug #">
       <p class="card-name">{{ product.name }}</p>
     </a>
     <div class="card-price-row">
-      <span class="card-price">₹{{ product.price }}</span>
+      <span class="card-price">₹{{ product.new_price }}</span>
       {% if product.old_price %}
         <span class="card-old-price">₹{{ product.old_price }}</span>
       {% endif %}

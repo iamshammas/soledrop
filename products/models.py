@@ -18,6 +18,10 @@ class Category(models.Model):
     def __str__(self):
         return self.name
     
+    @property
+    def product_count(self):
+        return self.products.filter(is_active=True).count()
+
 class Product(models.Model):
     BADGE_CHOICES = [
     ('',     'None'),

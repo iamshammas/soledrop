@@ -126,7 +126,7 @@
       <span>Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ paginator.count }} products</span>
       {% if request.GET.search %}
         <span>Results for "<strong>{{ request.GET.search }}</strong>"
-          <a href="# url 'products:product_list' #" style="color:var(--accent);font-size:.78rem;margin-left:6px">Clear ✕</a>
+          <a href="{% url 'products:product_list' %}" style="color:var(--accent);font-size:.78rem;margin-left:6px">Clear ✕</a>
         </span>
       {% endif %}
     </div>
@@ -134,11 +134,11 @@
     {# Product Grid #}
     <div class="products-grid">
       {% for product in page_obj %}
-        {% include "products/_product_card.html" with product=product %}
+        {% include "_product_card.html" with product=product %}
       {% empty %}
         <div style="grid-column:1/-1;padding:60px;text-align:center;color:var(--light)">
           <p style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--mid)">No sneakers found</p>
-          <a href="# url 'products:product_list' #" class="btn-primary" style="margin-top:20px;display:inline-block">Clear Filters</a>
+          <a href="{% url 'products:product_list' %}" class="btn-primary" style="margin-top:20px;display:inline-block">Clear Filters</a>
         </div>
       {% endfor %}
     </div>
