@@ -1,12 +1,18 @@
 from django.shortcuts import render
 from .models import Category, Product
+from django.core.paginator import Paginator
 
 # Create your views here.
 
 def product_list(request):
     all_categories = Category.objects.filter(is_active=True)
+    qs = Product.objects.filter(is_active=True)
+    paginator = Paginator(qs, 8)  
+    page_obj = paginator.get_page(request.GET.get('page', 1))
     context = {
         'all_categories': all_categories,
+        'paginator': paginator,
+        'page_obj': page_obj
     }
     return render(request, 'product_list.html', context)
 
