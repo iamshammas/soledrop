@@ -67,7 +67,7 @@
     </div>
 
     {# ── ADD TO CART FORM ── #}
-    <form action="# url 'cart:add' product.id #" method="POST" id="addToCartForm">
+    <form action="{% url 'cart:add_to_cart' product.id %}" method="POST" id="addToCartForm">
       {% csrf_token %}
       <input type="hidden" name="product_id" value="{{ product.id }}"/>
 
