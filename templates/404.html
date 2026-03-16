@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>404 — Page Not Found | SOLE DROP</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .error-wrap {
+      min-height: calc(100vh - 66px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* giant 404 background text */
+    .error-bg {
+      position: absolute;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(18rem, 36vw, 32rem);
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(255,59,0,.08);
+      letter-spacing: -.02em;
+      user-select: none;
+      pointer-events: none;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .error-card {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 560px;
+    }
+
+    .error-eyebrow {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .error-eyebrow::before,
+    .error-eyebrow::after {
+      content: '';
+      width: 36px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    .error-code {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(6rem, 16vw, 12rem);
+      line-height: .9;
+      color: var(--white);
+      letter-spacing: .04em;
+      margin-bottom: 8px;
+    }
+
+    .error-code span {
+      color: var(--accent);
+    }
+
+    .error-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(1.6rem, 4vw, 2.8rem);
+      color: var(--light);
+      letter-spacing: .06em;
+      margin-bottom: 20px;
+    }
+
+    .error-desc {
+      font-size: .96rem;
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 40px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .error-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 52px;
+    }
+
+    .error-divider {
+      font-size: .68rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 28px;
+    }
+
+    .quick-links {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .quick-link {
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      transition: all .2s;
+    }
+
+    .quick-link:hover {
+      color: var(--white);
+      border-color: var(--accent);
+    }
+
+    /* sneaker bounce animation */
+    .sneaker-icon {
+      font-size: 3.2rem;
+      display: block;
+      margin: 0 auto 24px;
+      animation: bounce 1.8s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-14px); }
+    }
+  </style>
+</head>
+<body>
+
+<nav id="navbar">
+  <div class="nav-wrap">
+    <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+    <a href="index.html" class="logo">SOLE<span>DROP</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="deals.html">Deals</a></li>
+      <li><a href="shop.html">Shop</a></li>
+      <li><a href="profile.html">Account</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="wishlist.html" class="icon-btn">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </a>
+      <button class="icon-btn" id="cartBtn">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="badge cart-badge">0</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="error-wrap">
+  <div class="error-bg">404</div>
+
+  <div class="error-card">
+    <span class="sneaker-icon">👟</span>
+
+    <p class="error-eyebrow">Error</p>
+    <div class="error-code">4<span>0</span>4</div>
+    <h1 class="error-title">Page Not Found</h1>
+    <p class="error-desc">
+      Looks like this sneaker dropped and we can't find it. The page you're looking for doesn't exist or has been moved.
+    </p>
+
+    <div class="error-actions">
+      <a href="index.html" class="btn btn-primary">Back to Home</a>
+      <a href="shop.html" class="btn btn-outline">Browse Sneakers</a>
+    </div>
+
+    <p class="error-divider">or jump to</p>
+
+    <div class="quick-links">
+      <a href="deals.html" class="quick-link">Deals</a>
+      <a href="shop.html" class="quick-link">Nike</a>
+      <a href="shop.html" class="quick-link">Adidas</a>
+      <a href="shop.html" class="quick-link">Jordan</a>
+      <a href="profile.html" class="quick-link">My Orders</a>
+      <a href="wishlist.html" class="quick-link">Wishlist</a>
+    </div>
+  </div>
+</div>
+
+<div class="cart-overlay" id="cartOverlay"></div>
+<aside class="cart-sidebar" id="cartSidebar">
+  <div class="cart-head"><h3>Your Bag</h3><button id="cartClose">✕</button></div>
+  <div class="cart-body" id="cartBody"></div>
+  <div class="cart-foot" id="cartFoot" style="display:none">
+    <div class="cart-sub-row"><span>Subtotal</span><span>₹0</span></div>
+    <p class="cart-note">Shipping & taxes at checkout</p>
+    <a href="checkout.html" class="btn btn-primary btn-full" style="margin-bottom:10px">Checkout</a>
+    <button class="btn btn-ghost btn-full" id="cartContinue">Continue Shopping</button>
+  </div>
+</aside>
+
+<div class="alerts-wrap"></div>
+<script src="store.js"></script>
+</body>
+</html>

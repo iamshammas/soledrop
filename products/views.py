@@ -30,3 +30,13 @@ def home_page(request):
 def deals(request):
     return render(request, 'deals.html')
 
+
+def product_detail(request, slug):
+    product = Product.objects.filter(slug=slug, is_active=True).first()
+    if not product:
+        return render(request, '404.html', status=404)
+    
+    context = {
+        'product': product,
+    }
+    return render(request, 'product_detail.html', context)

@@ -1,0 +1,11 @@
+<svg viewBox="0 0 680 690" width="100%" xmlns="http://www.w3.org/2000/svg">
+  <rect width="680" height="680" fill="#FF3B00" rx="140" style="fill:rgb(255, 59, 0);stroke:none;color:rgb(255, 255, 255);stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- SD monogram -->
+  <!-- S -->
+  <path d="&#10;    M 185 210&#10;    L 305 210&#10;    Q 325 210 325 230&#10;    L 325 310&#10;    Q 325 330 305 330&#10;    L 205 330&#10;    Q 185 330 185 350&#10;    L 185 440&#10;    Q 185 460 205 460&#10;    L 335 460&#10;  " fill="none" stroke="white" stroke-width="52" stroke-linecap="round" stroke-linejoin="round" style="fill:none;stroke:rgb(255, 255, 255);color:rgb(255, 255, 255);stroke-width:52px;stroke-linecap:round;stroke-linejoin:round;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+
+  <!-- D -->
+  <path d="&#10;    M 375 210&#10;    L 375 460&#10;  " fill="none" stroke="white" stroke-width="52" stroke-linecap="round" style="fill:none;stroke:rgb(255, 255, 255);color:rgb(255, 255, 255);stroke-width:52px;stroke-linecap:round;stroke-linejoin:miter;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+  <path d="&#10;    M 375 210&#10;    Q 530 210 530 335&#10;    Q 530 460 375 460&#10;  " fill="none" stroke="white" stroke-width="52" stroke-linecap="round" stroke-linejoin="round" style="fill:none;stroke:rgb(255, 255, 255);color:rgb(255, 255, 255);stroke-width:52px;stroke-linecap:round;stroke-linejoin:round;opacity:1;font-family:&quot;Anthropic Sans&quot;, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif;font-size:16px;font-weight:400;text-anchor:start;dominant-baseline:auto"/>
+</svg>
