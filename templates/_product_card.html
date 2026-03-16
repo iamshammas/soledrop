@@ -4,7 +4,7 @@
 
 <div class="product-card">
   <div class="card-img-wrap">
-    {% if product.image %}
+    {% if product.image.name %}
       <img class="card-img" src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy"/>
     {% else %}
       <img class="card-img" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80" alt="{{ product.name }}" loading="lazy"/>
