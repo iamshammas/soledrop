@@ -56,18 +56,18 @@
     </div>
 
     <div class="product-detail-price">
-      <span class="detail-price">₹{{ product.price }}</span>
+      <span class="detail-price">₹{{ product.new_price }}</span>
       {% if product.old_price %}
         <span class="detail-old-price">₹{{ product.old_price }}</span>
         <span class="detail-discount">
-          {% widthratio product.price product.old_price 100 as pct %}
+          {% widthratio product.new_price product.old_price 100 as pct %}
           {{ 100|add:"-"|add:pct }}% OFF
         </span>
       {% endif %}
     </div>
 
     {# ── ADD TO CART FORM ── #}
-    <form action="{% url 'cart:add' product.id %}" method="POST" id="addToCartForm">
+    <form action="# url 'cart:add' product.id #" method="POST" id="addToCartForm">
       {% csrf_token %}
       <input type="hidden" name="product_id" value="{{ product.id }}"/>
 
@@ -85,12 +85,12 @@
           </label>
         {% empty %}
           {# Fallback static sizes #}
-          {% for s in "6,7,7.5,8,9,10,11"|split:"," %}
+           <!-- for s in "6,7,7.5,8,9,10,11"|split:"," %}
             <label class="size-label">
               <input type="radio" name="size" value="{{ s }}" required/>
               <span class="size-btn">{{ s }}</span>
             </label>
-          {% endfor %}
+           endfor %} -->
         {% endfor %}
       </div>
       <p class="form-error" id="sizeError" style="display:none">Please select a size first</p>
@@ -127,7 +127,7 @@
         {% endif %}
 
         {# Wishlist toggle #}
-        <form action="{% url 'accounts:wishlist_toggle' product.id %}" method="POST" style="display:inline">
+        <form action="# url 'accounts:wishlist_toggle' product.id #" method="POST" style="display:inline">
           {% csrf_token %}
           <input type="hidden" name="next" value="{{ request.path }}"/>
           <button type="submit" class="wish-icon {% if product.id in wishlist_ids %}liked{% endif %}">

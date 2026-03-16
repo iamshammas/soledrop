@@ -52,7 +52,7 @@ class Product(models.Model):
     
 
 class ProductSize(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='sizes')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='available_sizes')
     value = models.CharField(max_length=20)
     in_stock = models.BooleanField(default=True)
 

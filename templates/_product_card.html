@@ -26,7 +26,7 @@
           <input type="hidden" name="product_id" value="{{ product.id }}"/>
           {# No size selected on quick-add — redirect to detail page for size selection #}
           <button type="button" class="quick-add-btn"
-                  onclick="window.location='# url 'products:product_detail' product.slug #'">
+                  onclick="window.location='{% url 'products:product_detail' product.slug %}'">
             Select Size
           </button>
         </form>
@@ -49,7 +49,7 @@
 
   <div class="card-info">
     <p class="card-brand">{{ product.brand }}</p>
-    <a href="# url 'products:product_detail' product.slug #">
+    <a href="{% url 'products:product_detail' product.slug %}">
       <p class="card-name">{{ product.name }}</p>
     </a>
     <div class="card-price-row">
