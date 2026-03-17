@@ -123,7 +123,7 @@
               </form>
             </div>
             {# Remove form #}
-            <form action="{% url 'cart:remove' item.id %}" method="POST" class="remove-form">
+            <form action="# url 'cart:remove' item.id #" method="POST" class="remove-form">
               {% csrf_token %}
               <button type="submit" class="cart-remove">Remove</button>
             </form>
@@ -135,7 +135,7 @@
       <div class="cart-empty">
         <div class="cart-empty-icon">👟</div>
         <p>Your bag is empty</p>
-        <a href="# url 'products:product_list' #" class="btn-ghost" style="margin-top:16px;display:inline-block">Browse Sneakers</a>
+        <a href="{% url 'products:product_list' %}" class="btn-ghost" style="margin-top:16px;display:inline-block">Browse Sneakers</a>
       </div>
     {% endif %}
   </div>
@@ -147,7 +147,7 @@
         <span>₹{{ cart_total }}</span>
       </div>
       <p class="cart-note">Shipping & taxes calculated at checkout</p>
-      <a href="{% url 'orders:checkout' %}" class="btn-primary w100">Checkout</a>
+      <a href="# url 'orders:checkout' #" class="btn-primary w100">Checkout</a>
       <button class="btn-ghost w100" id="cartContinue">Continue Shopping</button>
     </div>
   {% endif %}

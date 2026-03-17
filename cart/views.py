@@ -1,15 +1,22 @@
 from itertools import product
 
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from products.models import Product
-from cart.models import Cart
+from cart.models import Cart, CartItem
 
 # Create your views here.
 
 def cart_detail(request):
-    # Logic to display the cart details
-    return render(request, 'cart_detail.html')
+    cart_items = Cart.objects.filter(user=request.user).first().items.all()
+    cart_count = cart_items.count()
+    cart_subtotal = Cart.objects.filter(user=request.user).first().total_price if cart_items else 0
+    context = {
+        'cart_items': cart_items,
+        'cart_count': cart_count,
+        'cart_subtotal': cart_subtotal
+    }
+    return render(request, 'cart_detail.html', context)
 
 def add_to_cart(request, product_id):
     if request.method == 'POST':
@@ -21,11 +28,13 @@ def add_to_cart(request, product_id):
             color = request.POST.get('color')
             quantity = int(request.POST.get('quantity', 1))
             if quantity < product.stock:
-                if request.user.cart.count() == 0:
-                    cart = Cart.objects.create(user=request.user)
-                    print(f"New cart created for user '{request.user.email}': {cart}")
-                else:
-                    cart = request.user.cart
-                    print(f"Existing cart found for user '{request.user.email}': {cart}")
-                print(f"Adding product '{product.name}' (ID: {product_id}) to cart with size '{size}', color '{color}', and quantity {quantity}")
+                cart = Cart.objects.get_or_create(user=request.user)[0]
+                item, created = CartItem.objects.get_or_create(cart=cart, product=product, size=size)
+                if not created:
+                    item.quantity += 1
+                item.save()
+                return redirect('cart:cart_detail')
+                # item,created = CartItem.objects.create(cart=cart, product=product, size=size, quantity=quantity)
+                # item.save()
+                # return redirect('cart_detail')
     return render(request, 'cart_detail.html')
