@@ -147,7 +147,7 @@
         <span>₹{{ cart_total }}</span>
       </div>
       <p class="cart-note">Shipping & taxes calculated at checkout</p>
-      <a href="# url 'orders:checkout' #" class="btn-primary w100">Checkout</a>
+      <a href="{% url 'orders:checkout' %}" class="btn-primary w100">Checkout</a>
       <button class="btn-ghost w100" id="cartContinue">Continue Shopping</button>
     </div>
   {% endif %}
