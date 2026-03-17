@@ -38,3 +38,16 @@ def add_to_cart(request, product_id):
                 # item.save()
                 # return redirect('cart_detail')
     return render(request, 'cart_detail.html')
+
+
+def remove_from_cart(request, product_id):
+    if request.method == 'POST':
+        product = Product.objects.filter(id=product_id, is_active=True).first()
+        if not product:
+            return render(request, '404.html', status=404)
+        else:
+            cart = Cart.objects.filter(user=request.user).first()
+            if cart:
+                item = CartItem.objects.filter(cart=cart, product=product, size=size).first()
+                print(f"Removing item: {item} from cart: {cart}")
+    return redirect('cart:cart_detail')

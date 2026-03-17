@@ -105,7 +105,7 @@
           <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}"/>
           <div>
             <p class="cart-item-name">{{ item.product.name }}</p>
-            <p class="cart-item-meta">{{ item.product.brand }} · Size {{ item.size }}</p>
+            <p class="cart-item-meta">{{ item.product.brand }} · Size -   {{ item.size }}</p>
             <div class="qty-row">
               {# POST to cart:update — JS submits these forms via fetch #}
               <form class="qty-form" data-item="{{ item.id }}" data-action="decrease">
@@ -123,7 +123,7 @@
               </form>
             </div>
             {# Remove form #}
-            <form action="# url 'cart:remove' item.id #" method="POST" class="remove-form">
+            <form action="{% url 'cart:remove_from_cart' item.id %}" method="POST" class="remove-form">
               {% csrf_token %}
               <button type="submit" class="cart-remove">Remove</button>
             </form>

@@ -10,14 +10,17 @@ def product_list(request):
     qs = Product.objects.filter(is_active=True)
     paginator = Paginator(qs, 8)  
     page_obj = paginator.get_page(request.GET.get('page', 1))
-    cart_count = Cart.objects.filter(user=request.user).first().items.count() if request.user.is_authenticated else 0
-    cart_items = Cart.objects.filter(user=request.user).first().items.all() if request.user.is_authenticated else []
+    cart = Cart.objects.filter(user=request.user).first()
+    cart_count = cart.items.count() if cart else 0
+    cart_items = cart.items.all() if cart else []
+    cart_total = cart.total_price if cart else 0
     context = {
         'all_categories': all_categories,
         'paginator': paginator,
         'page_obj': page_obj,
         'cart_count': cart_count,
         'cart_items': cart_items,
+        'cart_total': cart_total,
     }
     return render(request, 'product_list.html', context)
 
