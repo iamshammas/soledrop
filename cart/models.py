@@ -5,7 +5,7 @@ from products.models import Product
 # Create your models here.
 
 class Cart(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,related_name='cart')
     created_at = models.DateTimeField(auto_now_add=True)
 
     @property
@@ -17,7 +17,7 @@ class Cart(models.Model):
         return sum(item.total_price for item in self.items.all())
 
     def __str__(self):
-        return f"Cart of {self.user.username}"
+        return f"Cart of {self.user.email} with {self.total_items} items"
 
 
 
@@ -36,4 +36,4 @@ class CartItem(models.Model):
         return self.product.new_price * self.quantity  # Use new_price for total calculation
 
     def __str__(self):
-        return f"{self.quantity} x {self.product.name} (Size: {self.size}) in {self.cart.user.username}'s Cart"
+        return f"{self.quantity} x {self.product.name} (Size: {self.size}) in {self.cart.user.email}'s Cart"
