@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate, login,logout
 from .models import CustomUser
+from cart.models import Cart
 
 # Create your views here.
 
@@ -39,10 +40,17 @@ def user_login(request):
     return render(request, 'login.html')
 
 def home(request):
-    return render(request, 'home.html')
+    cart_count = Cart.objects.filter(user=request.user).first().items.count() if request.user.is_authenticated else 0
+    return render(request, 'home.html', {'cart_count': cart_count})
 
 def profile(request):  
-    return render(request, 'profile.html')
+    cart_count = Cart.objects.filter(user=request.user).first().items.count() if request.user.is_authenticated else 0
+    cart_items = Cart.objects.filter(user=request.user).first().items.all() if request.user.is_authenticated else []
+    context = {
+        'cart_count': cart_count,
+        'cart_items': cart_items,
+    }
+    return render(request, 'profile.html', context)
 
 def profile_edit(request):
     # Placeholder for profile edit logic

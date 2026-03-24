@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .models import Category, Product
 from django.core.paginator import Paginator
 from cart.models import Cart
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -24,16 +25,18 @@ def product_list(request):
     }
     return render(request, 'product_list.html', context)
 
+@login_required
 def home_page(request):
     categories = Category.objects.filter(is_active=True)
     featured_products = Product.objects.filter(is_active=True, is_featured=True)
     cart_count = Cart.objects.filter(user=request.user).first().items.count() if request.user.is_authenticated else 0
+    cart_items = Cart.objects.filter(user=request.user).first().items.all() if request.user.is_authenticated else []
     context = {
         'categories': categories,
         'featured_products': featured_products,
         'cart_count': cart_count,
+        'cart_items': cart_items,
     }
-    # print(f"Featured Products: {featured_products[0].image if featured_products else 'None'}")  # Debugging statement to check the featured products queryset
     return render(request, 'home.html', context)
 
 def deals(request):

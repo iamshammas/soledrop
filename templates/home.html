@@ -20,7 +20,7 @@
             <p class="hero-sub">{{ slide.subtitle }}</p>
             <div class="hero-btns">
               <a href="{{ slide.cta_url }}" class="btn-primary">{{ slide.cta_label|default:"Shop Now" }}</a>
-              <a href="# url 'products:deals' #" class="btn-outline">View Deals</a>
+              <a href="{% url 'products:deals' %}" class="btn-outline">View Deals</a>
             </div>
           </div>
         </div>
@@ -34,7 +34,7 @@
           <p class="hero-sub">The most hyped sneakers, delivered to your door. Limited drops, exclusive collabs.</p>
           <div class="hero-btns">
             <a href="{% url 'products:product_list' %}" class="btn-primary">Shop Now</a>
-            <a href="# url 'products:deals' #" class="btn-outline">View Deals</a>
+            <a href="{% url 'products:deals' %}" class="btn-outline">View Deals</a>
           </div>
         </div>
       </div>
@@ -45,7 +45,7 @@
           <p class="hero-sub">Classic silhouettes reimagined for the modern street.</p>
           <div class="hero-btns">
             <a href="{% url 'products:product_list' %}" class="btn-primary">Shop Nike</a>
-            <a href="# url 'products:deals' #" class="btn-outline">View Deals</a>
+            <a href="{% url 'products:deals' %}" class="btn-outline">View Deals</a>
           </div>
         </div>
       </div>
@@ -56,7 +56,7 @@
           <p class="hero-sub">The Jumpman. Iconic since '85. Cop the latest retros now.</p>
           <div class="hero-btns">
             <a href="{% url 'products:product_list' %}" class="btn-primary">Shop Jordan</a>
-            <a href="# url 'products:deals' #" class="btn-outline">View Deals</a>
+            <a href="{% url 'products:deals' %}" class="btn-outline">View Deals</a>
           </div>
         </div>
       </div>
@@ -158,7 +158,7 @@
     <div class="deal-timer" id="dealTimer"
          data-end="{% if deal %}{{ deal.end_date|date:'c' }}{% else %}2025-04-30T23:59:59{% endif %}">
     </div>
-    <a href="# url 'products:deals' #" class="btn-primary">Grab the Deal</a>
+    <a href="{% url 'products:deals' %}" class="btn-primary">Grab the Deal</a>
   </div>
   <div class="deal-image">
     {% if deal and deal.image %}
