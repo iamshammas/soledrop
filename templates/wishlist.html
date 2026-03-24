@@ -1,19 +1,70 @@
 {% extends "base.html" %}
 {% load static %}
+
 {% block title %}Wishlist — SOLE DROP{% endblock %}
+
 {% block content %}
 <div class="page-hero">
   <div class="breadcrumb"><a href="{% url 'products:home' %}">Home</a><span>›</span><span>Wishlist</span></div>
   <h1 class="page-hero-title">My Wishlist</h1>
 </div>
+
 <div class="wishlist-page">
-  {% if wishlist_products %}
-    <p style="color:var(--light);margin-bottom:24px;font-size:.88rem">{{ wishlist_products|length }} item{{ wishlist_products|length|pluralize }} saved</p>
+  {% if wishlist_items %}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+      <p style="color:var(--light);font-size:.88rem">
+        {{ wishlist_items|length }} item{{ wishlist_items|length|pluralize }} saved
+      </p>
+      <form action="# url 'accounts:wishlist_clear' %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn-ghost" style="font-size:.72rem;padding:8px 16px">Clear Wishlist</button>
+      </form>
+    </div>
+
     <div class="products-grid">
-      {% for product in wishlist_products %}
-        {% include "products/_product_card.html" with product=product %}
+      {% for product in wishlist_items %}
+        <div class="product-card">
+
+          <div class="card-img-wrap">
+            <img class="card-img" src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy"/>
+            {% if product.badge %}
+              <span class="card-badge {{ product.badge }}">{{ product.badge|upper }}</span>
+            {% endif %}
+          </div>
+
+          <div class="card-info">
+            <p class="card-brand">{{ product.brand }}</p>
+            <a href="{% url 'products:product_detail' product.slug %}">
+              <p class="card-name">{{ product.name }}</p>
+            </a>
+            <div class="card-price-row">
+              <span class="card-price">₹{{ product.new_price }}</span>
+              {% if product.old_price %}
+                <span class="card-old-price">₹{{ product.old_price }}</span>
+              {% endif %}
+            </div>
+            <div class="card-rating">
+              {% for i in "12345" %}
+                {% if forloop.counter <= product.avg_rating %}★{% else %}☆{% endif %}
+              {% endfor %}
+              <span style="color:var(--muted);font-size:.7rem">({{ product.review_count }})</span>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:14px">
+              <a href="{% url 'products:product_detail' product.slug %}" class="btn-primary" style="flex:1;text-align:center;padding:10px;font-size:.72rem">
+                View Product
+              </a>
+              <form action="# url 'accounts:wishlist_toggle' product.id %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}"/>
+                <button type="submit" class="btn-ghost" style="padding:10px 14px" title="Remove">✕</button>
+              </form>
+            </div>
+          </div>
+
+        </div>
       {% endfor %}
     </div>
+
   {% else %}
     <div class="wishlist-empty">
       <h3>Your wishlist is empty</h3>

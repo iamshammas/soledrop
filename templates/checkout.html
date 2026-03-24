@@ -138,7 +138,7 @@
     {% if applied_coupon %}
       <div class="summary-row"><span>Discount ({{ applied_coupon.code }})</span><span style="color:var(--green)">−₹{{ discount_amount }}</span></div>
     {% endif %}
-    <div class="summary-row total"><span>Total</span><span>₹{{ final_total }}</span></div>
+    <div class="summary-row total"><span>Total</span><span>₹{{ cart_subtotal }}</span></div>
   </div>
 
 </div>
@@ -157,7 +157,7 @@
     if (!code) return;
     // Submit coupon via POST, Django handles redirect back with discount applied
     const f = document.createElement('form');
-    f.method = 'POST'; f.action = '# url "orders:apply_coupon" #';
+    f.method = 'POST'; f.action = '{% url "orders:apply_coupon" %}';
     f.innerHTML = `<input name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
                    <input name="coupon_code" value="${code}"/>
                    <input name="next" value="{{ request.path }}"/>`;

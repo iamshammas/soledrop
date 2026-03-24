@@ -1,7 +1,9 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate, login,logout
+from products.models import Product
 from .models import CustomUser
 from cart.models import Cart
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -57,8 +59,26 @@ def profile_edit(request):
     return render(request, 'profile_edit.html')
 
 def wishlist(request):
-    # Placeholder for wishlist logic
-    return render(request, 'wishlist.html')
+    wishlist_items = request.user.wishlist.all() if request.user.is_authenticated else []
+    context = {
+        'wishlist_items': wishlist_items,
+    }
+    return render(request, 'wishlist.html', context)
+
+@login_required
+def add_to_wishlist(request, product_id):
+    if request.method == 'POST':
+        product = Product.objects.get(id=product_id)
+        request.user.wishlist.add(product)
+        print(f"Current wishlist for {request.user.email}: {[p.name for p in request.user.wishlist.all()]}")
+    return redirect('accounts:home')
+
+@login_required
+def remove_from_wishlist(request, product_id):
+    if request.user.is_authenticated:
+        product = Product.objects.get(id=product_id)
+        request.user.wishlist.remove(product)
+    return redirect('accounts:wishlist')
 
 def user_logout(request):
     logout(request)

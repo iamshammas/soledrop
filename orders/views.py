@@ -1,7 +1,12 @@
 from django.shortcuts import render
-from .models import Coupon
+# from .models import Coupon
+from cart.models import Cart
+from django.http import HttpResponse
 
 # Create your views here.
+
+def apply_coupon(request):
+    return HttpResponse("Coupon applied successfully!")
 
 def checkout(request):
     if request.method == 'POST':
@@ -12,7 +17,16 @@ def checkout(request):
         return render(request, 'order_confirmation.html', {'message': 'Order placed successfully!'})
 
     # If it's a GET request, simply render the checkout page
-    return render(request, 'checkout.html')
+    cart = Cart.objects.filter(user=request.user).first()
+    cart_items = cart.items.all() if cart else []
+    cart_count = cart.items.count() if cart else 0
+    cart_subtotal = cart.total_price if cart else 0
+    context = {
+        'cart_items': cart_items,
+        'cart_count': cart_count,
+        'cart_subtotal': cart_subtotal,
+    }
+    return render(request, 'checkout.html', context)
 
 
 # def order_history(request):
