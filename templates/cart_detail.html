@@ -74,7 +74,7 @@
       {% if cart_subtotal < 4999 %}
         <p style="font-size:.75rem;color:var(--accent2);margin:10px 0">Add ₹{{ 4999|add:"-cart_subtotal" }} more for free shipping!</p>
       {% endif %}
-      <a href="# url 'orders:checkout' #" class="btn-primary w100" style="margin-top:16px">Proceed to Checkout</a>
+      <a href="{% url 'orders:checkout' %}" class="btn-primary w100" style="margin-top:16px">Proceed to Checkout</a>
     </div>
   {% endif %}
 </div>
