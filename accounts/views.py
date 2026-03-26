@@ -60,25 +60,49 @@ def profile_edit(request):
 
 def wishlist(request):
     wishlist_items = request.user.wishlist.all() if request.user.is_authenticated else []
+    cart = Cart.objects.filter(user=request.user).first() if request.user.is_authenticated else None
+    cart_count = cart.items.count() if cart else 0
+    cart_items = cart.items.all() if cart else []
     context = {
         'wishlist_items': wishlist_items,
+        'cart_count': cart_count,
+        'cart_items': cart_items,
+
     }
     return render(request, 'wishlist.html', context)
 
 @login_required
-def add_to_wishlist(request, product_id):
+def wishlist_toggle(request, product_id):
+    product = Product.objects.get(id=product_id)
     if request.method == 'POST':
-        product = Product.objects.get(id=product_id)
-        request.user.wishlist.add(product)
-        print(f"Current wishlist for {request.user.email}: {[p.name for p in request.user.wishlist.all()]}")
+        if product in request.user.wishlist.all():
+            request.user.wishlist.remove(product)
+        else:
+            request.user.wishlist.add(product)
+        next = request.POST.get('next', '/')
+        return redirect(next)
     return redirect('accounts:home')
 
 @login_required
-def remove_from_wishlist(request, product_id):
-    if request.user.is_authenticated:
-        product = Product.objects.get(id=product_id)
-        request.user.wishlist.remove(product)
+def clear_wishlist(request):
+    if request.method == 'POST':
+        request.user.wishlist.clear()
     return redirect('accounts:wishlist')
+
+# @login_required
+# def add_to_wishlist(request, product_id):
+#     if request.method == 'POST':
+#         product = Product.objects.get(id=product_id)
+#         request.user.wishlist.add(product)
+#         print(f"Current wishlist for {request.user.email}: {[p.name for p in request.user.wishlist.all()]}")
+#     return redirect('accounts:home')
+
+# @login_required
+# def remove_from_wishlist(request, product_id):
+#     if request.user.is_authenticated:
+#         product = Product.objects.get(id=product_id)
+#         request.user.wishlist.remove(product)
+#     return redirect('accounts:wishlist')
 
 def user_logout(request):
     logout(request)

@@ -6,7 +6,7 @@
 <div class="page-hero">
   <div class="breadcrumb">
     <a href="{% url 'products:home' %}">Home</a><span>›</span>
-    <a href="# url 'cart:detail' #">Cart</a><span>›</span>
+    <a href="{% url 'cart:cart_detail' %}">Cart</a><span>›</span>
     <span>Checkout</span>
   </div>
   <h1 class="page-hero-title">Checkout</h1>
@@ -14,7 +14,6 @@
 
 <div class="checkout-layout">
 
-  {# ── LEFT: FORM ── #}
   <div>
     <form action="{% url 'orders:checkout' %}" method="POST" id="checkoutForm">
       {% csrf_token %}
@@ -77,33 +76,30 @@
       </div>
 
       <h3 class="checkout-title" style="margin-top:40px">Payment Method</h3>
+
+      <input type="hidden" name="payment_method" id="paymentMethodInput" value="cod"/>
+
       <div class="payment-methods">
-        <label class="payment-method active" onclick="selectPay(this)">
-          <input type="radio" name="payment_method" value="upi" checked style="display:none"/>
-          <div style="font-size:1.4rem">📱</div><p>UPI</p>
-        </label>
-        <label class="payment-method" onclick="selectPay(this)">
-          <input type="radio" name="payment_method" value="card" style="display:none"/>
-          <div style="font-size:1.4rem">💳</div><p>Card</p>
-        </label>
-        <label class="payment-method" onclick="selectPay(this)">
-          <input type="radio" name="payment_method" value="cod" style="display:none"/>
-          <div style="font-size:1.4rem">💵</div><p>Cash on Delivery</p>
-        </label>
-        <label class="payment-method" onclick="selectPay(this)">
-          <input type="radio" name="payment_method" value="netbanking" style="display:none"/>
-          <div style="font-size:1.4rem">🏦</div><p>Net Banking</p>
-        </label>
+        <div class="payment-method active" onclick="selectPay(this, 'cod')">
+          <div style="font-size:1.4rem">💵</div>
+          <p>Cash on Delivery</p>
+        </div>
+        <div class="payment-method" onclick="selectPay(this, 'online')">
+          <div style="font-size:1.4rem">💳</div>
+          <p>Online Payment</p>
+        </div>
       </div>
 
-      {# Coupon Code #}
+      <p id="paymentNote" style="font-size:.76rem;color:var(--muted);margin-top:8px">
+        💵 Pay in cash when your order arrives.
+      </p>
+
       <h3 class="checkout-title" style="margin-top:32px">Coupon Code</h3>
       <div style="display:flex;gap:10px;margin-bottom:8px">
         <input type="text" name="coupon_code" id="couponInput"
                value="{{ applied_coupon.code|default:'' }}"
                placeholder="Enter coupon code (e.g. FIRST10)"
                style="flex:1;background:var(--dark);border:1px solid var(--border);color:var(--white);padding:12px 16px;font-family:inherit;outline:none"/>
-        {# Coupon applied via separate form POST to orders:apply_coupon #}
         <button type="button" class="btn-outline" onclick="applyCoupon()">Apply</button>
       </div>
       {% if applied_coupon %}
@@ -114,13 +110,12 @@
       {% endif %}
 
       <button type="submit" class="btn-primary w100" style="margin-top:32px;padding:18px;font-size:.9rem">
-        Place Order — ₹{{ final_total }}
+        Place Order — ₹{{ cart_total }}
       </button>
-      <a href="# url 'cart:detail' #" class="btn-ghost w100" style="margin-top:10px;text-align:center;display:block">← Back to Cart</a>
-    </form>
+      <a href="{% url 'cart:cart_detail' %}" class="btn-ghost w100" style="margin-top:10px;text-align:center;display:block">← Back to Cart</a>
+    </form> 
   </div>
 
-  {# ── RIGHT: SUMMARY ── #}
   <div class="checkout-summary">
     <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.06em;margin-bottom:20px">Order Summary</h3>
     {% for item in cart_items %}
@@ -133,35 +128,45 @@
         <span class="checkout-item-price">₹{{ item.total_price }}</span>
       </div>
     {% endfor %}
-    <div class="summary-row"><span>Subtotal</span><span>₹{{ cart_subtotal }}</span></div>
-    <div class="summary-row"><span>Shipping</span><span>{% if cart_subtotal >= 4999 %}<span style="color:var(--green)">Free</span>{% else %}₹199{% endif %}</span></div>
+    <div class="summary-row"><span>Subtotal</span><span>₹{{ cart_total }}</span></div>
+    <div class="summary-row">
+      <span>Shipping</span>
+      <span>{% if cart_total >= 4999 %}<span style="color:var(--green)">Free</span>{% else %}₹199{% endif %}</span>
+    </div>
     {% if applied_coupon %}
       <div class="summary-row"><span>Discount ({{ applied_coupon.code }})</span><span style="color:var(--green)">−₹{{ discount_amount }}</span></div>
     {% endif %}
-    <div class="summary-row total"><span>Total</span><span>₹{{ cart_subtotal }}</span></div>
+    <div class="summary-row total"><span>Total</span><span>₹{{ cart_total }}</span></div>
   </div>
 
 </div>
-
 {% endblock %}
 
 {% block extra_js %}
 <script>
-  function selectPay(label) {
+  const NOTES = {
+    cod:    '💵 Pay in cash when your order arrives.',
+    online: '💳 You will be redirected to complete payment securely.',
+  };
+
+  function selectPay(el, method) {
     document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
-    label.classList.add('active');
-    label.querySelector('input').checked = true;
+    el.classList.add('active');
+    document.getElementById('paymentMethodInput').value = method;
+    document.getElementById('paymentNote').textContent = NOTES[method] || '';
   }
+
   function applyCoupon() {
     const code = document.getElementById('couponInput').value.trim();
     if (!code) return;
-    // Submit coupon via POST, Django handles redirect back with discount applied
     const f = document.createElement('form');
-    f.method = 'POST'; f.action = '{% url "orders:apply_coupon" %}';
+    f.method = 'POST';
+    f.action = '{% url "orders:apply_coupon" %}';
     f.innerHTML = `<input name="csrfmiddlewaretoken" value="{{ csrf_token }}"/>
                    <input name="coupon_code" value="${code}"/>
                    <input name="next" value="{{ request.path }}"/>`;
-    document.body.appendChild(f); f.submit();
+    document.body.appendChild(f);
+    f.submit();
   }
 </script>
 {% endblock %}

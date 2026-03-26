@@ -37,7 +37,7 @@
       {% endif %}
 
       {# Wishlist toggle — POST to accounts:wishlist_toggle #}
-      <form action="{% url 'accounts:add_to_wishlist' product.id %}" method="POST" class="wish-form">
+      <form action="{% url 'accounts:wishlist_toggle' product.id %}" method="POST" class="wish-form">
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ request.path }}"/>
         <button type="submit" class="wish-btn {% if product.id in wishlist_ids %}liked{% endif %}">

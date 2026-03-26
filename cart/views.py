@@ -48,6 +48,13 @@ def remove_from_cart(request, product_id):
         else:
             cart = Cart.objects.filter(user=request.user).first()
             if cart:
-                item = CartItem.objects.filter(cart=cart, product=product, size=size).first()
+                item = CartItem.objects.filter(cart=cart, product=product).first()
                 print(f"Removing item: {item} from cart: {cart}")
+    return redirect('cart:cart_detail')
+
+def clear_cart(request):
+    if request.method == 'POST':
+        cart = Cart.objects.filter(user=request.user).first()
+        if cart:
+            cart.items.all().delete()
     return redirect('cart:cart_detail')

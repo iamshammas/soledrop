@@ -15,7 +15,7 @@
       <p style="color:var(--light);font-size:.88rem">
         {{ wishlist_items|length }} item{{ wishlist_items|length|pluralize }} saved
       </p>
-      <form action="# url 'accounts:wishlist_clear' %}" method="POST">
+      <form action="{% url 'accounts:wishlist_clear' %}" method="POST">
         {% csrf_token %}
         <button type="submit" class="btn-ghost" style="font-size:.72rem;padding:8px 16px">Clear Wishlist</button>
       </form>
@@ -53,7 +53,7 @@
               <a href="{% url 'products:product_detail' product.slug %}" class="btn-primary" style="flex:1;text-align:center;padding:10px;font-size:.72rem">
                 View Product
               </a>
-              <form action="# url 'accounts:wishlist_toggle' product.id %}" method="POST">
+              <form action="{% url 'accounts:wishlist_toggle' product.id %}" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.path }}"/>
                 <button type="submit" class="btn-ghost" style="padding:10px 14px" title="Remove">✕</button>
