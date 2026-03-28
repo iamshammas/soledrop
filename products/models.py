@@ -42,7 +42,10 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=True)
     is_featured = models.BooleanField(default=False)
-    in_stock = models.BooleanField(default=True)
+
+    @property
+    def  in_stock(self):
+        return self.stock > 0
 
     def __str__(self):
         return self.name
