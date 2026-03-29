@@ -28,26 +28,26 @@
         <div class="form-row">
           <div class="form-group">
             <label>First Name</label>
-            <input type="text" name="first_name" value="{{ form.first_name.value|default:user.first_name }}" placeholder="Rahul" required/>
+            <input type="text" name="first_name" value="{{ form.first_name.value|default:request.user.first_name }}" placeholder="Rahul" required/>
             {% if form.first_name.errors %}<p class="form-error">{{ form.first_name.errors.0 }}</p>{% endif %}
           </div>
           <div class="form-group">
             <label>Last Name</label>
-            <input type="text" name="last_name" value="{{ form.last_name.value|default:user.last_name }}" placeholder="Sharma" required/>
+            <input type="text" name="last_name" value="{{ form.last_name.value|default:request.user.last_name }}" placeholder="Sharma" required/>
           </div>
         </div>
         <div class="form-group">
           <label>Email</label>
-          <input type="email" name="email" value="{{ form.email.value|default:user.email }}" required/>
+          <input type="email" name="email" value="{{ form.email.value|default:request.user.email }}" required/>
           {% if form.email.errors %}<p class="form-error">{{ form.email.errors.0 }}</p>{% endif %}
         </div>
         <div class="form-group">
           <label>Phone</label>
-          <input type="tel" name="phone" value="{{ form.phone.value|default:user.phone_number }}" placeholder="+91 98765 43210"/>
+          <input type="tel" name="phone" value="{{ form.phone.value|default:request.user.phone_number }}" placeholder="+91 98765 43210"/>
         </div>
         <div class="form-group">
           <label>Default Shipping Address</label>
-          <input type="text" name="address" value="{{ form.address.value|default:user.addresses.first }}" placeholder="123 MG Road, Bangalore, 560001"/>
+          <input type="text" name="address" value="{{ form.address.value|default:request.user.addresses.first }}" placeholder="123 MG Road, Bangalore, 560001"/>
         </div>
         <button type="submit" class="btn-primary">Save Changes</button>
       </form>
