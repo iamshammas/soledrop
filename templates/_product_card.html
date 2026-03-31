@@ -7,7 +7,7 @@
     {% if product.image.name %}
       <img class="card-img" src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy"/>
     {% else %}
-      <img class="card-img" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80" alt="{{ product.name }}" loading="lazy"/>
+      <img class="card-img" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80 " alt="{{ product.name }}" loading="lazy"/>
     {% endif %}
 
     {% if product.badge %}
@@ -20,15 +20,38 @@
 
     <div class="card-actions">
       {% if product.in_stock %}
-        {# Quick-add to cart — POST to cart:add #}
-        <form action="{% url 'cart:add_to_cart' product.id %}" method="POST" class="quick-add-form">
+        {# Size selection and add to cart form #}
+        <form action="{% url 'cart:add_to_cart' product.id %}" method="POST" class="quick-add-form" id="quick-add-form-{{ product.id }}">
           {% csrf_token %}
           <input type="hidden" name="product_id" value="{{ product.id }}"/>
-          {# No size selected on quick-add — redirect to detail page for size selection #}
-          <button type="button" class="quick-add-btn"
-                  onclick="window.location='{% url 'products:product_detail' product.slug %}'">
-            Select Size
-          </button>
+          
+          {# Size selector - hidden by default, shown when Add to Cart is clicked #}
+          <div class="size-selector" id="size-selector-{{ product.id }}" style="display: none; margin-bottom: 8px;">
+            <select name="size" required style="width: 100%; padding: 8px; font-size: 0.75rem; border: 1px solid var(--gray); background: var(--light); color: var(--dark);">
+              <option value="" disabled selected>Select Size</option>
+              {% for size in product.sizes.all %}
+                {% if size.quantity > 0 %}
+                  <option value="{{ size.id }}">{{ size.name }}</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          </div>
+          
+          {# Button container - switches between Add to Cart and Select Size + Add #}
+          <div class="button-group" id="button-group-{{ product.id }}">
+            <button type="button" class="quick-add-btn" id="show-size-btn-{{ product.id }}" onclick="showSizeSelector({{ product.id }})">
+              Add to Cart
+            </button>
+            
+            <div id="size-actions-{{ product.id }}" style="display: none; gap: 6px;">
+              <button type="button" class="quick-add-btn" style="flex: 1; background: var(--gray);" onclick="hideSizeSelector({{ product.id }})">
+                Cancel
+              </button>
+              <button type="submit" class="quick-add-btn" style="flex: 2;">
+                Add
+              </button>
+            </div>
+          </div>
         </form>
       {% else %}
         <button disabled style="opacity:.4;cursor:not-allowed;flex:1;padding:10px;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;background:var(--gray);border:none;color:var(--light)">
@@ -68,3 +91,18 @@
     </div>
   </div>
 </div>
+
+<script>
+function showSizeSelector(productId) {
+  document.getElementById('size-selector-' + productId).style.display = 'block';
+  document.getElementById('show-size-btn-' + productId).style.display = 'none';
+  document.getElementById('size-actions-' + productId).style.display = 'flex';
+}
+
+function hideSizeSelector(productId) {
+  document.getElementById('size-selector-' + productId).style.display = 'none';
+  document.getElementById('show-size-btn-' + productId).style.display = 'block';
+  document.getElementById('size-actions-' + productId).style.display = 'none';
+  document.getElementById('quick-add-form-' + productId).reset();
+}
+</script>

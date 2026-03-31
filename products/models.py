@@ -55,7 +55,7 @@ class Product(models.Model):
         ordering = ['-created_at']
     
 class ProductSize(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name='available_sizes',null=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name='sizes',null=True)
     value = models.CharField(max_length=20)
 
     class Meta:
