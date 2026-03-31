@@ -32,7 +32,7 @@ class Product(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     description = models.TextField()
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, related_name='products', null=True)
     image = models.ImageField(upload_to='product_images/', blank=True, null=True)
     stock = models.PositiveIntegerField(default=0)
     old_price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -44,8 +44,9 @@ class Product(models.Model):
     is_featured = models.BooleanField(default=False)
 
     @property
-    def  in_stock(self):
-        return self.stock > 0
+    def in_stock(self):
+        res = self.variants.filter(stock__gt=0).exists()
+        return res
 
     def __str__(self):
         return self.name
@@ -53,11 +54,9 @@ class Product(models.Model):
     class Meta:
         ordering = ['-created_at']
     
-
 class ProductSize(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='available_sizes')
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name='available_sizes',null=True)
     value = models.CharField(max_length=20)
-    in_stock = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['value']
@@ -66,6 +65,29 @@ class ProductSize(models.Model):
     def __str__(self):
         return f"{self.product.name} - Size {self.value}"
 
+class ProductColor(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name='available_colors',null=True)
+    value = models.CharField(max_length=20)
+
+    class Meta:
+        ordering = ['value']
+        unique_together = ('product', 'value')
+
+    def __str__(self):
+        return f"{self.product.name} - Color {self.value}"
+
+class Variant(models.Model):
+    product = models.ForeignKey(Product,on_delete=models.CASCADE,related_name='variants')
+    color = models.ForeignKey(ProductColor,  on_delete=models.CASCADE)
+    size = models.ForeignKey(ProductSize,on_delete=models.CASCADE)
+    stock = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        unique_together = ('product', 'color', 'size')
+        ordering = ['product', 'color', 'size']
+
+    def __str__(self):        
+        return f"{self.product.name} - {self.color.value} - {self.size.value}"
 
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
