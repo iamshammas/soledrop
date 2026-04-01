@@ -42,12 +42,11 @@ def user_login(request):
     return render(request, 'login.html')
 
 def home(request):
-    try:
-        cart_count = Cart.objects.filter(user=request.user).first().items.count() if request.user.is_authenticated else 0
-    except Product.DoesNotExist:
-        cart_count = 0
+    cart = Cart.objects.filter(user=request.user).first()
+    cart_count = cart.items.count() if cart else 0
+
     context = {
-        {'cart_count': cart_count}
+        'cart_count': cart_count
     }
     return render(request, 'home.html',context)
 

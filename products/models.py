@@ -55,8 +55,16 @@ class Product(models.Model):
         ordering = ['-created_at']
     
 class ProductSize(models.Model):
+    class Sizes(models.TextChoices):
+        six = '6', '6'
+        six_half = '6.5', '6.5'
+        seven = '7', '7'
+        seven_half = '7.5', '7.5'
+        eight = '8', '8'
+        eight_half = '8.5', '8.5'
+        nine = '9', '9'
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name='sizes',null=True)
-    value = models.CharField(max_length=20)
+    value = models.CharField(max_length=20, choices=Sizes.choices)
 
     class Meta:
         ordering = ['value']
@@ -66,8 +74,20 @@ class ProductSize(models.Model):
         return f"{self.product.name} - Size {self.value}"
 
 class ProductColor(models.Model):
+    class Colors(models.TextChoices):
+        RED = 'red', 'Red'
+        BLUE = 'blue', 'Blue'
+        GREEN = 'green', 'Green'
+        BLACK = 'black', 'Black'
+        WHITE = 'white', 'White'
+        YELLOW = 'yellow', 'Yellow'
+        ORANGE = 'orange', 'Orange'
+        PURPLE = 'purple', 'Purple'
+        PINK = 'pink', 'Pink'
+        BROWN = 'brown', 'Brown'
+        GREY = 'grey', 'Grey'
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name='available_colors',null=True)
-    value = models.CharField(max_length=20)
+    value = models.CharField(max_length=20, choices=Colors.choices)
 
     class Meta:
         ordering = ['value']

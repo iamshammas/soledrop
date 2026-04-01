@@ -30,9 +30,7 @@
             <select name="size" required style="width: 100%; padding: 8px; font-size: 0.75rem; border: 1px solid var(--gray); background: var(--light); color: var(--dark);">
               <option value="" disabled selected>Select Size</option>
               {% for size in product.sizes.all %}
-                {% if size.quantity > 0 %}
-                  <option value="{{ size.id }}">{{ size.name }}</option>
-                {% endif %}
+                  <option value="{{ size.id }}">{{ size.value }}</option>
               {% endfor %}
             </select>
           </div>
