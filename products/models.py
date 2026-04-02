@@ -1,13 +1,16 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from accounts.models import CustomUser
-
+from autoslug import AutoSlugField
 # Create your models here.
 
 
 class Category(models.Model):
+    def generate_slug(self):
+        return self.name.lower().replace(' ', '-')
+
     name = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True)
+    slug = AutoSlugField(populate_from=generate_slug, unique=True)
     image = models.ImageField(upload_to='category_images/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
 
@@ -23,6 +26,9 @@ class Category(models.Model):
         return self.products.filter(is_active=True).count()
 
 class Product(models.Model):
+    def generate_slug(self):
+        return f'{self.category.name.lower()}-{self.name.lower()}'.replace(' ', '-')
+
     BADGE_CHOICES = [
     ('',     'None'),
     ('new',  'New'),
@@ -30,7 +36,7 @@ class Product(models.Model):
     ('hot',  'Hot'),
 ]
     name = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True)
+    slug = AutoSlugField(populate_from=generate_slug, unique=True)
     description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, related_name='products', null=True)
     image = models.ImageField(upload_to='product_images/', blank=True, null=True)
@@ -43,6 +49,7 @@ class Product(models.Model):
     is_active = models.BooleanField(default=True)
     is_featured = models.BooleanField(default=False)
 
+   
     @property
     def in_stock(self):
         res = self.variants.filter(stock__gt=0).exists()
