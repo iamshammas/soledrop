@@ -70,7 +70,7 @@ class ProductSize(models.Model):
         eight = '8', '8'
         eight_half = '8.5', '8.5'
         nine = '9', '9'
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name='sizes',null=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name='available_sizes',null=True)
     value = models.CharField(max_length=20, choices=Sizes.choices)
 
     class Meta:
