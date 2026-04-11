@@ -120,10 +120,10 @@
     <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.06em;margin-bottom:20px">Order Summary</h3>
     {% for item in cart_items %}
       <div class="checkout-item">
-        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}"/>
+        <img src="{{ item.variant.product.image.url }}" alt="{{ item.variant.product.name }}"/>
         <div class="checkout-item-info">
-          <p class="checkout-item-name">{{ item.product.name }}</p>
-          <p class="checkout-item-meta">{{ item.product.brand }} · Size {{ item.size }} · Qty {{ item.quantity }}</p>
+          <p class="checkout-item-name">{{ item.variant.product.name }}</p>
+          <p class="checkout-item-meta">{{ item.variant.product.brand }} · Size {{ item.variant.size.value }} · Qty {{ item.quantity }}</p>
         </div>
         <span class="checkout-item-price">₹{{ item.total_price }}</span>
       </div>

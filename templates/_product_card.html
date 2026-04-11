@@ -21,7 +21,7 @@
     <div class="card-actions">
       {% if product.in_stock %}
         {# Size selection and add to cart form #}
-        <form action="{% url 'cart:add_to_cart' product.id %}" method="POST" class="quick-add-form" id="quick-add-form-{{ product.id }}">
+        <form action="{% url 'cart:add_to_cart' product.id size.id %}" method="POST" class="quick-add-form" id="quick-add-form-{{ product.id }}">
           {% csrf_token %}
           <input type="hidden" name="product_id" value="{{ product.id }}"/>
           
@@ -29,8 +29,8 @@
           <div class="size-selector" id="size-selector-{{ product.id }}" style="display: none; margin-bottom: 8px;">
             <select name="size" required style="width: 100%; padding: 8px; font-size: 0.75rem; border: 1px solid var(--gray); background: var(--light); color: var(--dark);">
               <option value="" disabled selected>Select Size</option>
-              {% for size in product.available_sizes.all %}
-                  <option value="{{ size.value }}">{{ size.value }}</option>
+              {% for size in product.available_variants.all %}
+                  <option value="{{ size.id }}" name="size_id">{{ size.value }}</option>
               {% endfor %}
             </select>
           </div>

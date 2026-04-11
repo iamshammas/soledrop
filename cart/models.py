@@ -23,22 +23,21 @@ class Cart(models.Model):
 
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
-    product = models.ForeignKey(Variant, on_delete=models.CASCADE)
-    size = models.CharField(max_length=10)  
+    variant = models.ForeignKey(Variant, on_delete=models.CASCADE,null=True, related_name='cart_items')
     quantity = models.PositiveIntegerField(default=1)
     added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('cart', 'product', 'size')  # Ensure one entry per product-size in cart  
+        unique_together = ('cart', 'variant')  # Ensure one entry per variant in cart  
 
     @property
     def total_price(self):
-        return self.product.new_price * self.quantity  # Use new_price for total calculation
+        return self.variant.product.new_price * self.quantity  # Use new_price for total calculation
 
     @property
     def in_stock(self):
-        print(self.product.stock)
-        return self.quantity <= self.product.stock
+        print(self.variant.stock)
+        return self.quantity <= self.variant.stock
 
     def __str__(self):
-        return f"{self.quantity} x {self.product.name} (Size: {self.size}) in {self.cart.user.email}'s Cart"
+        return f"{self.quantity} x {self.variant.product.name} in {self.cart.user.email}'s Cart"

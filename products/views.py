@@ -11,7 +11,7 @@ def product_list(request):
     qs = Product.objects.filter(is_active=True)
     paginator = Paginator(qs, 8)  
     page_obj = paginator.get_page(request.GET.get('page', 1))
-    cart = Cart.objects.filter(user=request.user).first()
+    cart = Cart.objects.filter(user=request.user).first() if request.user else []
     cart_count = cart.items.count() if cart else 0
     cart_items = cart.items.all() if cart else []
     cart_total = cart.total_price if cart else 0

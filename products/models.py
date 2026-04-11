@@ -56,7 +56,7 @@ class Product(models.Model):
         return res
 
     def __str__(self):
-        return self.name
+        return f'ID={self.id} -- {self.name}'
     
     class Meta:
         ordering = ['-created_at']
@@ -104,9 +104,9 @@ class ProductColor(models.Model):
         return f"{self.product.name} - Color {self.value}"
 
 class Variant(models.Model):
-    product = models.ForeignKey(Product,on_delete=models.CASCADE,related_name='variants')
+    product = models.ForeignKey(Product,on_delete=models.CASCADE,related_name='available_variants')
     color = models.ForeignKey(ProductColor,  on_delete=models.CASCADE)
-    size = models.ForeignKey(ProductSize,on_delete=models.CASCADE)
+    size = models.ForeignKey(ProductSize,on_delete=models.CASCADE,related_name='variant')
     stock = models.PositiveIntegerField(default=0)
 
     class Meta:
@@ -114,7 +114,7 @@ class Variant(models.Model):
         ordering = ['product', 'color', 'size']
 
     def __str__(self):        
-        return f"{self.product.name} - {self.color.value} - {self.size.value}"
+        return f"ID={self.id} -- {self.product.name} - {self.color.value} - {self.size.value}"
 
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')

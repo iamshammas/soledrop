@@ -14,12 +14,12 @@
     {% if cart_items %}
       {% for item in cart_items %}
         <div class="cart-page-item" style="display:grid;grid-template-columns:100px 1fr auto;gap:20px;padding:20px 0;border-bottom:1px solid var(--border);align-items:start">
-          <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}"
+          <img src="{{ item.variant.product.image.url }}" alt="{{ item.variant.product.name }}"
                style="width:100px;height:100px;object-fit:cover;background:var(--dark)"/>
           <div>
-            <p style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--light)">{{ item.product.brand }}</p>
-            <p style="font-size:1.1rem;font-weight:600;color:var(--white);margin:4px 0">{{ item.product.name }}</p>
-            <p style="font-size:.82rem;color:var(--light);margin-bottom:14px">Size - {{ item.size }}</p>
+            <p style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--light)">{{ item.variant.product.brand }}</p>
+            <p style="font-size:1.1rem;font-weight:600;color:var(--white);margin:4px 0">{{ item.variant.product.name }}</p>
+            <p style="font-size:.82rem;color:var(--light);margin-bottom:14px">Size - {{ item.variant.size.value }}</p>
             {# Qty update form #}
             <form action="{% url 'cart:update_cart' item.id %}" method="POST" style="display:flex;align-items:center;gap:0;border:1px solid var(--border);width:fit-content">
               {% csrf_token %}
@@ -35,8 +35,8 @@
           </div>
           <div style="text-align:right">
             <span style="font-size:1.1rem;font-weight:700">₹{{ item.total_price }}</span>
-            {% if item.product.old_price %}
-              <span style="display:block;font-size:.82rem;color:var(--mid);text-decoration:line-through">₹{{ item.product.old_price }}</span>
+            {% if item.variant.product.old_price %}
+              <span style="display:block;font-size:.82rem;color:var(--mid);text-decoration:line-through">₹{{ item.variant.product.old_price }}</span>
             {% endif %}
           </div>
         </div>

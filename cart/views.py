@@ -1,9 +1,10 @@
 from itertools import product
 
+from django.db import IntegrityError
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 
-from products.models import Product
+from products.models import Product, Variant
 from cart.models import Cart, CartItem
 
 # Create your views here.
@@ -19,25 +20,26 @@ def cart_detail(request):
     }
     return render(request, 'cart_detail.html', context)
 
-def add_to_cart(request, product_id):
+def add_to_cart(request, product_id,size_id):
     if request.method == 'POST':
-        product = Product.objects.filter(id=product_id, is_active=True).first()
-        if not product:
+        variant = Variant.objects.filter(product=product_id,size=size_id).first()
+        print(variant)
+        if not variant:
+            print('Variant not found')
             return render(request, '404.html', status=404)
         else:
-            size = request.POST.get('size')
-            color = request.POST.get('color')
-            quantity = int(request.POST.get('quantity', 1))
-            if quantity < product.stock:
-                cart = Cart.objects.get_or_create(user=request.user)[0]
-                item, created = CartItem.objects.get_or_create(cart=cart, product=product, size=size)
-                if not created:
-                    item.quantity += 1
+            # size = request.POST.get('size')
+            # quantity = int(request.POST.get('quantity', 1))
+            # if quantity < variant.stock:
+            cart = Cart.objects.get_or_create(user=request.user)[0]
+            item, created = CartItem.objects.get_or_create(cart=cart, variant=variant)
+            if not created:
+                item.quantity += 1
                 item.save()
                 return redirect('cart:cart_detail')
                 # item,created = CartItem.objects.create(cart=cart, product=product, size=size, quantity=quantity)
                 # item.save()
-                # return redirect('cart_detail')
+            return redirect('cart:cart_detail')
     return render(request, 'cart_detail.html')
 
 def update_cart(request,item_id):
