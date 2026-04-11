@@ -65,14 +65,15 @@
       <div class="summary-row"><span>Subtotal ({{ cart_count }} items)</span><span>₹{{ cart_subtotal }}</span></div>
       <div class="summary-row">
         <span>Shipping</span>
-        <span>{% if cart_subtotal >= 1999 %}<span style="color:var(--green)">Free</span>{% else %}₹199{% endif %}</span>
+        <span>{% if cart_subtotal >= 2000 %}<span style="color:var(--green)">Free</span>{% else %}₹199{% endif %}</span>
       </div>
       <div class="summary-row total">
         <span>Total</span>
-        <span>₹{% if cart_subtotal >= 1999 %}{{ cart_subtotal }}{% else %}{{ cart_subtotal|add:199 }}{% endif %}</span>
+        <span>₹{% if cart_subtotal >= 2000 %}{{ cart_subtotal }}{% else %}{{ cart_subtotal|add:199 }}{% endif %}</span>
       </div>
-      {% if cart_subtotal < 1999 %}
-        <p style="font-size:.75rem;color:var(--accent2);margin:10px 0">Add ₹{{ 1999|add:"-cart_subtotal" }} more for free shipping!</p>
+      {% if cart_subtotal < 2000 %}
+        {% load mathfilters %}
+        <p style="font-size:.75rem;color:var(--accent2);margin:10px 0">Add ₹{{ 2000|sub:cart_subtotal }} more for free shipping!</p>
       {% endif %}
       <a href="{% url 'orders:checkout' %}" class="btn-primary w100" style="margin-top:16px">Proceed to Checkout</a>
     </div>

@@ -1,6 +1,6 @@
 from django.db import models
 from accounts.models import CustomUser
-from products.models import Product
+from products.models import Product, Variant
 
 # Create your models here.
 
@@ -23,7 +23,7 @@ class Cart(models.Model):
 
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Variant, on_delete=models.CASCADE)
     size = models.CharField(max_length=10)  
     quantity = models.PositiveIntegerField(default=1)
     added_at = models.DateTimeField(auto_now_add=True)
@@ -37,7 +37,7 @@ class CartItem(models.Model):
 
     @property
     def in_stock(self):
-        print(self.product.stock)        
+        print(self.product.stock)
         return self.quantity <= self.product.stock
 
     def __str__(self):

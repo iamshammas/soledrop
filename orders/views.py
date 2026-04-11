@@ -22,18 +22,21 @@ def checkout(request):
         
         # After processing the order, you can redirect to a confirmation page or render a success message
         return render(request, 'order_confirmation.html', {'message': 'Order placed successfully!'})
-
-    # If it's a GET request, simply render the checkout page
-    cart = Cart.objects.filter(user=request.user).first()
-    cart_items = cart.items.all() if cart else []
-    cart_count = cart.items.count() if cart else 0
-    cart_total = cart.total_price if cart else 0
-    context = {
-        'cart_items': cart_items,
-        'cart_count': cart_count,
-        'cart_total': cart_total,
-    }
-    return render(request, 'checkout.html', context)
+    else:
+        # If it's a GET request, simply render the checkout page
+        cart = Cart.objects.filter(user=request.user).first()
+        cart_items = cart.items.all() if cart else []
+        cart_count = cart.items.count() if cart else 0
+        cart_total = cart.total_price if cart else 0
+        for i in cart_items:
+            print(i)
+            print(i.in_stock)
+        context = {
+            'cart_items': cart_items,
+            'cart_count': cart_count,
+            'cart_total': cart_total,
+        }
+        return render(request, 'checkout.html', context)
 
 
 # def order_history(request):
