@@ -24,7 +24,7 @@ class Cart(models.Model):
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    size = models.CharField(max_length=10)  # Store selected size as string
+    size = models.CharField(max_length=10)  
     quantity = models.PositiveIntegerField(default=1)
     added_at = models.DateTimeField(auto_now_add=True)
 
@@ -34,6 +34,11 @@ class CartItem(models.Model):
     @property
     def total_price(self):
         return self.product.new_price * self.quantity  # Use new_price for total calculation
+
+    @property
+    def in_stock(self):
+        print(self.product.stock)        
+        return self.quantity <= self.product.stock
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name} (Size: {self.size}) in {self.cart.user.email}'s Cart"
