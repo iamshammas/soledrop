@@ -104,18 +104,22 @@ def checkout(request):
             address_line2=address_line2,
             city=city,
             state=state,
-            pin_code=pin_code,
+            pincode=pin_code,
             country=country,
             payment_method=payment_method
             )
             if order:
                 print("Order created successfully")
-                return redirect('orders:order_confirmation', order_id=order.id)
+                return redirect('orders:order_confirmation')
             else:
                 print("Order creation failed")
                 return redirect('orders:checkout')
 
     return render(request, 'checkout.html')
+
+
+def order_confirmation(request):
+    return render(request,'order_confirmation.html')
 
 # def order_history(request):
     # Fetch the user's order history from the database

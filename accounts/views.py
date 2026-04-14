@@ -32,7 +32,7 @@ def user_registration(request):
 
 
 def user_login(request):
-    if request.user:
+    if request.user.is_authenticated:
         return redirect('accounts:home')
     if request.method == 'POST':
         email = request.POST.get('username')
@@ -40,7 +40,7 @@ def user_login(request):
         user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
-            return redirect('accounts:home')  # Redirect to a success page.
+            return redirect('accounts:home')  
     return render(request, 'login.html')
 
 def home(request):

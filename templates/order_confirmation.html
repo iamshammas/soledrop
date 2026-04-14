@@ -7,14 +7,14 @@
     <div style="font-size:4rem;margin-bottom:20px">🎉</div>
     <h1 style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:var(--white);margin-bottom:12px">Order Confirmed!</h1>
     <p style="color:var(--light);font-size:1rem;line-height:1.7;margin-bottom:28px">
-      Your order <strong style="color:var(--accent)">#{{ order.order_number }}</strong> has been placed successfully.
-      We'll send a confirmation to <strong>{{ order.email }}</strong>.
+      Your order <strong style="color:var(--accent)">#{{ order.order_number }}123</strong> has been placed successfully.
+      We'll send a confirmation to <strong>{{ request.user.email }}</strong>.
     </p>
     <div style="background:var(--dark);border:1px solid var(--border);padding:24px;margin-bottom:32px;text-align:left">
       <div class="summary-row"><span>Order Number</span><span style="color:var(--accent)">#{{ order.order_number }}</span></div>
       <div class="summary-row"><span>Total</span><span>₹{{ order.total_amount }}</span></div>
       <div class="summary-row"><span>Payment</span><span>{{ order.get_payment_method_display }}</span></div>
-      <div class="summary-row"><span>Status</span><span style="color:var(--green)">{{ order.get_status_display }}</span></div>
+      <div class="summary-row"><span>Status</span><span style="color:var(--green)">{{ order.status|default:'pending' }}</span></div>
     </div>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
       <a href="# url 'orders:order_detail' order.id #" class="btn-primary">View Order Details</a>
