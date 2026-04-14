@@ -21,7 +21,7 @@
     <div class="card-actions">
       {% if product.in_stock %}
         {# Size selection and add to cart form #}
-        <form action="{% url 'cart:add_to_cart' product.id size.id %}" method="POST" class="quick-add-form" id="quick-add-form-{{ product.id }}">
+        <form action="{% url 'cart:add_to_cart' %}" method="POST" class="quick-add-form" id="quick-add-form-{{ product.id }}">
           {% csrf_token %}
           <input type="hidden" name="product_id" value="{{ product.id }}"/>
           

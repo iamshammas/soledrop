@@ -32,6 +32,8 @@ def user_registration(request):
 
 
 def user_login(request):
+    if request.user:
+        return redirect('accounts:home')
     if request.method == 'POST':
         email = request.POST.get('username')
         password = request.POST.get('password')
@@ -42,7 +44,7 @@ def user_login(request):
     return render(request, 'login.html')
 
 def home(request):
-    cart = Cart.objects.filter(user=request.user).first()
+    cart = Cart.objects.filter(user=request.user.id).first() if request.user.is_authenticated else None
     cart_count = cart.items.count() if cart else 0
 
     context = {

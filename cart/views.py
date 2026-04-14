@@ -20,10 +20,12 @@ def cart_detail(request):
     }
     return render(request, 'cart_detail.html', context)
 
-def add_to_cart(request, product_id,size_id):
+def add_to_cart(request):
     if request.method == 'POST':
-        variant = Variant.objects.filter(product=product_id,size=size_id).first()
-        print(variant)
+        item = request.POST.get('product_id')
+        size = request.POST.get('size')
+        variant = Variant.objects.filter(product=item,size=size)
+        # print(variant)
         if not variant:
             print('Variant not found')
             return render(request, '404.html', status=404)

@@ -52,7 +52,7 @@ class Product(models.Model):
    
     @property
     def in_stock(self):
-        res = self.variants.filter(stock__gt=0).exists()
+        res = self.available_variants.filter(stock__gt=0).exists()
         return res
 
     def __str__(self):

@@ -77,14 +77,14 @@
 
       <h3 class="checkout-title" style="margin-top:40px">Payment Method</h3>
 
-      <input type="hidden" name="payment_method" id="paymentMethodInput" value="cod"/>
+      <input type="hidden" name="payment_method" id="paymentMethodInput" value="COD"/>
 
       <div class="payment-methods">
-        <div class="payment-method active" onclick="selectPay(this, 'cod')">
+        <div class="payment-method active" onclick="selectPay(this, 'COD')">
           <div style="font-size:1.4rem">💵</div>
           <p>Cash on Delivery</p>
         </div>
-        <div class="payment-method" onclick="selectPay(this, 'online')">
+        <div class="payment-method" onclick="selectPay(this, 'ONLINE')">
           <div style="font-size:1.4rem">💳</div>
           <p>Online Payment</p>
         </div>
@@ -145,8 +145,8 @@
 {% block extra_js %}
 <script>
   const NOTES = {
-    cod:    '💵 Pay in cash when your order arrives.',
-    online: '💳 You will be redirected to complete payment securely.',
+    COD:    '💵 Pay in cash when your order arrives.',
+    ONLINE: '💳 You will be redirected to complete payment securely.',
   };
 
   function selectPay(el, method) {

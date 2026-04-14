@@ -1,43 +1,121 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 # from .models import Coupon
-from cart.models import Cart
+from cart.models import Cart,CartItem
+from .models import Order,OrderItem
 from django.http import HttpResponse
+from django.db import transaction
 
 # Create your views here.
 
 def apply_coupon(request):
     return HttpResponse("Coupon applied successfully!")
 
+# def checkout(request):
+#     if request.method == 'POST':
+#         first_name = request.POST.get('first_name')
+#         last_name = request.POST.get('last_name')
+#         full_name = first_name + ' ' +last_name
+#         address_line1 = request.POST.get('address_line1')
+#         address_line2 = request.POST.get('address_line2')
+#         email = request.POST.get('email')
+#         phone = request.POST.get('phone')
+#         city = request.POST.get('city')
+#         state = request.POST.get('state')
+#         pin_code = request.POST.get('pin_code')
+#         country = request.POST.get('country')
+#         payment_method = request.POST.get('payment_method')
+#         cart_items = CartItem.objects.filter(cart__user=request.user) 
+#         # price_at_purchase = cart_total
+#         # print(cart_total)
+#         # print(payment_method)
+#         # Process the order placement logic here
+#         order = Order.objects.create(
+#             user=request.user,
+#             name=full_name,
+#             email=email,
+#             phone=phone,
+#             address_line1=address_line1,
+#             address_line2=address_line2,
+#             city=city,
+#             state=state,
+#             pin_code=pin_code,
+#             country=country,
+#             payment_method=payment_method
+#         )
+#         if order:
+#             order.save()
+#             total = 0
+#             for item in cart_items:
+#                 OrderItem.objects.create(
+#                     order=order,
+#                     variant=item.variant,
+#                     quantity=item.quantity,
+#                     price_at_purchase=item.variant.product.new_price,
+#                 )
+#                 total+=item.variant.product.new_price
+#                 item.cart.items.remove(item)
+#         # For example, you might want to create an Order object, save it to the database, etc.
+        
+#         # After processing the order, you can redirect to a confirmation page or render a success message
+#         return render(request, 'order_confirmation.html', {'message': 'Order placed successfully!'})
+#     else:
+#         # If it's a GET request, simply render the checkout page
+#         cart = Cart.objects.filter(user=request.user).first()
+#         cart_items = cart.items.all() if cart else []
+#         cart_count = cart.items.count() if cart else 0
+#         cart_total = cart.total_price if cart else 0
+#         j = 0
+#         # j1 means no stock, j0 means it is available
+#         for i in cart_items:
+#             if not i.in_stock:
+#                 j = 1
+#         print('Stock available' if j==0 else 'Stock Not available')
+#         context = {
+#             'cart_items': cart_items,
+#             'cart_count': cart_count,
+#             'cart_total': cart_total,
+#         }
+#         return render(request, 'checkout.html', context)
+
+
+#another function to checkout
 def checkout(request):
     if request.method == 'POST':
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        full_name = first_name + ' ' +last_name
         address_line1 = request.POST.get('address_line1')
         address_line2 = request.POST.get('address_line2')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
         city = request.POST.get('city')
         state = request.POST.get('state')
         pin_code = request.POST.get('pin_code')
         country = request.POST.get('country')
         payment_method = request.POST.get('payment_method')
-        # Process the order placement logic here
-        # For example, you might want to create an Order object, save it to the database, etc.
-        
-        # After processing the order, you can redirect to a confirmation page or render a success message
-        return render(request, 'order_confirmation.html', {'message': 'Order placed successfully!'})
-    else:
-        # If it's a GET request, simply render the checkout page
-        cart = Cart.objects.filter(user=request.user).first()
-        cart_items = cart.items.all() if cart else []
-        cart_count = cart.items.count() if cart else 0
-        cart_total = cart.total_price if cart else 0
-        for i in cart_items:
-            print(i)
-            print(i.in_stock)
-        context = {
-            'cart_items': cart_items,
-            'cart_count': cart_count,
-            'cart_total': cart_total,
-        }
-        return render(request, 'checkout.html', context)
+        cart_items = CartItem.objects.filter(cart__user=request.user)
+        with transaction.atomic():
+            order = Order.objects.create(
+            user=request.user,
+            name=full_name,
+            email=email,
+            phone=phone,
+            address_line1=address_line1,
+            address_line2=address_line2,
+            city=city,
+            state=state,
+            pin_code=pin_code,
+            country=country,
+            payment_method=payment_method
+            )
+            if order:
+                print("Order created successfully")
+                return redirect('orders:order_confirmation', order_id=order.id)
+            else:
+                print("Order creation failed")
+                return redirect('orders:checkout')
 
+    return render(request, 'checkout.html')
 
 # def order_history(request):
     # Fetch the user's order history from the database
