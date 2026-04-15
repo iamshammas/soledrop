@@ -11,7 +11,7 @@
       We'll send a confirmation to <strong>{{ request.user.email }}</strong>.
     </p>
     <div style="background:var(--dark);border:1px solid var(--border);padding:24px;margin-bottom:32px;text-align:left">
-      <div class="summary-row"><span>Order Number</span><span style="color:var(--accent)">#{{ order.order_number }}</span></div>
+      <div class="summary-row"><span>Order Number</span><span style="color:var(--accent)">#{{ order.order_number|default:'362327' }}</span></div>
       <div class="summary-row"><span>Total</span><span>₹{{ order.total_amount }}</span></div>
       <div class="summary-row"><span>Payment</span><span>{{ order.get_payment_method_display }}</span></div>
       <div class="summary-row"><span>Status</span><span style="color:var(--green)">{{ order.status|default:'pending' }}</span></div>

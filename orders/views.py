@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import get_object_or_404, render,redirect
 # from .models import Coupon
 from cart.models import Cart,CartItem
 from .models import Order,OrderItem
@@ -78,7 +78,7 @@ def apply_coupon(request):
 #         return render(request, 'checkout.html', context)
 
 
-#another function to checkout
+#another function to checkout | Order creation working properly
 def checkout(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
@@ -94,6 +94,8 @@ def checkout(request):
         country = request.POST.get('country')
         payment_method = request.POST.get('payment_method')
         cart_items = CartItem.objects.filter(cart__user=request.user)
+        # for item in cart_items:
+        #     print(item)
         with transaction.atomic():
             order = Order.objects.create(
             user=request.user,
@@ -109,8 +111,18 @@ def checkout(request):
             payment_method=payment_method
             )
             if order:
-                print("Order created successfully")
-                return redirect('orders:order_confirmation')
+                order.total_amount = 0
+                for item in cart_items:
+                    order_item = OrderItem.objects.create(
+                        order=order,
+                        variant=item.variant,
+                        quantity=item.quantity,
+                        price_at_purchase=item.variant.product.new_price
+                    )
+                    order_item.save()
+                    order.total_amount+= order_item.total_price
+                    order.save()
+                return redirect('orders:order_confirmation',order_id=order.id)
             else:
                 print("Order creation failed")
                 return redirect('orders:checkout')
@@ -118,8 +130,13 @@ def checkout(request):
     return render(request, 'checkout.html')
 
 
-def order_confirmation(request):
-    return render(request,'order_confirmation.html')
+def order_confirmation(request,order_id):
+    order = get_object_or_404(Order,id=order_id)
+    print(order.status)
+    context = {
+        'order': order
+    }
+    return render(request,'order_confirmation.html',context)
 
 # def order_history(request):
     # Fetch the user's order history from the database
