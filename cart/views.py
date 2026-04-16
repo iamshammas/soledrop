@@ -1,10 +1,11 @@
+from email import message
 from itertools import product
 
 from django.db import IntegrityError
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
-
-from products.models import Product, Variant
+from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib import messages
+from products.models import Product, ProductSize, Variant
 from cart.models import Cart, CartItem
 
 # Create your views here.
@@ -24,9 +25,12 @@ def add_to_cart(request):
     if request.method == 'POST':
         item = request.POST.get('product_id')
         size = request.POST.get('size')
-        print(item)
-        print(size)
-        variant = Variant.objects.filter(product=item,size=size)
+        # print(item)
+        # print(size)
+        # variant_id = ProductSize.variant.get(id=size)
+        # print(variant_id)
+        # variant = Variant.objects.filter(product=item,size=size)
+        variant=get_object_or_404(Variant,product=item,size=size)
         # print(variant)
         if not variant:
             print('Variant not found')
@@ -37,6 +41,7 @@ def add_to_cart(request):
             # if quantity < variant.stock:
             cart = Cart.objects.get_or_create(user=request.user)[0]
             item, created = CartItem.objects.get_or_create(cart=cart, variant=variant)
+            messages.success(request,'Added to cart')
             if not created:
                 item.quantity += 1
                 item.save()
@@ -67,7 +72,8 @@ def update_cart(request,item_id):
             # if cart_item.quantity > 1:
                 # print('If condition passed')
             if cart_item.quantity == 1:
-                print('Cart quantity is 1, removing item from cart')
+                messages.warning(request,'Item deleted')
+                cart_item.delete()
                 # Should implemenet a confirmation step here before deletion in a real application
                 return redirect('cart:cart_detail')
             else:
@@ -93,4 +99,5 @@ def clear_cart(request):
         cart = Cart.objects.filter(user=request.user).first()
         if cart:
             cart.items.all().delete()
+            messages.info(request,'Cart Cleared')
     return redirect('cart:cart_detail')

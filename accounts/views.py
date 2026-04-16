@@ -67,6 +67,7 @@ def profile(request):
     }
     return render(request, 'profile.html', context)
 
+@login_required
 def profile_edit(request):
     # Placeholder for profile edit logic
     return render(request, 'profile_edit.html')
@@ -101,21 +102,6 @@ def clear_wishlist(request):
     if request.method == 'POST':
         request.user.wishlist.clear()
     return redirect('accounts:wishlist')
-
-# @login_required
-# def add_to_wishlist(request, product_id):
-#     if request.method == 'POST':
-#         product = Product.objects.get(id=product_id)
-#         request.user.wishlist.add(product)
-#         print(f"Current wishlist for {request.user.email}: {[p.name for p in request.user.wishlist.all()]}")
-#     return redirect('accounts:home')
-
-# @login_required
-# def remove_from_wishlist(request, product_id):
-#     if request.user.is_authenticated:
-#         product = Product.objects.get(id=product_id)
-#         request.user.wishlist.remove(product)
-#     return redirect('accounts:wishlist')
 
 def user_logout(request):
     logout(request)

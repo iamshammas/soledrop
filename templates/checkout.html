@@ -128,10 +128,10 @@
         <span class="checkout-item-price">₹{{ item.total_price }}</span>
       </div>
     {% endfor %}
-    <div class="summary-row"><span>Subtotal</span><span>₹{{ cart_total }}</span></div>
+    <div class="summary-row"><span>Subtotal</span><span>₹{{ cart_subtotal }}</span></div>
     <div class="summary-row">
       <span>Shipping</span>
-      <span>{% if cart_total >= 4999 %}<span style="color:var(--green)">Free</span>{% else %}₹199{% endif %}</span>
+      <span>{% if cart_subtotal >= 4999 %}<span style="color:var(--green)">Free</span>{% else %}₹199{% endif %}</span>
     </div>
     {% if applied_coupon %}
       <div class="summary-row"><span>Discount ({{ applied_coupon.code }})</span><span style="color:var(--green)">−₹{{ discount_amount }}</span></div>

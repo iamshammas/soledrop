@@ -129,8 +129,13 @@ def checkout(request):
             else:
                 print("Order creation failed")
                 return redirect('orders:checkout')
-
-    return render(request, 'checkout.html')
+    cart_subtotal = Cart.objects.filter(user=request.user).first().total_price
+    cart_total = cart_subtotal if cart_subtotal >= 4999 else cart_subtotal+199
+    context = {
+        'cart_subtotal' : cart_subtotal,
+        'cart_total' : cart_total
+    }
+    return render(request, 'checkout.html',context)
 
 
 def order_confirmation(request,order_id):
