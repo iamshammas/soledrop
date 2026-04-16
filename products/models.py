@@ -93,7 +93,7 @@ class ProductColor(models.Model):
         PINK = 'pink', 'Pink'
         BROWN = 'brown', 'Brown'
         GREY = 'grey', 'Grey'
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name='available_colors',null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='available_colors')
     value = models.CharField(max_length=20, choices=Colors.choices)
 
     class Meta:
@@ -101,7 +101,9 @@ class ProductColor(models.Model):
         unique_together = ('product', 'value')
 
     def __str__(self):
-        return f"{self.product.name} - Color {self.value}"
+        if self.product:
+            return f"{self.product.name} - Color {self.value}"
+        return f"Orphan Color - {self.value}"
 
 class Variant(models.Model):
     product = models.ForeignKey(Product,on_delete=models.CASCADE,related_name='available_variants')

@@ -144,7 +144,7 @@
     <div class="cart-foot">
       <div class="cart-total-row">
         <span>Subtotal</span>
-        <span>₹{{ cart_total|default:'3738' }}</span>
+        <span>₹{{ cart_total }}</span>
       </div>
       <p class="cart-note">Shipping & taxes calculated at checkout</p>
       <a href="{% url 'orders:checkout' %}" class="btn-primary w100">Checkout</a>

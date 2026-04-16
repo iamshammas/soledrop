@@ -45,10 +45,18 @@ def user_login(request):
 
 def home(request):
     cart = Cart.objects.filter(user=request.user.id).first() if request.user.is_authenticated else None
-    cart_count = cart.items.count() if cart else 0
-
+    if cart:
+        cart_count = cart.items.count()
+        cart_items = cart.items.all()
+        cart_total = cart.total_price
+    else:
+        cart_count = 0
+        cart_items = []
+        cart_total = 0
     context = {
-        'cart_count': cart_count
+        'cart_count': cart_count,
+        'cart_items':cart_items,
+        'cart_total': cart_total
     }
     return render(request, 'home.html',context)
 
@@ -58,12 +66,15 @@ def profile(request):
     if cart:
         cart_count = cart.items.count()
         cart_items = cart.items.all()
+        cart_total = cart.total_price
     else:
         cart_count = 0
         cart_items = []
+        cart_total = 0
     context = {
         'cart_count': cart_count,
         'cart_items': cart_items,
+        'cart_total': cart_total,
     }
     return render(request, 'profile.html', context)
 
@@ -75,13 +86,19 @@ def profile_edit(request):
 def wishlist(request):
     wishlist_items = request.user.wishlist.all() if request.user.is_authenticated else []
     cart = Cart.objects.filter(user=request.user).first() if request.user.is_authenticated else None
-    cart_count = cart.items.count() if cart else 0
-    cart_items = cart.items.all() if cart else []
+    if cart:
+        cart_count = cart.items.count()
+        cart_items = cart.items.all()
+        cart_total = cart.total_price
+    else:
+        cart_count = 0
+        cart_items = []
+        cart_total = 0
     context = {
         'wishlist_items': wishlist_items,
         'cart_count': cart_count,
         'cart_items': cart_items,
-
+        'cart_total': cart_total
     }
     return render(request, 'wishlist.html', context)
 
