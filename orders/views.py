@@ -1,3 +1,4 @@
+from django.core.signals import request_finished
 from django.shortcuts import get_object_or_404, render,redirect
 # from .models import Coupon
 from cart.models import Cart,CartItem
@@ -122,6 +123,8 @@ def checkout(request):
                     order_item.save()
                     order.total_amount+= order_item.total_price
                     order.save()
+                cart=Cart.objects.get(user=request.user)
+                cart.delete()
                 return redirect('orders:order_confirmation',order_id=order.id)
             else:
                 print("Order creation failed")
@@ -132,11 +135,21 @@ def checkout(request):
 
 def order_confirmation(request,order_id):
     order = get_object_or_404(Order,id=order_id)
-    print(order.status)
     context = {
         'order': order
     }
     return render(request,'order_confirmation.html',context)
+
+def order_list(request):
+    orders=Order.objects.filter(user=request.user)
+    return render(request,'order_list.html',{'orders':orders})
+
+def order_detail(request,order_id):
+    order = get_object_or_404(Order,id=order_id)
+    context = {
+        'order': order
+    }
+    return render(request,'order_detail.html',context)
 
 # def order_history(request):
     # Fetch the user's order history from the database

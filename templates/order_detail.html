@@ -21,10 +21,10 @@
   <div style="background:var(--dark);border:1px solid var(--border);margin-bottom:24px">
     {% for item in order.items.all %}
       <div style="display:grid;grid-template-columns:80px 1fr auto;gap:16px;padding:16px 20px;{% if not forloop.last %}border-bottom:1px solid var(--border);{% endif %}align-items:center">
-        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width:80px;height:80px;object-fit:cover"/>
+        <img src="{{ item.variant.product.image.url }}" alt="{{ item.variant.product.name }}" style="width:80px;height:80px;object-fit:cover"/>
         <div>
-          <p style="font-weight:600;color:var(--white)">{{ item.product.name }}</p>
-          <p style="font-size:.78rem;color:var(--light)">{{ item.product.brand }} · Size {{ item.size }} · Qty {{ item.quantity }}</p>
+          <p style="font-weight:600;color:var(--white)">{{ item.variant.product.name }}</p>
+          <p style="font-size:.78rem;color:var(--light)">{{ item.variant.product.brand }} · Size {{ item.variant.size }} · Qty {{ item.quantity }}</p>
         </div>
         <span style="font-weight:700">₹{{ item.total_price }}</span>
       </div>

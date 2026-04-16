@@ -13,7 +13,7 @@
     <p class="profile-email">{{ user.email }}</p>
     <ul class="profile-nav">
       <li><a href="{% url 'accounts:profile' %}">Dashboard</a></li>
-      <li><a href="# url 'orders:order_list' #">My Orders</a></li>
+      <li><a href="{% url 'orders:order_list' %}">My Orders</a></li>
       <li><a href="{% url 'accounts:profile_edit' %}" class="active">Profile Settings</a></li>
       <li><a href="{% url 'accounts:wishlist' %}">Wishlist</a></li>
       <li><form action="{% url 'accounts:logout' %}" method="POST" style="display:inline">{% csrf_token %}<button type="submit">Logout</button></form></li>

@@ -52,9 +52,15 @@ def home(request):
     }
     return render(request, 'home.html',context)
 
+@login_required
 def profile(request):  
-    cart_count = Cart.objects.filter(user=request.user).first().items.count() if request.user.is_authenticated else 0
-    cart_items = Cart.objects.filter(user=request.user).first().items.all() if request.user.is_authenticated else []
+    cart = Cart.objects.filter(user=request.user).first()
+    if cart:
+        cart_count = cart.items.count()
+        cart_items = cart.items.all()
+    else:
+        cart_count = 0
+        cart_items = []
     context = {
         'cart_count': cart_count,
         'cart_items': cart_items,

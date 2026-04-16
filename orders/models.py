@@ -2,15 +2,10 @@ from django.conf import settings
 from django.db import models
 import uuid
 from products.models import Variant
-# Create your models here.
+from django.db import IntegrityError
 
-# import datetime as dt
-
-# def gen_id():
-#     result = dt.datetime.now().strftime('%Y%m%d%H%M%S')
-#     return f'ORD-{result}'
-
-# print(gen_id())
+def generate_order_number():
+        return f"ORD-{uuid.uuid4().hex[:8].upper()}"
 
 class Coupon(models.Model):
     code = models.CharField(max_length=50, unique=True)
@@ -34,6 +29,7 @@ class Order(models.Model):
         ONLINE = 'ONLINE','Online Payment'
 
     id = models.UUIDField(primary_key=True,default=uuid.uuid4,editable=False)
+    order_number = models.CharField(max_length=12,unique=True,editable=False,null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     status = models.CharField(choices=Status.choices,default='pending',max_length=10)
     payment_method = models.CharField(max_length=10,choices=PaymentMethod.choices)
@@ -49,11 +45,22 @@ class Order(models.Model):
     pincode = models.CharField(max_length=10)
     country = models.CharField(max_length=26)
     coupon_code = models.ForeignKey(Coupon,null=True,blank=True,on_delete=models.SET_NULL)
-    created_at = models.DateTimeField(auto_now_add=True)
-    
+    created_at = models.DateTimeField(auto_now_add=True,db_index=True)
 
     def __str__(self):
-        return f"Order #{self.id} by {self.user.first_name} {self.user.last_name}"
+        return f"Order #{self.id} by {self.user.first_name}"
+
+    def save(self, *args, **kwargs):
+        if not self.order_number:
+            for _ in range(5):  # retry a few times
+                try:
+                    self.order_number = generate_order_number()
+                    super().save(*args, **kwargs)
+                    return
+                except IntegrityError:
+                    continue
+            raise Exception("Failed to generate unique order number")
+        super().save(*args, **kwargs)
     
 
 class OrderItem(models.Model):

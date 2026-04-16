@@ -32,8 +32,10 @@ def product_list(request):
 def home_page(request):
     categories = Category.objects.filter(is_active=True)
     featured_products = Product.objects.filter(is_active=True, is_featured=True)
-    cart_count = Cart.objects.filter(user=request.user).first().items.count() if request.user.is_authenticated else 0
-    cart_items = Cart.objects.filter(user=request.user).first().items.all() if request.user.is_authenticated else []
+    cart = Cart.objects.filter(user=request.user).first()
+    cart_count = cart.items.count() if cart else 0
+    cart_items = cart.items.all() if cart else []
+    cart_items = []
     context = {
         'categories': categories,
         'featured_products': featured_products,

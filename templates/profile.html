@@ -22,7 +22,7 @@
     <p class="profile-email">{{ user.email }}</p>
     <ul class="profile-nav">
       <li><a href="{% url 'accounts:profile' %}" {% if active_tab == 'dashboard' %}class="active"{% endif %}>Dashboard</a></li>
-      <li><a href="# url 'orders:order_list'#" {% if active_tab == 'orders' %}class="active"{% endif %}>My Orders</a></li>
+      <li><a href="{% url 'orders:order_list' %}" {% if active_tab == 'orders' %}class="active"{% endif %}>My Orders</a></li>
       <li><a href="{% url 'accounts:profile_edit' %}" {% if active_tab == 'settings' %}class="active"{% endif %}>Profile Settings</a></li>
       <li><a href="{% url 'accounts:wishlist' %}" {% if active_tab == 'wishlist' %}class="active"{% endif %}>Wishlist</a></li>
       <li>
