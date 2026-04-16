@@ -78,7 +78,7 @@ class ProductSize(models.Model):
         unique_together = ('product', 'value')
 
     def __str__(self):
-        return f"{self.product.name} - Size {self.value}"
+        return f"ID={self.id} -- {self.product.name} - Size {self.value}"
 
 class ProductColor(models.Model):
     class Colors(models.TextChoices):

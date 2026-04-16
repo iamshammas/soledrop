@@ -24,6 +24,8 @@ def add_to_cart(request):
     if request.method == 'POST':
         item = request.POST.get('product_id')
         size = request.POST.get('size')
+        print(item)
+        print(size)
         variant = Variant.objects.filter(product=item,size=size)
         # print(variant)
         if not variant:

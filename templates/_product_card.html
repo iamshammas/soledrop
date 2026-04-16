@@ -29,8 +29,8 @@
           <div class="size-selector" id="size-selector-{{ product.id }}" style="display: none; margin-bottom: 8px;">
             <select name="size" required style="width: 100%; padding: 8px; font-size: 0.75rem; border: 1px solid var(--gray); background: var(--light); color: var(--dark);">
               <option value="" disabled selected>Select Size</option>
-              {% for size in product.available_variants.all %}
-                  <option value="{{ size.id }}" name="size_id">{{ size.value }}</option>
+              {% for variant in product.available_variants.all %}
+                  <option value="{{ variant.size.id }}" name="size_id">{{ variant.size.value }}</option>
               {% endfor %}
             </select>
           </div>
