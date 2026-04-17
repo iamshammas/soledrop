@@ -69,3 +69,5 @@ def product_detail(request, slug):
         'product': product,
     }
     return render(request, 'product_detail.html', context)
+
+ 
