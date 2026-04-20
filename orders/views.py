@@ -147,7 +147,7 @@ def order_confirmation(request,order_id):
 
 def order_list(request):
     orders=Order.objects.filter(user=request.user)
-    print(request.user.id)
+    # print(request.user.id)
     return render(request,'order_list.html',{'orders':orders})
 
 def order_detail(request,order_id):

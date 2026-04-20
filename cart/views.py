@@ -12,11 +12,11 @@ from cart.models import Cart, CartItem
 
 def cart_detail(request):
     cart_items = Cart.objects.filter(user=request.user).first().items.all()
-    cart_count = cart_items.count()
+    # cart_count = cart_items.count()
     cart_subtotal = Cart.objects.filter(user=request.user).first().total_price if cart_items else 0
     context = {
-        'cart_items': cart_items,
-        'cart_count': cart_count,
+        # 'cart_items': cart_items,
+        # 'cart_count': cart_count,
         'cart_subtotal': cart_subtotal
     }
     return render(request, 'cart_detail.html', context)

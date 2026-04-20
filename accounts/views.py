@@ -2,6 +2,7 @@ from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate, login,logout
 from products.models import Product
 from .models import CustomUser
+from orders.models import Order
 from cart.models import Cart
 from django.contrib.auth.decorators import login_required
 
@@ -44,39 +45,40 @@ def user_login(request):
     return render(request, 'login.html')
 
 def home(request):
-    cart = Cart.objects.filter(user=request.user.id).first() if request.user.is_authenticated else None
-    if cart:
-        cart_count = cart.items.count()
-        cart_items = cart.items.all()
-        cart_total = cart.total_price
-    else:
-        cart_count = 0
-        cart_items = []
-        cart_total = 0
-    context = {
-        'cart_count': cart_count,
-        'cart_items':cart_items,
-        'cart_total': cart_total
-    }
-    return render(request, 'home.html',context)
+    # cart = Cart.objects.filter(user=request.user.id).first() if request.user.is_authenticated else None
+    # if cart:
+    #     cart_count = cart.items.count()
+    #     cart_items = cart.items.all()
+    #     cart_total = cart.total_price
+    # else:
+    #     cart_count = 0
+    #     cart_items = []
+    #     cart_total = 0
+    # context = {
+    #     'cart_count': cart_count,
+    #     'cart_items':cart_items,
+    #     'cart_total': cart_total
+    # }
+    return render(request, 'home.html')
 
 @login_required
 def profile(request):  
-    cart = Cart.objects.filter(user=request.user).first()
-    if cart:
-        cart_count = cart.items.count()
-        cart_items = cart.items.all()
-        cart_total = cart.total_price
-    else:
-        cart_count = 0
-        cart_items = []
-        cart_total = 0
+    # cart = Cart.objects.filter(user=request.user).first()
+    # if cart:
+    #     cart_count = cart.items.count()
+    #     cart_items = cart.items.all()
+    #     cart_total = cart.total_price
+    # else:
+    #     cart_count = 0
+    #     cart_items = []
+    #     cart_total = 0
+    order_count = Order.objects.filter(user=request.user).count()
+    wishlist_count = request.user.wishlist.count() if request.user.is_authenticated else 0
     context = {
-        'cart_count': cart_count,
-        'cart_items': cart_items,
-        'cart_total': cart_total,
+        'order_count': order_count,
+        'wishlist_count':wishlist_count
     }
-    return render(request, 'profile.html', context)
+    return render(request, 'profile.html',context)
 
 @login_required
 def profile_edit(request):
