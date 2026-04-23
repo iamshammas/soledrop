@@ -36,7 +36,6 @@ class CartItem(models.Model):
 
     @property
     def in_stock(self):
-        print(self.variant.stock)
         return self.quantity <= self.variant.stock
 
     def __str__(self):

@@ -1,15 +1,11 @@
-from email import message
-from itertools import product
-
-from django.db import IntegrityError
-from django.http import HttpResponse
+from django.contrib.auth.views import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
-from products.models import Product, ProductSize, Variant
+from products.models import Variant
 from cart.models import Cart, CartItem
 
-# Create your views here.
 
+@login_required
 def cart_detail(request):
     cart_items = Cart.objects.filter(user=request.user).first().items.all()
     # cart_count = cart_items.count()
@@ -20,7 +16,7 @@ def cart_detail(request):
         'cart_subtotal': cart_subtotal
     }
     return render(request, 'cart_detail.html', context)
-
+ 
 def add_to_cart(request):
     if request.method == 'POST':
         item = request.POST.get('product_id')
@@ -33,7 +29,7 @@ def add_to_cart(request):
         variant=get_object_or_404(Variant,product=item,size=size)
         # print(variant)
         if not variant:
-            print('Variant not found')
+            # print('Variant not found')
             return render(request, '404.html', status=404)
         else:
             # size = request.POST.get('size')
@@ -88,7 +84,7 @@ def remove_from_cart(request, product_id):
         item = CartItem.objects.filter(id=product_id,cart__user=request.user).first()
         # print(item)
         if not item:
-            print('Item not found in cart')
+            # print('Item not found in cart')
             return render(request, '404.html', status=404)
         else:
             item.delete()

@@ -74,9 +74,11 @@ def profile(request):
     #     cart_total = 0
     order_count = Order.objects.filter(user=request.user).count()
     wishlist_count = request.user.wishlist.count() if request.user.is_authenticated else 0
+    recent_orders = Order.objects.filter(user=request.user).order_by('-created_at')[:3]
     context = {
         'order_count': order_count,
-        'wishlist_count':wishlist_count
+        'wishlist_count':wishlist_count,
+        'recent_orders':recent_orders
     }
     return render(request, 'profile.html',context)
 
@@ -127,5 +129,8 @@ def user_logout(request):
     return redirect('accounts:home')
 
 def change_password(request):
-    # Placeholder for change password logic
+    # if request.method ==
+    # user = request.user
+    # user.set_password("new_password")
+    # user.save()
     return render(request, 'change_password.html')

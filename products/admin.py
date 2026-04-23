@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from products.models import Category, Product, ProductSize, ProductColor, Variant
+from products.models import Category, Product, ProductSize, Review, Variant
 
 # Register your models here.
 
@@ -11,4 +11,4 @@ admin.site.register(Category)
 admin.site.register(Product)    
 admin.site.register(Variant)
 admin.site.register(ProductSize)
-admin.site.register(ProductColor)
+admin.site.register(Review)

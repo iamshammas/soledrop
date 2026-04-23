@@ -2,7 +2,6 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from accounts.models import CustomUser
 from autoslug import AutoSlugField
-# Create your models here.
 
 
 class Category(models.Model):
@@ -80,43 +79,43 @@ class ProductSize(models.Model):
     # def __str__(self):
     #     return f"ID={self.id} -- {self.product.name} - Size {self.value}"
 
-class ProductColor(models.Model):
-    class Colors(models.TextChoices):
-        RED = 'red', 'Red'
-        BLUE = 'blue', 'Blue'
-        GREEN = 'green', 'Green'
-        BLACK = 'black', 'Black'
-        WHITE = 'white', 'White'
-        YELLOW = 'yellow', 'Yellow'
-        ORANGE = 'orange', 'Orange'
-        PURPLE = 'purple', 'Purple'
-        PINK = 'pink', 'Pink'
-        BROWN = 'brown', 'Brown'
-        GREY = 'grey', 'Grey'
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='available_colors')
-    value = models.CharField(max_length=20, choices=Colors.choices)
+# class ProductColor(models.Model):
+#     class Colors(models.TextChoices):
+#         RED = 'red', 'Red'
+#         BLUE = 'blue', 'Blue'
+#         GREEN = 'green', 'Green'
+#         BLACK = 'black', 'Black'
+#         WHITE = 'white', 'White'
+#         YELLOW = 'yellow', 'Yellow'
+#         ORANGE = 'orange', 'Orange'
+#         PURPLE = 'purple', 'Purple'
+#         PINK = 'pink', 'Pink'
+#         BROWN = 'brown', 'Brown'
+#         GREY = 'grey', 'Grey'
+#     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='available_colors')
+#     value = models.CharField(max_length=20, choices=Colors.choices)
 
-    class Meta:
-        ordering = ['value']
-        unique_together = ('product', 'value')
+#     class Meta:
+#         ordering = ['value']
+#         unique_together = ('product', 'value')
 
-    def __str__(self):
-        if self.product:
-            return f"{self.product.name} - Color {self.value}"
-        return f"Orphan Color - {self.value}"
+#     def __str__(self):
+#         if self.product:
+#             return f"{self.product.name} - Color {self.value}"
+#         return f"Orphan Color - {self.value}"
 
 class Variant(models.Model):
     product = models.ForeignKey(Product,on_delete=models.CASCADE,related_name='available_variants')
-    color = models.ForeignKey(ProductColor,  on_delete=models.CASCADE)
+    # color = models.ForeignKey(ProductColor,  on_delete=models.CASCADE)
     size = models.ForeignKey(ProductSize,on_delete=models.CASCADE,related_name='variant')
     stock = models.PositiveIntegerField(default=0)
 
     class Meta:
-        unique_together = ('product', 'color', 'size')
-        ordering = ['product', 'color', 'size']
+        unique_together = ('product', 'size')
+        ordering = ['product', 'size']
 
     def __str__(self):        
-        return f"ID={self.id} -- {self.product.name} - {self.color.value} - {self.size.value}"
+        return f"ID={self.id} -- {self.product.name} - {self.size.value}"
 
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
@@ -130,4 +129,4 @@ class Review(models.Model):
         unique_together = ('product', 'user')
 
     def __str__(self):
-        return f'{self.user.username} — {self.product.name} ({self.rating}★)'
+        return f'{self.user} — {self.product.name} ({self.rating}★)'

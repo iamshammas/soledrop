@@ -67,7 +67,7 @@
           </div>
           <p class="order-items">
             {% for item in order.items.all|slice:":2" %}
-              {{ item.product.name }} (Size {{ item.size }}) × {{ item.quantity }}{% if not forloop.last %}, {% endif %}
+              {{ item.variant.product.name }} (Size {{ item.variant.size.value }}) × {{ item.quantity }}{% if not forloop.last %}, {% endif %}
             {% endfor %}
             {% if order.items.count > 2 %}+ {{ order.items.count|add:"-2" }} more{% endif %}
           </p>

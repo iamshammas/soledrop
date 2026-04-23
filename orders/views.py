@@ -1,4 +1,3 @@
-from django.core.signals import request_finished
 from django.shortcuts import get_object_or_404, render,redirect
 # from .models import Coupon
 from cart.models import Cart,CartItem

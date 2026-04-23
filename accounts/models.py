@@ -29,8 +29,6 @@ class CustomUser(AbstractUser):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
-    password1 = models.CharField(max_length=128)
-    password2 = models.CharField(max_length=128)
     wishlist = models.ManyToManyField('products.Product', blank=True, related_name='wishlisted_by')
     username = None
     USERNAME_FIELD = 'email'

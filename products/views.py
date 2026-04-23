@@ -37,22 +37,22 @@ def product_list(request):
 def home_page(request):
     categories = Category.objects.filter(is_active=True)
     featured_products = Product.objects.filter(is_active=True, is_featured=True)
-    cart = Cart.objects.filter(user=request.user).first()
-    if cart:
-        cart_count = cart.items.count()
-        cart_items = cart.items.all()
-        cart_total = cart.total_price
-    else:
-        cart_count = 0
-        cart_items = []
-        cart_total = 0
-    cart_items = []
+    # cart = Cart.objects.filter(user=request.user).first()
+    # if cart:
+    #     cart_count = cart.items.count()
+    #     cart_items = cart.items.all()
+    #     cart_total = cart.total_price
+    # else:
+    #     cart_count = 0
+    #     cart_items = []
+    #     cart_total = 0
+    # cart_items = []
     context = {
         'categories': categories,
         'featured_products': featured_products,
-        'cart_count': cart_count,
-        'cart_items': cart_items,
-        'cart_total':cart_total
+        # 'cart_count': cart_count,
+        # 'cart_items': cart_items,
+        # 'cart_total':cart_total
     }
     return render(request, 'home.html', context)
 

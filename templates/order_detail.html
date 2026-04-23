@@ -46,8 +46,13 @@
     {# Payment Summary #}
     <div style="background:var(--dark);border:1px solid var(--border);padding:20px 24px">
       <h4 style="font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:14px">Payment</h4>
-      <div class="summary-row"><span>Subtotal</span><span>₹{{ order.subtotal }}</span></div>
-      <div class="summary-row"><span>Shipping</span><span>{% if order.shipping_cost == 0 %}<span style="color:var(--green)">Free</span>{% else %}₹{{ order.shipping_cost }}{% endif %}</span></div>
+      <div class="summary-row"><span>Subtotal</span><span>₹{{ order.total_amount }}</span></div>
+      {% if order.total_amount >= 4999 %}
+      <div class="summary-row"><span>Shipping</span><span><span style="color:var(--green)">Free</span></span></div>
+      {% else %}
+      <div class="summary-row"><span>Shipping</span>₹199</span></div>
+      {% endif %}
+      <!-- <div class="summary-row"><span>Shipping</span><span>{% if order.shipping_cost == 0 %}<span style="color:var(--green)">Free</span>{% else %}₹{{ order.shipping_cost }}{% endif %}</span></div> -->
       {% if order.discount_amount %}<div class="summary-row"><span>Discount</span><span style="color:var(--green)">−₹{{ order.discount_amount }}</span></div>{% endif %}
       <div class="summary-row total"><span>Total</span><span>₹{{ order.total_amount }}</span></div>
       <p style="color:var(--light);font-size:.78rem;margin-top:12px">Paid via {{ order.get_payment_method_display }}</p>
