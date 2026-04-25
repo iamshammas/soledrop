@@ -5,9 +5,16 @@ from cart.models import Cart
 from django.contrib.auth.decorators import login_required
 
 def product_list(request):
-    print(request.GET.get('category'))
     all_categories = Category.objects.filter(is_active=True)
-    qs = Product.objects.filter(is_active=True)
+    category_slug = request.GET.get('category')
+    if category_slug:
+        category = Category.objects.filter(slug=category_slug, is_active=True).first()
+        if category:
+            qs = category.products.filter(is_active=True)
+        else:
+            qs = Product.objects.filter(is_active=True)
+    else:
+        qs = Product.objects.filter(is_active=True)
     paginator = Paginator(qs, 8)  
     page_obj = paginator.get_page(request.GET.get('page', 1))
     if request.user.is_authenticated:
