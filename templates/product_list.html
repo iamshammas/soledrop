@@ -1,172 +1,172 @@
-{% extends "base.html" %}
-{% load static %}
+  {% extends "base.html" %}
+  {% load static %}
 
-{% block title %}Shop — SOLE DROP{% endblock %}
+  {% block title %}Shop — SOLE DROP{% endblock %}
 
-{% block content %}
+  {% block content %}
 
-<div class="page-hero">
-  <div class="breadcrumb">
-    <a href="{% url 'products:home' %}">Home</a>
-    <span>›</span>
-    <span>Shop</span>
+  <div class="page-hero">
+    <div class="breadcrumb">
+      <a href="{% url 'products:home' %}">Home</a>
+      <span>›</span>
+      <span>Shop</span>
+    </div>
+    <h1 class="page-hero-title">
+      {% if current_category %}{{ current_category }}{% else %}All Sneakers{% endif %}
+    </h1>
   </div>
-  <h1 class="page-hero-title">
-    {% if current_category %}{{ current_category }}{% else %}All Sneakers{% endif %}
-  </h1>
-</div>
 
-<div class="shop-layout">
+  <div class="shop-layout">
 
-  {# ── SIDEBAR ── #}
-  <aside class="sidebar">
+    {# ── SIDEBAR ── #}
+    <aside class="sidebar">
 
-    {# Brand Filter #}
-    <div class="sidebar-block">
-      <h3>Brand</h3>
-      <ul>
-        <li>
-          <a href="# url 'products:product_list' #{% if request.GET.sort %}?sort={{ request.GET.sort }}{% endif %}"
-             {% if not current_category %}class="active"{% endif %}>
-            All
-          </a>
-        </li>
-        {% for cat in all_categories %}
+      {# Brand Filter #}
+      <div class="sidebar-block">
+        <h3>Brand</h3>
+        <ul>
           <li>
-            <a href="{% url 'products:product_list' %}?category={{ cat.slug }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
-               {% if current_category == cat.name %}class="active"{% endif %}>
-              {{ cat.name }}
-              <span style="font-size:.7rem;color:var(--mid)">({{ cat.product_count }})</span>
+            <a href="# url 'products:product_list' #{% if request.GET.sort %}?sort={{ request.GET.sort }}{% endif %}"
+              {% if not current_category %}class="active"{% endif %}>
+              All
             </a>
           </li>
-        {% endfor %}
-      </ul>
-    </div>
-
-    {# Sort #}
-    <div class="sidebar-block">
-      <h3>Sort By</h3>
-      <ul>
-        {% for value, label in sort_options %}
-          <li>
-            <a href="?{% if current_category %}category={{ request.GET.category }}&{% endif %}sort={{ value }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
-               {% if current_sort == value %}class="active"{% endif %}>
-              {{ label }}
-            </a>
-          </li>
-        {% endfor %}
-      </ul>
-    </div>
-
-    {# Price Range — submits as GET param #}
-    <div class="sidebar-block">
-      <h3>Price Range</h3>
-      <form method="GET" id="priceForm">
-        {% if request.GET.category %}<input type="hidden" name="category" value="{{ request.GET.category }}"/>{% endif %}
-        {% if request.GET.sort %}<input type="hidden" name="sort" value="{{ request.GET.sort }}"/>{% endif %}
-        {% if request.GET.search %}<input type="hidden" name="search" value="{{ request.GET.search }}"/>{% endif %}
-        <div class="price-range">
-          <input type="range" name="max_price" id="priceRange"
-                 min="0" max="50000" step="500"
-                 value="{{ request.GET.max_price|default:50000 }}"
-                 oninput="document.getElementById('priceLabel').textContent='Up to ₹'+Number(this.value).toLocaleString('en-IN')"/>
-          <div class="price-label">
-            <span>₹0</span>
-            <span id="priceLabel">Up to ₹{{ request.GET.max_price|default:"50,000" }}</span>
-          </div>
-          <button type="submit" class="btn-ghost" style="width:100%;margin-top:8px">Apply</button>
-        </div>
-      </form>
-    </div>
-
-    {# Stock Filter #}
-    <div class="sidebar-block">
-      <h3>Availability</h3>
-      <ul>
-        <li>
-          <a href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}"
-             {% if not request.GET.stock %}class="active"{% endif %}>All</a>
-        </li>
-        <li>
-          <a href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}stock=inStock"
-             {% if request.GET.stock == 'inStock' %}class="active"{% endif %}>In Stock Only</a>
-        </li>
-        <li>
-          <a href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}stock=sale"
-             {% if request.GET.stock == 'sale' %}class="active"{% endif %}>On Sale</a>
-        </li>
-        <li>
-          <a href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}stock=new"
-             {% if request.GET.stock == 'new' %}class="active"{% endif %}>New Arrivals</a>
-        </li>
-      </ul>
-    </div>
-  </aside>
-
-  {# ── MAIN CONTENT ── #}
-  <main>
-    {# Search + inline sort bar #}
-    <div class="search-filter-bar">
-      <form method="GET" style="display:contents">
-        {% if request.GET.category %}
-          <input type="hidden" name="category" value="{{ request.GET.category }}"/>
-        {% endif %}
-        <input type="text" class="search-filter-input" name="search"
-               placeholder="Search products…" value="{{ request.GET.search }}"/>
-        <select class="sort-select" name="sort" onchange="this.form.submit()">
-          {% for value, label in sort_options %}
-            <option value="{{ value }}" {% if current_sort == value %}selected{% endif %}>{{ label }}</option>
+          {% for cat in all_categories %}
+            <li>
+              <a href="{% url 'products:product_list' %}?category={{ cat.slug }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+                {% if current_category == cat.name %}class="active"{% endif %}>
+                {{ cat.name }}
+                <span style="font-size:.7rem;color:var(--mid)">({{ cat.product_count }})</span>
+              </a>
+            </li>
           {% endfor %}
-        </select>
-        <button type="submit" class="btn-primary">Go</button>
-      </form>
-    </div>
+        </ul>
+      </div>
 
-    <div class="results-bar">
-      <span>Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ paginator.count }} products</span>
-      {% if request.GET.search %}
-        <span>Results for "<strong>{{ request.GET.search }}</strong>"
-          <a href="{% url 'products:product_list' %}" style="color:var(--accent);font-size:.78rem;margin-left:6px">Clear ✕</a>
-        </span>
-      {% endif %}
-    </div>
+      {# Sort #}
+      <div class="sidebar-block">
+        <h3>Sort By</h3>
+        <ul>
+          {% for value, label in sort_options %}
+            <li>
+              <a href="?{% if current_category %}category={{ request.GET.category }}&{% endif %}sort={{ value }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+                {% if current_sort == value %}class="active"{% endif %}>
+                {{ label }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
 
-    {# Product Grid #}
-    <div class="products-grid">
-      {% for product in page_obj %}
-        {% include "_product_card.html" with product=product %}
-      {% empty %}
-        <div style="grid-column:1/-1;padding:60px;text-align:center;color:var(--light)">
-          <p style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--mid)">No sneakers found</p>
-          <a href="{% url 'products:product_list' %}" class="btn-primary" style="margin-top:20px;display:inline-block">Clear Filters</a>
-        </div>
-      {% endfor %}
-    </div>
+      {# Price Range — submits as GET param #}
+      <div class="sidebar-block">
+        <h3>Price Range</h3>
+        <form method="GET" id="priceForm">
+          {% if request.GET.category %}<input type="hidden" name="category" value="{{ request.GET.category }}"/>{% endif %}
+          {% if request.GET.sort %}<input type="hidden" name="sort" value="{{ request.GET.sort }}"/>{% endif %}
+          {% if request.GET.search %}<input type="hidden" name="search" value="{{ request.GET.search }}"/>{% endif %}
+          <div class="price-range">
+            <input type="range" name="max_price" id="priceRange"
+                  min="0" max="50000" step="500"
+                  value="{{ request.GET.max_price|default:50000 }}"
+                  oninput="document.getElementById('priceLabel').textContent='Up to ₹'+Number(this.value).toLocaleString('en-IN')"/>
+            <div class="price-label">
+              <span>₹0</span>
+              <span id="priceLabel">Up to ₹{{ request.GET.max_price|default:"50,000" }}</span>
+            </div>
+            <button type="submit" class="btn-ghost" style="width:100%;margin-top:8px">Apply</button>
+          </div>
+        </form>
+      </div>
 
-    {# ── PAGINATION ── #}
-    {% if paginator.num_pages > 1 %}
-      <div class="pagination">
-        {% if page_obj.has_previous %}
-          <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
-             class="page-btn">‹</a>
-        {% endif %}
+      {# Stock Filter #}
+      <div class="sidebar-block">
+        <h3>Availability</h3>
+        <ul>
+          <li>
+            <a href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}"
+              {% if not request.GET.stock %}class="active"{% endif %}>All</a>
+          </li>
+          <li>
+            <a href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}stock=inStock"
+              {% if request.GET.stock == 'inStock' %}class="active"{% endif %}>In Stock Only</a>
+          </li>
+          <li>
+            <a href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}stock=sale"
+              {% if request.GET.stock == 'sale' %}class="active"{% endif %}>On Sale</a>
+          </li>
+          <li>
+            <a href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}stock=new"
+              {% if request.GET.stock == 'new' %}class="active"{% endif %}>New Arrivals</a>
+          </li>
+        </ul>
+      </div>
+    </aside>
 
-        {% for num in paginator.page_range %}
-          {% if page_obj.number == num %}
-            <span class="page-btn active">{{ num }}</span>
-          {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-            <a href="?page={{ num }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
-               class="page-btn">{{ num }}</a>
+    {# ── MAIN CONTENT ── #}
+    <main>
+      {# Search + inline sort bar #}
+      <div class="search-filter-bar">
+        <form method="GET" style="display:contents">
+          {% if request.GET.category %}
+            <input type="hidden" name="category" value="{{ request.GET.category }}"/>
           {% endif %}
-        {% endfor %}
+          <input type="text" class="search-filter-input" name="search"
+                placeholder="Search products…" value="{{ request.GET.search }}"/>
+          <select class="sort-select" name="sort" onchange="this.form.submit()">
+            {% for value, label in sort_options %}
+              <option value="{{ value }}" {% if current_sort == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" class="btn-primary">Go</button>
+        </form>
+      </div>
 
-        {% if page_obj.has_next %}
-          <a href="?page={{ page_obj.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
-             class="page-btn">›</a>
+      <div class="results-bar">
+        <span>Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ paginator.count }} products</span>
+        {% if request.GET.search %}
+          <span>Results for "<strong>{{ request.GET.search }}</strong>"
+            <a href="{% url 'products:product_list' %}" style="color:var(--accent);font-size:.78rem;margin-left:6px">Clear ✕</a>
+          </span>
         {% endif %}
       </div>
-    {% endif %}
-  </main>
 
-</div>
-{% endblock %}
+      {# Product Grid #}
+      <div class="products-grid">
+        {% for product in page_obj %}
+          {% include "_product_card.html" with product=product %}
+        {% empty %}
+          <div style="grid-column:1/-1;padding:60px;text-align:center;color:var(--light)">
+            <p style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--mid)">No sneakers found</p>
+            <a href="{% url 'products:product_list' %}" class="btn-primary" style="margin-top:20px;display:inline-block">Clear Filters</a>
+          </div>
+        {% endfor %}
+      </div>
+
+      {# ── PAGINATION ── #}
+      {% if paginator.num_pages > 1 %}
+        <div class="pagination">
+          {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+              class="page-btn">‹</a>
+          {% endif %}
+
+          {% for num in paginator.page_range %}
+            {% if page_obj.number == num %}
+              <span class="page-btn active">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+              <a href="?page={{ num }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+                class="page-btn">{{ num }}</a>
+            {% endif %}
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+              class="page-btn">›</a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </main>
+
+  </div>
+  {% endblock %}

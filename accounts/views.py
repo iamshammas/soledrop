@@ -84,7 +84,16 @@ def profile(request):
 
 @login_required
 def profile_edit(request):
-    # Placeholder for profile edit logic
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        phone_number = request.POST.get('phone')
+        user = request.user
+        user.first_name = first_name
+        user.last_name = last_name
+        user.phone_number = phone_number
+        user.save()
+        return redirect('accounts:profile')
     return render(request, 'profile_edit.html')
 
 def wishlist(request):

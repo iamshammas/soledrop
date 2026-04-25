@@ -39,7 +39,7 @@ class Product(models.Model):
     description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, related_name='products', null=True)
     image = models.ImageField(upload_to='product_images/', blank=True, null=True)
-    stock = models.PositiveIntegerField(default=0)
+    # stock = models.PositiveIntegerField(default=0)
     old_price = models.DecimalField(max_digits=10, decimal_places=2)
     new_price = models.DecimalField(max_digits=10, decimal_places=2)
     badge = models.CharField(max_length=20, choices=BADGE_CHOICES, default='',blank=True)

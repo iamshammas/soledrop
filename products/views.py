@@ -4,9 +4,8 @@ from django.core.paginator import Paginator
 from cart.models import Cart
 from django.contrib.auth.decorators import login_required
 
-# Create your views here.
-
 def product_list(request):
+    print(request.GET.get('category'))
     all_categories = Category.objects.filter(is_active=True)
     qs = Product.objects.filter(is_active=True)
     paginator = Paginator(qs, 8)  
@@ -15,7 +14,7 @@ def product_list(request):
         cart = Cart.objects.filter(user=request.user).first()
     else:
         cart = None
-    if cart:
+    if cart:    
         cart_count = cart.items.count()
         cart_items = cart.items.all()
         cart_total = cart.total_price
