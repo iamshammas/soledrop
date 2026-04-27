@@ -9,7 +9,7 @@ def cart_data(request):
         cart_total = cart.total_price
         # cart_subtotal = Cart.objects.filter(user=request.user).first().total_price if cart_items else 0
     else:
-        cart_count = 0
+        cart_count = None
         cart_items = []
         cart_total = 0
     return {

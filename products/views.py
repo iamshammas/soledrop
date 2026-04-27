@@ -39,7 +39,6 @@ def product_list(request):
     }
     return render(request, 'product_list.html', context)
 
-@login_required
 def home_page(request):
     categories = Category.objects.filter(is_active=True)
     featured_products = Product.objects.filter(is_active=True, is_featured=True)
