@@ -1,0 +1,166 @@
+{% extends 'admin_panel/base.html' %}
+
+{% block title %}Categories{% endblock %}
+{% block page_title %}Categories{% endblock %}
+
+{% block content %}
+<div class="card mb-6">
+    <div class="flex items-center justify-between" style="flex-wrap: wrap; gap: var(--space-4);">
+        <div class="filters-bar">
+            <div class="filter-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search categories..." id="category-search">
+            </div>
+        </div>
+        <button class="btn btn-primary" onclick="openCategoryModal()" id="btn-add-category">
+            <i class="fas fa-plus"></i> Add Category
+        </button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-container">
+        <table class="data-table" id="categories-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Category Name</th>
+                    <th>Description</th>
+                    <th>Products</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for category in categories %}
+                <tr>
+                    <td class="text-muted">{{ forloop.counter }}</td>
+                    <td class="text-bold">{{ category.name }}</td>
+                    <td class="text-muted">{{ category.description|truncatewords:8|default:"-" }}</td>
+                    <td>{{ category.product_count }}</td>
+                    <td>
+                        {% if category.is_active %}
+                        <span class="status-badge active">Active</span>
+                        {% else %}
+                        <span class="status-badge inactive">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon edit" title="Edit"
+                                onclick="openCategoryModal({{ category.id }}, '{{ category.name }}', '{{ category.description|escapejs }}', {{ category.is_active|yesno:'true,false' }})">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                            <a href="{% url 'admin_category_delete' category.id %}" class="btn-icon delete" title="Delete"
+                               data-confirm="Delete '{{ category.name }}'?">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td class="text-muted">1</td>
+                    <td class="text-bold">Sneakers</td>
+                    <td class="text-muted">Lifestyle and streetwear sneakers</td>
+                    <td>42</td>
+                    <td><span class="status-badge active">Active</span></td>
+                    <td><div class="action-buttons">
+                        <button class="btn-icon edit" title="Edit" onclick="openCategoryModal(1,'Sneakers','Lifestyle and streetwear sneakers',true)"><i class="fas fa-pen"></i></button>
+                        <button class="btn-icon delete" title="Delete"><i class="fas fa-trash"></i></button>
+                    </div></td>
+                </tr>
+                <tr>
+                    <td class="text-muted">2</td>
+                    <td class="text-bold">Running</td>
+                    <td class="text-muted">Performance running shoes</td>
+                    <td>28</td>
+                    <td><span class="status-badge active">Active</span></td>
+                    <td><div class="action-buttons">
+                        <button class="btn-icon edit" title="Edit" onclick="openCategoryModal(2,'Running','Performance running shoes',true)"><i class="fas fa-pen"></i></button>
+                        <button class="btn-icon delete" title="Delete"><i class="fas fa-trash"></i></button>
+                    </div></td>
+                </tr>
+                <tr>
+                    <td class="text-muted">3</td>
+                    <td class="text-bold">Casual</td>
+                    <td class="text-muted">Everyday casual footwear</td>
+                    <td>35</td>
+                    <td><span class="status-badge active">Active</span></td>
+                    <td><div class="action-buttons">
+                        <button class="btn-icon edit" title="Edit" onclick="openCategoryModal(3,'Casual','Everyday casual footwear',true)"><i class="fas fa-pen"></i></button>
+                        <button class="btn-icon delete" title="Delete"><i class="fas fa-trash"></i></button>
+                    </div></td>
+                </tr>
+                <tr>
+                    <td class="text-muted">4</td>
+                    <td class="text-bold">Formal</td>
+                    <td class="text-muted">Formal and dress shoes</td>
+                    <td>15</td>
+                    <td><span class="status-badge inactive">Inactive</span></td>
+                    <td><div class="action-buttons">
+                        <button class="btn-icon edit" title="Edit" onclick="openCategoryModal(4,'Formal','Formal and dress shoes',false)"><i class="fas fa-pen"></i></button>
+                        <button class="btn-icon delete" title="Delete"><i class="fas fa-trash"></i></button>
+                    </div></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Category Modal -->
+<div class="modal-overlay" id="category-modal">
+    <div class="modal" style="max-width: 480px;">
+        <div class="modal-header">
+            <h3 class="modal-title" id="category-modal-title">Add Category</h3>
+            <button class="modal-close" onclick="closeModal('category-modal')"><i class="fas fa-times"></i></button>
+        </div>
+        <form method="POST" action="{% url 'admin_category_add' %}" id="category-form">
+            {% csrf_token %}
+            <div class="modal-body">
+                <input type="hidden" name="category_id" id="cat-id">
+                <div class="form-group">
+                    <label class="form-label" for="cat-name">Category Name</label>
+                    <input type="text" class="form-input" id="cat-name" name="name" placeholder="e.g. Sneakers" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="cat-desc">Description</label>
+                    <textarea class="form-textarea" id="cat-desc" name="description" placeholder="Brief description..." style="min-height: 80px;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="cat-status">Status</label>
+                    <select class="form-select" id="cat-status" name="is_active">
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('category-modal')">Cancel</button>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-check"></i> Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openCategoryModal(id, name, desc, active) {
+    var isEdit = typeof id !== 'undefined';
+    document.getElementById('category-modal-title').textContent = isEdit ? 'Edit Category' : 'Add Category';
+    document.getElementById('cat-id').value = id || '';
+    document.getElementById('cat-name').value = name || '';
+    document.getElementById('cat-desc').value = desc || '';
+    document.getElementById('cat-status').value = active ? '1' : '0';
+    openModal('category-modal');
+}
+document.getElementById('category-search').addEventListener('input', function() {
+    var q = this.value.toLowerCase();
+    document.querySelectorAll('#categories-table tbody tr').forEach(function(r) {
+        r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+});
+</script>
+{% endblock %}

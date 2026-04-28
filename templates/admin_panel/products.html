@@ -1,0 +1,329 @@
+{% extends 'admin_panel/base.html' %}
+
+{% block title %}Products{% endblock %}
+{% block page_title %}Products{% endblock %}
+
+{% block content %}
+<!-- Filters & Actions -->
+<div class="card mb-6">
+    <div class="flex items-center justify-between" style="flex-wrap: wrap; gap: var(--space-4);">
+        <div class="filters-bar">
+            <div class="filter-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search products..." id="product-search">
+            </div>
+            <select class="filter-select" id="filter-category">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                <option value="{{ cat.id }}">{{ cat.name }}</option>
+                {% empty %}
+                <option value="sneakers">Sneakers</option>
+                <option value="running">Running</option>
+                <option value="casual">Casual</option>
+                <option value="formal">Formal</option>
+                {% endfor %}
+            </select>
+            <select class="filter-select" id="filter-stock">
+                <option value="">All Stock</option>
+                <option value="in-stock">In Stock</option>
+                <option value="low-stock">Low Stock</option>
+                <option value="out-of-stock">Out of Stock</option>
+            </select>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('product-modal')" id="btn-add-product">
+            <i class="fas fa-plus"></i> Add Product
+        </button>
+    </div>
+</div>
+
+<!-- Products Table -->
+<div class="card">
+    <div class="table-container">
+        <table class="data-table" id="products-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>
+                        <div class="product-cell">
+                            <div class="product-thumb">
+                                {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                                {% else %}
+                                <i class="fas fa-image"></i>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <span class="text-bold">{{ product.name }}</span>
+                                <br><span class="text-xs text-muted">SKU: {{ product.sku }}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ product.category.name }}</td>
+                    <td class="text-bold">₹{{ product.price }}</td>
+                    <td>{{ product.stock }}</td>
+                    <td>
+                        {% if product.stock == 0 %}
+                        <span class="status-badge out-of-stock">Out of Stock</span>
+                        {% elif product.stock < 10 %}
+                        <span class="status-badge low-stock">Low Stock</span>
+                        {% else %}
+                        <span class="status-badge in-stock">In Stock</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="{% url 'admin_product_edit' product.id %}" class="btn-icon edit" title="Edit">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            <a href="{% url 'admin_product_delete' product.id %}" class="btn-icon delete" title="Delete"
+                               data-confirm="Are you sure you want to delete this product?">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <!-- Demo rows -->
+                <tr>
+                    <td>
+                        <div class="product-cell">
+                            <div class="product-thumb"><i class="fas fa-image"></i></div>
+                            <div>
+                                <span class="text-bold">Nike Air Max 90</span>
+                                <br><span class="text-xs text-muted">SKU: NK-AM90-001</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>Sneakers</td>
+                    <td class="text-bold">₹8,499</td>
+                    <td>45</td>
+                    <td><span class="status-badge in-stock">In Stock</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon edit" title="Edit"><i class="fas fa-pen"></i></button>
+                            <button class="btn-icon delete" title="Delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="product-cell">
+                            <div class="product-thumb"><i class="fas fa-image"></i></div>
+                            <div>
+                                <span class="text-bold">Adidas Ultraboost 22</span>
+                                <br><span class="text-xs text-muted">SKU: AD-UB22-003</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>Running</td>
+                    <td class="text-bold">₹12,999</td>
+                    <td>8</td>
+                    <td><span class="status-badge low-stock">Low Stock</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon edit" title="Edit"><i class="fas fa-pen"></i></button>
+                            <button class="btn-icon delete" title="Delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="product-cell">
+                            <div class="product-thumb"><i class="fas fa-image"></i></div>
+                            <div>
+                                <span class="text-bold">Puma RS-X Reinvention</span>
+                                <br><span class="text-xs text-muted">SKU: PM-RSX-007</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>Casual</td>
+                    <td class="text-bold">₹6,799</td>
+                    <td>0</td>
+                    <td><span class="status-badge out-of-stock">Out of Stock</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon edit" title="Edit"><i class="fas fa-pen"></i></button>
+                            <button class="btn-icon delete" title="Delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="product-cell">
+                            <div class="product-thumb"><i class="fas fa-image"></i></div>
+                            <div>
+                                <span class="text-bold">New Balance 574</span>
+                                <br><span class="text-xs text-muted">SKU: NB-574-012</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>Casual</td>
+                    <td class="text-bold">₹7,299</td>
+                    <td>32</td>
+                    <td><span class="status-badge in-stock">In Stock</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon edit" title="Edit"><i class="fas fa-pen"></i></button>
+                            <button class="btn-icon delete" title="Delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="product-cell">
+                            <div class="product-thumb"><i class="fas fa-image"></i></div>
+                            <div>
+                                <span class="text-bold">Reebok Classic Leather</span>
+                                <br><span class="text-xs text-muted">SKU: RB-CL-019</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>Sneakers</td>
+                    <td class="text-bold">₹5,499</td>
+                    <td>67</td>
+                    <td><span class="status-badge in-stock">In Stock</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-icon edit" title="Edit"><i class="fas fa-pen"></i></button>
+                            <button class="btn-icon delete" title="Delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <span class="pagination-info">Showing 1-10 of {{ products_count|default:"86" }} products</span>
+        <div class="pagination-controls">
+            <a href="#" class="disabled"><i class="fas fa-chevron-left"></i></a>
+            <a href="#" class="active">1</a>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <span>...</span>
+            <a href="#">9</a>
+            <a href="#"><i class="fas fa-chevron-right"></i></a>
+        </div>
+    </div>
+</div>
+
+<!-- Add / Edit Product Modal -->
+<div class="modal-overlay" id="product-modal">
+    <div class="modal" style="max-width: 640px;">
+        <div class="modal-header">
+            <h3 class="modal-title" id="product-modal-title">Add New Product</h3>
+            <button class="modal-close" onclick="closeModal('product-modal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form method="POST" action="{% url 'admin_product_add' %}" enctype="multipart/form-data" id="product-form">
+            {% csrf_token %}
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="prod-name">Product Name</label>
+                    <input type="text" class="form-input" id="prod-name" name="name" placeholder="e.g. Nike Air Max 90" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="prod-price">Price (₹)</label>
+                        <input type="number" class="form-input" id="prod-price" name="price" placeholder="0.00" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="prod-stock">Stock Quantity</label>
+                        <input type="number" class="form-input" id="prod-stock" name="stock" placeholder="0" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="prod-sku">SKU</label>
+                        <input type="text" class="form-input" id="prod-sku" name="sku" placeholder="e.g. NK-AM90-001">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="prod-category">Category</label>
+                        <select class="form-select" id="prod-category" name="category" required>
+                            <option value="">Select Category</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat.id }}">{{ cat.name }}</option>
+                            {% empty %}
+                            <option value="1">Sneakers</option>
+                            <option value="2">Running</option>
+                            <option value="3">Casual</option>
+                            <option value="4">Formal</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="prod-desc">Description</label>
+                    <textarea class="form-textarea" id="prod-desc" name="description" placeholder="Brief product description..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="prod-image">Product Image</label>
+                    <input type="file" class="form-input" id="prod-image" name="image" accept="image/*">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('product-modal')">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-save-product">
+                    <i class="fas fa-check"></i> Save Product
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .product-cell {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+    }
+
+    .product-thumb {
+        width: 44px;
+        height: 44px;
+        border-radius: var(--radius-md);
+        background: var(--gray-100);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--gray-400);
+        font-size: var(--font-md);
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .product-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Client-side search
+    document.getElementById('product-search').addEventListener('input', function () {
+        var query = this.value.toLowerCase();
+        var rows = document.querySelectorAll('#products-table tbody tr');
+        rows.forEach(function (row) {
+            row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
+        });
+    });
+</script>
+{% endblock %}

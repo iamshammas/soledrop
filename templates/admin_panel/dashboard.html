@@ -1,0 +1,357 @@
+{% extends 'admin_panel/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Summary Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-info">
+            <h3>Total Orders</h3>
+            <div class="stat-value">{{ total_orders|default:"1,284" }}</div>
+            <span class="stat-change positive">
+                <i class="fas fa-arrow-up"></i> 12.5%
+            </span>
+        </div>
+        <div class="stat-icon orders">
+            <i class="fas fa-shopping-bag"></i>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-info">
+            <h3>Revenue</h3>
+            <div class="stat-value">₹{{ total_revenue|default:"4,52,300" }}</div>
+            <span class="stat-change positive">
+                <i class="fas fa-arrow-up"></i> 8.2%
+            </span>
+        </div>
+        <div class="stat-icon revenue">
+            <i class="fas fa-indian-rupee-sign"></i>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-info">
+            <h3>Total Users</h3>
+            <div class="stat-value">{{ total_users|default:"3,472" }}</div>
+            <span class="stat-change positive">
+                <i class="fas fa-arrow-up"></i> 5.1%
+            </span>
+        </div>
+        <div class="stat-icon users">
+            <i class="fas fa-users"></i>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-info">
+            <h3>Products</h3>
+            <div class="stat-value">{{ total_products|default:"586" }}</div>
+            <span class="stat-change negative">
+                <i class="fas fa-arrow-down"></i> 2.4%
+            </span>
+        </div>
+        <div class="stat-icon products">
+            <i class="fas fa-box"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Orders Table -->
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Recent Orders</h2>
+        <a href="{% url 'admin_panel:orders' %}" class="btn btn-secondary btn-sm">
+            View All <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+    <div class="table-container">
+        <table class="data-table" id="recent-orders-table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in recent_orders %}
+                <tr>
+                    <td class="text-bold">#{{ order.id }}</td>
+                    <td>{{ order.customer_name }}</td>
+                    <td>{{ order.product_name }}</td>
+                    <td>₹{{ order.total_amount }}</td>
+                    <td>
+                        <span class="status-badge {{ order.status|lower }}">
+                            {{ order.status }}
+                        </span>
+                    </td>
+                    <td class="text-muted">{{ order.created_at|date:"d M Y" }}</td>
+                </tr>
+                {% empty %}
+                <!-- Demo data (remove when backend is connected) -->
+                <tr>
+                    <td class="text-bold">#10234</td>
+                    <td>Rahul Sharma</td>
+                    <td>Nike Air Max 90</td>
+                    <td>₹8,499</td>
+                    <td><span class="status-badge delivered">Delivered</span></td>
+                    <td class="text-muted">27 Apr 2026</td>
+                </tr>
+                <tr>
+                    <td class="text-bold">#10233</td>
+                    <td>Priya Patel</td>
+                    <td>Adidas Ultraboost</td>
+                    <td>₹12,999</td>
+                    <td><span class="status-badge shipped">Shipped</span></td>
+                    <td class="text-muted">27 Apr 2026</td>
+                </tr>
+                <tr>
+                    <td class="text-bold">#10232</td>
+                    <td>Amit Kumar</td>
+                    <td>Puma RS-X</td>
+                    <td>₹6,799</td>
+                    <td><span class="status-badge pending">Pending</span></td>
+                    <td class="text-muted">26 Apr 2026</td>
+                </tr>
+                <tr>
+                    <td class="text-bold">#10231</td>
+                    <td>Sneha Gupta</td>
+                    <td>New Balance 574</td>
+                    <td>₹7,299</td>
+                    <td><span class="status-badge cancelled">Cancelled</span></td>
+                    <td class="text-muted">26 Apr 2026</td>
+                </tr>
+                <tr>
+                    <td class="text-bold">#10230</td>
+                    <td>Vikram Singh</td>
+                    <td>Reebok Classic</td>
+                    <td>₹5,499</td>
+                    <td><span class="status-badge delivered">Delivered</span></td>
+                    <td class="text-muted">25 Apr 2026</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Quick Stats Row -->
+<div class="stats-grid mt-6" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Orders by Status</h2>
+        </div>
+        <div class="status-summary">
+            <div class="status-row">
+                <span class="flex items-center gap-2">
+                    <span class="status-dot" style="background: var(--warning);"></span>
+                    Pending
+                </span>
+                <span class="text-bold">{{ pending_orders|default:"23" }}</span>
+            </div>
+            <div class="status-row">
+                <span class="flex items-center gap-2">
+                    <span class="status-dot" style="background: var(--info);"></span>
+                    Shipped
+                </span>
+                <span class="text-bold">{{ shipped_orders|default:"45" }}</span>
+            </div>
+            <div class="status-row">
+                <span class="flex items-center gap-2">
+                    <span class="status-dot" style="background: var(--success);"></span>
+                    Delivered
+                </span>
+                <span class="text-bold">{{ delivered_orders|default:"1,180" }}</span>
+            </div>
+            <div class="status-row">
+                <span class="flex items-center gap-2">
+                    <span class="status-dot" style="background: var(--danger);"></span>
+                    Cancelled
+                </span>
+                <span class="text-bold">{{ cancelled_orders|default:"36" }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Top Products</h2>
+        </div>
+        <div class="top-list">
+            {% for product in top_products %}
+            <div class="top-list-item">
+                <span class="top-rank">{{ forloop.counter }}</span>
+                <div class="top-info">
+                    <span class="top-name">{{ product.name }}</span>
+                    <span class="text-xs text-muted">{{ product.sold }} sold</span>
+                </div>
+                <span class="text-bold text-sm">₹{{ product.revenue }}</span>
+            </div>
+            {% empty %}
+            <div class="top-list-item">
+                <span class="top-rank">1</span>
+                <div class="top-info">
+                    <span class="top-name">Nike Air Max 90</span>
+                    <span class="text-xs text-muted">234 sold</span>
+                </div>
+                <span class="text-bold text-sm">₹19,87,266</span>
+            </div>
+            <div class="top-list-item">
+                <span class="top-rank">2</span>
+                <div class="top-info">
+                    <span class="top-name">Adidas Ultraboost</span>
+                    <span class="text-xs text-muted">189 sold</span>
+                </div>
+                <span class="text-bold text-sm">₹24,55,811</span>
+            </div>
+            <div class="top-list-item">
+                <span class="top-rank">3</span>
+                <div class="top-info">
+                    <span class="top-name">Puma RS-X</span>
+                    <span class="text-xs text-muted">156 sold</span>
+                </div>
+                <span class="text-bold text-sm">₹10,60,644</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Recent Activity</h2>
+        </div>
+        <div class="activity-list">
+            <div class="activity-item">
+                <div class="activity-dot" style="background: var(--success);"></div>
+                <div class="activity-content">
+                    <p>New order <strong>#10234</strong> placed</p>
+                    <span class="text-xs text-muted">2 minutes ago</span>
+                </div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-dot" style="background: var(--primary);"></div>
+                <div class="activity-content">
+                    <p>User <strong>Priya Patel</strong> registered</p>
+                    <span class="text-xs text-muted">15 minutes ago</span>
+                </div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-dot" style="background: var(--warning);"></div>
+                <div class="activity-content">
+                    <p>Product <strong>Puma RS-X</strong> low stock</p>
+                    <span class="text-xs text-muted">1 hour ago</span>
+                </div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-dot" style="background: var(--info);"></div>
+                <div class="activity-content">
+                    <p>Order <strong>#10233</strong> shipped</p>
+                    <span class="text-xs text-muted">3 hours ago</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Dashboard-specific styles */
+    .status-summary {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-4);
+    }
+
+    .status-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: var(--font-sm);
+        color: var(--gray-600);
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: var(--radius-full);
+        display: inline-block;
+    }
+
+    .top-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-4);
+    }
+
+    .top-list-item {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+    }
+
+    .top-rank {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--radius-full);
+        background: var(--gray-100);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--font-xs);
+        font-weight: 600;
+        color: var(--gray-600);
+        flex-shrink: 0;
+    }
+
+    .top-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .top-name {
+        font-size: var(--font-sm);
+        font-weight: 500;
+        color: var(--gray-800);
+    }
+
+    .activity-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-5);
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--space-3);
+    }
+
+    .activity-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: var(--radius-full);
+        margin-top: 6px;
+        flex-shrink: 0;
+    }
+
+    .activity-content p {
+        font-size: var(--font-sm);
+        color: var(--gray-700);
+        line-height: 1.4;
+    }
+
+    @media (max-width: 1024px) {
+        .stats-grid[style] {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+{% endblock %}
