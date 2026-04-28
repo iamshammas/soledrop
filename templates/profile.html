@@ -52,8 +52,9 @@
         </div>
         <div class="feature-card" style="text-align:center">
           <div class="feature-icon">🛒</div>
-          <h3>{{ cart_count }}</h3>
+          <h3>{{ cart_count|default:"0" }}</h3>
           <p>Cart Items</p>
+        
         </div>
       </div>
 

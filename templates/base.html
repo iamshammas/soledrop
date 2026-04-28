@@ -60,7 +60,9 @@
             <path d="M16 10a4 4 0 0 1-8 0"/>
           </svg>
           {# cart_count passed from context processor or view context #}
-          <span class="badge" id="cartBadge">{{ cart_count|default:'' }}</span>
+          {% if cart_count > 0 %}
+            <span class="badge" id="cartBadge">{{ cart_count}}</span>
+          {% endif %}
         </button>
       {% endif %}
     </div>
