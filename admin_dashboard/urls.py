@@ -8,7 +8,7 @@ urlpatterns = [
     # Orders 
     path('orders/', views.orders, name='orders'),
     path('orders/<int:order_id>/', views.order_detail, name='admin_order_detail'),
-    path('orders/update-status/', views.order_update_status, name='admin_order_update_status'),
+    # path('orders/update-status/', views.order_update_status, name='admin_order_update_status'),
 
     # Products
     path('products/', views.products, name='products'),
@@ -18,6 +18,8 @@ urlpatterns = [
 
     # Categories
     path('categories/', views.categories, name='categories'),
+    path('categories/add/', views.category_add, name='category_add'),
+    path('categories/<int:category_id>/delete/', views.category_delete, name='category_delete'),
 
     # Coupons
     path('coupons/', views.coupons, name='coupons'),

@@ -24,8 +24,9 @@
             <thead>
                 <tr>
                     <th>#</th>
+                    <th>Image</th>
                     <th>Category Name</th>
-                    <th>Description</th>
+                    <th>Slug</th>
                     <th>Products</th>
                     <th>Status</th>
                     <th>Actions</th>
@@ -35,8 +36,18 @@
                 {% for category in categories %}
                 <tr>
                     <td class="text-muted">{{ forloop.counter }}</td>
+                    <td>
+                        {% if category.image %}
+                        <img src="{{ category.image.url }}" alt="{{ category.name }}"
+                             style="width: 44px; height: 44px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-color);">
+                        {% else %}
+                        <div style="width: 44px; height: 44px; border-radius: 8px; background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color);">
+                            <i class="fas fa-image" style="color: var(--text-muted); font-size: 16px;"></i>
+                        </div>
+                        {% endif %}
+                    </td>
                     <td class="text-bold">{{ category.name }}</td>
-                    <td class="text-muted">{{ category.description|truncatewords:8|default:"-" }}</td>
+                    <td class="text-muted" style="font-family: monospace; font-size: 0.85em;">{{ category.slug }}</td>
                     <td>{{ category.product_count }}</td>
                     <td>
                         {% if category.is_active %}
@@ -48,10 +59,10 @@
                     <td>
                         <div class="action-buttons">
                             <button class="btn-icon edit" title="Edit"
-                                onclick="openCategoryModal({{ category.id }}, '{{ category.name }}', '{{ category.description|escapejs }}', {{ category.is_active|yesno:'true,false' }})">
+                                onclick="openCategoryModal({{ category.id }}, '{{ category.name|escapejs }}', {{ category.is_active|yesno:'true,false' }}, '{% if category.image %}{{ category.image.url }}{% endif %}')">
                                 <i class="fas fa-pen"></i>
                             </button>
-                            <a href="{% url 'admin_category_delete' category.id %}" class="btn-icon delete" title="Delete"
+                            <a href="{% url 'admin_panel:category_delete' category.id %}" class="btn-icon delete" title="Delete"
                                data-confirm="Delete '{{ category.name }}'?">
                                 <i class="fas fa-trash"></i>
                             </a>
@@ -61,45 +72,65 @@
                 {% empty %}
                 <tr>
                     <td class="text-muted">1</td>
+                    <td>
+                        <div style="width: 44px; height: 44px; border-radius: 8px; background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color);">
+                            <i class="fas fa-image" style="color: var(--text-muted); font-size: 16px;"></i>
+                        </div>
+                    </td>
                     <td class="text-bold">Sneakers</td>
-                    <td class="text-muted">Lifestyle and streetwear sneakers</td>
+                    <td class="text-muted" style="font-family: monospace; font-size: 0.85em;">sneakers</td>
                     <td>42</td>
                     <td><span class="status-badge active">Active</span></td>
                     <td><div class="action-buttons">
-                        <button class="btn-icon edit" title="Edit" onclick="openCategoryModal(1,'Sneakers','Lifestyle and streetwear sneakers',true)"><i class="fas fa-pen"></i></button>
+                        <button class="btn-icon edit" title="Edit" onclick="openCategoryModal(1,'Sneakers',true,'')"><i class="fas fa-pen"></i></button>
                         <button class="btn-icon delete" title="Delete"><i class="fas fa-trash"></i></button>
                     </div></td>
                 </tr>
                 <tr>
                     <td class="text-muted">2</td>
+                    <td>
+                        <div style="width: 44px; height: 44px; border-radius: 8px; background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color);">
+                            <i class="fas fa-image" style="color: var(--text-muted); font-size: 16px;"></i>
+                        </div>
+                    </td>
                     <td class="text-bold">Running</td>
-                    <td class="text-muted">Performance running shoes</td>
+                    <td class="text-muted" style="font-family: monospace; font-size: 0.85em;">running</td>
                     <td>28</td>
                     <td><span class="status-badge active">Active</span></td>
                     <td><div class="action-buttons">
-                        <button class="btn-icon edit" title="Edit" onclick="openCategoryModal(2,'Running','Performance running shoes',true)"><i class="fas fa-pen"></i></button>
+                        <button class="btn-icon edit" title="Edit" onclick="openCategoryModal(2,'Running',true,'')"><i class="fas fa-pen"></i></button>
                         <button class="btn-icon delete" title="Delete"><i class="fas fa-trash"></i></button>
                     </div></td>
                 </tr>
                 <tr>
                     <td class="text-muted">3</td>
+                    <td>
+                        <div style="width: 44px; height: 44px; border-radius: 8px; background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color);">
+                            <i class="fas fa-image" style="color: var(--text-muted); font-size: 16px;"></i>
+                        </div>
+                    </td>
                     <td class="text-bold">Casual</td>
-                    <td class="text-muted">Everyday casual footwear</td>
+                    <td class="text-muted" style="font-family: monospace; font-size: 0.85em;">casual</td>
                     <td>35</td>
                     <td><span class="status-badge active">Active</span></td>
                     <td><div class="action-buttons">
-                        <button class="btn-icon edit" title="Edit" onclick="openCategoryModal(3,'Casual','Everyday casual footwear',true)"><i class="fas fa-pen"></i></button>
+                        <button class="btn-icon edit" title="Edit" onclick="openCategoryModal(3,'Casual',true,'')"><i class="fas fa-pen"></i></button>
                         <button class="btn-icon delete" title="Delete"><i class="fas fa-trash"></i></button>
                     </div></td>
                 </tr>
                 <tr>
                     <td class="text-muted">4</td>
+                    <td>
+                        <div style="width: 44px; height: 44px; border-radius: 8px; background: var(--bg-secondary); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color);">
+                            <i class="fas fa-image" style="color: var(--text-muted); font-size: 16px;"></i>
+                        </div>
+                    </td>
                     <td class="text-bold">Formal</td>
-                    <td class="text-muted">Formal and dress shoes</td>
+                    <td class="text-muted" style="font-family: monospace; font-size: 0.85em;">formal</td>
                     <td>15</td>
                     <td><span class="status-badge inactive">Inactive</span></td>
                     <td><div class="action-buttons">
-                        <button class="btn-icon edit" title="Edit" onclick="openCategoryModal(4,'Formal','Formal and dress shoes',false)"><i class="fas fa-pen"></i></button>
+                        <button class="btn-icon edit" title="Edit" onclick="openCategoryModal(4,'Formal',false,'')"><i class="fas fa-pen"></i></button>
                         <button class="btn-icon delete" title="Delete"><i class="fas fa-trash"></i></button>
                     </div></td>
                 </tr>
@@ -116,7 +147,7 @@
             <h3 class="modal-title" id="category-modal-title">Add Category</h3>
             <button class="modal-close" onclick="closeModal('category-modal')"><i class="fas fa-times"></i></button>
         </div>
-        <form method="POST" action="{% url 'admin_category_add' %}" id="category-form">
+        <form method="POST" action="{% url 'admin_panel:category_add' %}" id="category-form" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="modal-body">
                 <input type="hidden" name="category_id" id="cat-id">
@@ -125,8 +156,14 @@
                     <input type="text" class="form-input" id="cat-name" name="name" placeholder="e.g. Sneakers" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="cat-desc">Description</label>
-                    <textarea class="form-textarea" id="cat-desc" name="description" placeholder="Brief description..." style="min-height: 80px;"></textarea>
+                    <label class="form-label" for="cat-image">Category Image</label>
+                    <div id="cat-image-preview" style="display: none; margin-bottom: 10px;">
+                        <img id="cat-image-thumb" src="" alt="Preview"
+                             style="width: 80px; height: 80px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border-color);">
+                    </div>
+                    <input type="file" class="form-input" id="cat-image" name="image" accept="image/*"
+                           style="padding: 8px;" onchange="previewCatImage(this)">
+                    <small class="text-muted" style="display: block; margin-top: 4px;">Leave empty to keep current image (on edit)</small>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="cat-status">Status</label>
@@ -147,15 +184,40 @@
 
 {% block extra_js %}
 <script>
-function openCategoryModal(id, name, desc, active) {
+function openCategoryModal(id, name, active, imageUrl) {
     var isEdit = typeof id !== 'undefined';
     document.getElementById('category-modal-title').textContent = isEdit ? 'Edit Category' : 'Add Category';
     document.getElementById('cat-id').value = id || '';
     document.getElementById('cat-name').value = name || '';
-    document.getElementById('cat-desc').value = desc || '';
     document.getElementById('cat-status').value = active ? '1' : '0';
+    document.getElementById('cat-image').value = '';
+
+    var preview = document.getElementById('cat-image-preview');
+    var thumb = document.getElementById('cat-image-thumb');
+    if (isEdit && imageUrl) {
+        thumb.src = imageUrl;
+        preview.style.display = 'block';
+    } else {
+        thumb.src = '';
+        preview.style.display = 'none';
+    }
+
     openModal('category-modal');
 }
+
+function previewCatImage(input) {
+    var preview = document.getElementById('cat-image-preview');
+    var thumb = document.getElementById('cat-image-thumb');
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            thumb.src = e.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
 document.getElementById('category-search').addEventListener('input', function() {
     var q = this.value.toLowerCase();
     document.querySelectorAll('#categories-table tbody tr').forEach(function(r) {
