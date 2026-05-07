@@ -34,6 +34,7 @@ def category_add(request):
             category = get_object_or_404(Category, id=category_id)
             category.name = name
             category.is_active = active
+            category.slug = category.generate_slug()
             if image:
                 category.image = image
             category.save()
