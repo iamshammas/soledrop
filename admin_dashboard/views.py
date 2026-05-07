@@ -25,10 +25,21 @@ def categories(request):
 
 def category_add(request):
     if request.method == 'POST':
+        category_id = request.POST.get('category_id')
         name = request.POST.get('name')
         image = request.FILES.get('image')
-        active = int(request.POST.get('is_active')) == 1
-        Category.objects.create(name=name, image=image, is_active=active)
+        active = int(request.POST.get('is_active', 0)) == 1
+        
+        if category_id:
+            category = get_object_or_404(Category, id=category_id)
+            category.name = name
+            category.is_active = active
+            if image:
+                category.image = image
+            category.save()
+        else:
+            Category.objects.create(name=name, image=image, is_active=active)
+            
         return redirect('admin_panel:categories')
     return HttpResponse('hello')
 
