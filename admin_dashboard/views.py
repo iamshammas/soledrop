@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from products.models import Category
+from products.models import Category, Product
+from django.contrib.auth import logout
 
 # Create your views here.
 
@@ -14,7 +15,65 @@ def order_detail(request, order_id):
     return render(request, 'admin_panel/order_detail.html', {'order_id': order_id})
 
 def products(request):
-    return render(request, 'admin_panel/products.html')
+    categories = Category.objects.all()
+    products = Product.objects.all()
+    context = {
+        'categories': categories,
+        'products': products,
+        'products_count': products.count()
+    }
+    return render(request, 'admin_panel/products.html', context)
+
+def product_add(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        category_id = request.POST.get('category')
+        old_price = request.POST.get('old_price')
+        new_price = request.POST.get('new_price')
+        badge = request.POST.get('badge')
+        image = request.FILES.get('image')
+        is_active = request.POST.get('is_active', None) == 'on'
+        is_featured = request.POST.get('is_featured', None) == 'on'
+        category = get_object_or_404(Category, id=category_id)
+        Product.objects.create(
+            name=name,
+            description=description,
+            category=category,
+            old_price=old_price,
+            new_price=new_price,
+            badge=badge,
+            image=image,
+            is_active=is_active,
+            is_featured=is_featured
+        )
+        return redirect('admin_panel:products')
+    return redirect('admin_panel:products')
+
+def product_edit(request, product_id):
+    if request.method == 'POST':
+        product = get_object_or_404(Product, id=product_id)
+        product.name = request.POST.get('name')
+        product.description = request.POST.get('description')
+        category_id = request.POST.get('category')
+        product.old_price = request.POST.get('old_price')
+        product.new_price = request.POST.get('new_price')
+        product.badge = request.POST.get('badge')
+        image = request.FILES.get('image')
+        if image:
+            product.image = image
+        product.is_active = request.POST.get('is_active', None) == 'on'
+        product.is_featured = request.POST.get('is_featured', None) == 'on'
+        if category_id:
+            product.category = get_object_or_404(Category, id=category_id)
+        product.save()
+        return redirect('admin_panel:products')
+    return redirect('admin_panel:products')
+
+def product_delete(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    product.delete()
+    return redirect('admin_panel:products')
 
 def users(request):
     return render(request, 'admin_panel/users.html')
@@ -53,6 +112,6 @@ def coupons(request):
     return render(request, 'admin_panel/coupons.html')
 
 def admin_logout(request):
-    # Implement logout logic here
-    pass
+    logout(request)
+    return redirect('accounts:home')
 

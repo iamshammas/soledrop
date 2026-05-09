@@ -52,12 +52,26 @@ document.addEventListener('DOMContentLoaded', function () {
     // ── Modal helpers ──
     window.openModal = function (id) {
         var modal = document.getElementById(id);
+        console.log('Opening modal:', id, modal);
         if (modal) modal.classList.add('open');
     };
 
     window.closeModal = function (id) {
         var modal = document.getElementById(id);
         if (modal) modal.classList.remove('open');
+    };
+
+    window.openEditModal = function(event, id, name, price) {
+
+        event.preventDefault();
+
+        document.getElementById('prod-name').value = name;
+        document.getElementById('prod-new-price').value = price;
+
+        document.getElementById('product-form').action =
+            '/admin/products/edit/' + id + '/';
+
+        openModal('product-modal');
     };
 
     // Close modals on overlay click

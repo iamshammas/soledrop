@@ -18,7 +18,7 @@ class Category(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return self.name
+        return f'{self.name} and id={self.id}'
     
     @property
     def product_count(self):
@@ -53,6 +53,10 @@ class Product(models.Model):
     def in_stock(self):
         res = self.available_variants.filter(stock__gt=0).exists()
         return res
+
+    @property
+    def available_stock(self):
+        return sum(variant.stock for variant in self.available_variants.all())
 
     def __str__(self):
         return f'ID={self.id} -- {self.name}'
