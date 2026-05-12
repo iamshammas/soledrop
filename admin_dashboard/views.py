@@ -12,10 +12,22 @@ def dashboard(request):
     return render(request, 'admin_panel/dashboard.html')
 
 def orders(request):
-    return render(request, 'admin_panel/orders.html')
+    orders = Order.objects.select_related('user').order_by('-created_at')
+    print('##################')
+    for order in orders:
+        print(order.items.all())
+    print('##################')
+    return render(request, 'admin_panel/orders.html', {'orders': orders})
 
 def order_detail(request, order_id):
     return render(request, 'admin_panel/order_detail.html', {'order_id': order_id})
+
+def order_update_status(request):
+    return HttpResponse('Order status updated')
+
+def order_detail(request, order_id):
+    print(f"Fetching details for order ID: {order_id}")
+    return HttpResponse(f"Order details for order ID: {order_id}")
 
 def products(request):
     categories = Category.objects.all()
