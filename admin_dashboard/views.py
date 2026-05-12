@@ -1,6 +1,9 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from accounts.models import CustomUser
 from products.models import Category, Product
+from orders.models import Order
+from django.db.models import Count
 from django.contrib.auth import logout
 
 # Create your views here.
@@ -76,7 +79,37 @@ def product_delete(request, product_id):
     return redirect('admin_panel:products')
 
 def users(request):
-    return render(request, 'admin_panel/users.html')
+    users = CustomUser.objects.annotate(order_count=Count('order')).order_by('-date_joined')
+    return render(
+        request,
+        'admin_panel/users.html',
+        {
+            'users': users,
+            'users_count': users.count(),
+            'active_page': 'users',
+        },
+    )
+
+def user_detail(request, user_id):
+    user = get_object_or_404(CustomUser, id=user_id)
+    recent_orders = Order.objects.filter(user=user).order_by('-created_at')[:10]
+    return render(
+        request,
+        'admin_panel/user_detail.html',
+        {
+            'detail_user': user,
+            'recent_orders': recent_orders,
+            'user_orders_count': Order.objects.filter(user=user).count(),
+            'active_page': 'users',
+        },
+    )
+
+def toggle_user_status(request, user_id):   
+    user = get_object_or_404(CustomUser, id=user_id)
+    user.is_active = not user.is_active
+    user.save()
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
 
 def categories(request):
     categories = Category.objects.all()

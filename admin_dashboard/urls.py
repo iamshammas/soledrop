@@ -18,6 +18,8 @@ urlpatterns = [
 
     # Users
     path('users/', views.users, name='users'),
+    path('users/<int:user_id>/', views.user_detail, name='user_detail'),
+    path('toggle_user_status/<int:user_id>/', views.toggle_user_status, name='toggle_user_status'),
 
     # Categories
     path('categories/', views.categories, name='categories'),

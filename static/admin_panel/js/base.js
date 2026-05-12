@@ -52,7 +52,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // ── Modal helpers ──
     window.openModal = function (id) {
         var modal = document.getElementById(id);
-        console.log('Opening modal:', id, modal);
         if (modal) modal.classList.add('open');
     };
 
@@ -61,18 +60,53 @@ document.addEventListener('DOMContentLoaded', function () {
         if (modal) modal.classList.remove('open');
     };
 
-    window.openEditModal = function(event, id, name, price) {
+    // ── Open Edit Modal ──
+    window.openEditModal = function (productId) {
+        // Reset modal to loading state
+        document.getElementById('product-modal-title').textContent = 'Edit Product';
+        document.getElementById('btn-save-product').textContent    = 'Update Product';
 
-        event.preventDefault();
+        // Clear all fields first
+        document.getElementById('product-form').reset();
 
-        document.getElementById('prod-name').value = name;
-        document.getElementById('prod-new-price').value = price;
+        // Fetch product data from Django
+        fetch('/admin-panel/products/' + productId + '/data/')
+            .then(function (res) {
+                if (!res.ok) throw new Error('Failed to fetch product data');
+                return res.json();
+            })
+            .then(function (data) {
+                document.getElementById('prod-name').value      = data.name      || '';
+                document.getElementById('prod-old-price').value = data.old_price || '';
+                document.getElementById('prod-new-price').value = data.new_price || '';
+                document.getElementById('prod-category').value  = data.category_id || '';
+                document.getElementById('prod-badge').value     = data.badge     || '';
+                document.getElementById('prod-desc').value      = data.description || '';
 
-        document.getElementById('product-form').action =
-            '/admin/products/edit/' + id + '/';
+                // Checkboxes
+                document.getElementById('prod-is-active').checked   = data.is_active;
+                document.getElementById('prod-is-featured').checked = data.is_featured;
 
-        openModal('product-modal');
+                // Point form action to edit URL
+                document.getElementById('product-form').action =
+                    '/admin-panel/products/' + productId + '/edit/';
+
+                openModal('product-modal');
+            })
+            .catch(function (err) {
+                console.error('Edit modal error:', err);
+                alert('Could not load product data. Please try again.');
+            });
     };
+
+    // ── Open Add Modal (reset form to blank) ──
+    document.getElementById('btn-add-product')?.addEventListener('click', function () {
+        document.getElementById('product-modal-title').textContent = 'Add New Product';
+        document.getElementById('btn-save-product').textContent    = 'Save Product';
+        document.getElementById('product-form').reset();
+        document.getElementById('product-form').action = '/admin-panel/products/add/';
+        openModal('product-modal');
+    });
 
     // Close modals on overlay click
     document.querySelectorAll('.modal-overlay').forEach(function (overlay) {

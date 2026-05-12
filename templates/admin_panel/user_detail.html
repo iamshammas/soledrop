@@ -1,0 +1,164 @@
+{% extends 'admin_panel/base.html' %}
+
+{% block title %}User Details{% endblock %}
+{% block page_title %}User Details{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6" style="flex-wrap: wrap; gap: var(--space-3);">
+    <div class="flex items-center gap-3">
+        <a href="{% url 'admin_panel:users' %}" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        <h2 style="font-size: var(--font-xl); font-weight: 700; color: var(--gray-900); margin: 0;">
+            {{ detail_user.get_full_name|default:detail_user.email }}
+        </h2>
+        {% if detail_user.is_active %}
+        <span class="status-badge active">Active</span>
+        {% else %}
+        <span class="status-badge inactive">Inactive</span>
+        {% endif %}
+    </div>
+</div>
+
+<div class="detail-layout">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Profile</h2>
+        </div>
+        <div class="detail-group">
+            <div class="detail-row">
+                <span class="detail-label">Email</span>
+                <span class="detail-value">{{ detail_user.email }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Phone</span>
+                <span class="detail-value">{{ detail_user.phone_number|default:"-" }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Joined</span>
+                <span class="detail-value">{{ detail_user.date_joined|date:"d M Y, h:i A" }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">Orders</span>
+                <span class="detail-value">{{ user_orders_count }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Addresses</h2>
+        </div>
+        <div class="address-list">
+            {% for address in detail_user.addresses.all %}
+            <div class="address-item">
+                <div class="address-head">
+                    <span class="text-bold">{{ address.full_name }}</span>
+                    {% if address.is_default %}<span class="status-badge active">Default</span>{% endif %}
+                </div>
+                <p>
+                    {{ address.address }}<br>
+                    {{ address.city }}, {{ address.state }} - {{ address.pin_code }}<br>
+                    {{ address.country }}
+                </p>
+            </div>
+            {% empty %}
+            <p class="text-muted text-sm">No saved addresses.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="card mt-6">
+    <div class="card-header">
+        <h2 class="card-title">Recent Orders</h2>
+    </div>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in recent_orders %}
+                <tr>
+                    <td>{{ order.order_number|default:order.id }}</td>
+                    <td>{{ order.created_at|date:"d M Y" }}</td>
+                    <td>₹{{ order.total_amount }}</td>
+                    <td>{{ order.get_payment_method_display }}</td>
+                    <td>
+                        <span class="status-badge {{ order.status|lower }}">{{ order.get_status_display }}</span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-muted text-sm">No orders found for this user.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.detail-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+}
+.detail-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+}
+.detail-label {
+    color: var(--gray-500);
+    font-size: var(--font-sm);
+}
+.detail-value {
+    color: var(--gray-800);
+    font-weight: 500;
+    font-size: var(--font-sm);
+    text-align: right;
+}
+.address-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+.address-item {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+}
+.address-item p {
+    margin: 0;
+    color: var(--gray-600);
+    font-size: var(--font-sm);
+    line-height: 1.6;
+}
+.address-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-2);
+}
+@media (max-width: 768px) {
+    .detail-layout {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
