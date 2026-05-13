@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate, login,logout
 from products.models import Product
@@ -31,7 +32,6 @@ def user_registration(request):
             return render(request, 'login.html', {'success': 'Account created successfully. Please log in.'})
     return render(request, 'register.html')
 
-
 def user_login(request):
     if request.user.is_authenticated:
         return redirect('accounts:home')
@@ -42,6 +42,9 @@ def user_login(request):
         if user is not None:
             login(request, user)
             return redirect('accounts:home')  
+        else:
+            messages.error(request, 'Invalid email or password.')
+            return render(request, 'login.html')
     return render(request, 'login.html')
 
 def home(request):

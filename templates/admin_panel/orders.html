@@ -60,7 +60,7 @@
                             <br><span class="text-xs text-muted">{{ order.user.email }}</span>
                         </div>
                     </td>
-                    <td>{{ order.product_count }} item{{ order.product_count|pluralize }}</td>
+                    <td>{{ order.items.count }} item{{ order.items.count|pluralize }}</td>
                     <td class="text-bold">₹{{ order.total_amount }}</td>
                     <td>{{ order.payment_method }}</td>
                     <td>
@@ -188,7 +188,7 @@
 
     <!-- Pagination -->
     <div class="pagination">
-        <span class="pagination-info">Showing 1-10 of {{ orders_count|default:"156" }} orders</span>
+        <span class="pagination-info">Showing 1-{% if orders_count < 10 %}{{ orders_count }}{% else %}10{% endif %} of {{ orders_count }} orders</span>
         <div class="pagination-controls">
             <a href="#" class="disabled"><i class="fas fa-chevron-left"></i></a>
             <a href="#" class="active">1</a>

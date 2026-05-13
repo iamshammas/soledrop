@@ -13,11 +13,11 @@ def dashboard(request):
 
 def orders(request):
     orders = Order.objects.select_related('user').order_by('-created_at')
-    print('##################')
-    for order in orders:
-        print(order.items.all())
-    print('##################')
-    return render(request, 'admin_panel/orders.html', {'orders': orders})
+    context = {
+        'orders': orders,
+        'orders_count': orders.count(),
+    }
+    return render(request, 'admin_panel/orders.html', context)
 
 def order_detail(request, order_id):
     return render(request, 'admin_panel/order_detail.html', {'order_id': order_id})
