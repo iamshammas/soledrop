@@ -47,6 +47,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{% url 'admin_panel:variants' %}" class="nav-link {% if active_page == 'variants' %}active{% endif %}" id="nav-variants">
+                        <i class="fas fa-cubes"></i>
+                        <span>Variants</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{% url 'admin_panel:users' %}" class="nav-link {% if active_page == 'users' %}active{% endif %}" id="nav-users">
                         <i class="fas fa-users"></i>
                         <span>Users</span>

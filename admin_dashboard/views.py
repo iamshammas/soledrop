@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from accounts.models import CustomUser
-from products.models import Category, Product
+from products.models import Category, Product, Variant
 from orders.models import Order
 from django.db.models import Count
 from django.contrib.auth import logout
@@ -10,6 +10,22 @@ from django.contrib.auth import logout
 
 def dashboard(request):
     return render(request, 'admin_panel/dashboard.html')
+
+def variants(request):
+    variants = Variant.objects.select_related('product').all()
+    products = Product.objects.all()
+    context = {
+        'variants': variants,
+        'variants_count': variants.count(),
+        'products': products,
+    }
+    return render(request, 'admin_panel/variants.html', context)
+
+def variant_add(request):
+    return HttpResponse('Variant add page')
+
+def variant_delete(request, variant_id):
+    return HttpResponse(f'Variant delete page for variant ID: {variant_id}')
 
 def orders(request):
     orders = Order.objects.select_related('user').order_by('-created_at')
