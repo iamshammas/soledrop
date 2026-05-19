@@ -22,6 +22,16 @@ def variants(request):
     return render(request, 'admin_panel/variants.html', context)
 
 def variant_add(request):
+    if request.method == 'POST':
+        product_id = request.POST.get('product') ## correct
+        size = request.POST.get('size_value') ## correct
+        stock = request.POST.get('stock')
+        product = get_object_or_404(Product, id=product_id)
+        print('####################################')
+        print(f"Product ID: {product_id}, Size: {size}, Stock: {stock}")
+        print('####################################')
+        # Variant.objects.create(product=product, name=name, price=price, stock=stock)
+        return redirect('admin_panel:variants')
     return HttpResponse('Variant add page')
 
 def variant_delete(request, variant_id):

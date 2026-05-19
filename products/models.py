@@ -64,25 +64,25 @@ class Product(models.Model):
     class Meta:
         ordering = ['-created_at']
     
-class ProductSize(models.Model):
-    class Sizes(models.TextChoices):
-        six = '6', '6'
-        six_half = '6.5', '6.5'
-        seven = '7', '7'
-        seven_half = '7.5', '7.5'
-        eight = '8', '8'
-        eight_half = '8.5', '8.5'
-        nine = '9', '9'
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name='available_sizes',null=True)
-    value = models.CharField(max_length=20, choices=Sizes.choices)
+# class ProductSize(models.Model):
+#     class Sizes(models.TextChoices):
+#         six = '6', '6'
+#         six_half = '6.5', '6.5'
+#         seven = '7', '7'
+#         seven_half = '7.5', '7.5'
+#         eight = '8', '8'
+#         eight_half = '8.5', '8.5'
+#         nine = '9', '9'
+#     product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name='available_sizes',null=True)
+#     value = models.CharField(max_length=20, choices=Sizes.choices)
 
-    class Meta:
-        ordering = ['value']
-        unique_together = ('product', 'value')
+#     class Meta:
+#         ordering = ['value']
+#         unique_together = ('product', 'value')
 
-    def __str__(self):
-        # return f"ID={self.id} -- {self.product.name} - Size {self.value}"
-        return self.value
+#     def __str__(self):
+#         # return f"ID={self.id} -- {self.product.name} - Size {self.value}"
+#         return self.value
 
 # class ProductColor(models.Model):
 #     class Colors(models.TextChoices):
@@ -110,17 +110,32 @@ class ProductSize(models.Model):
 #         return f"Orphan Color - {self.value}"
 
 class Variant(models.Model):
-    product = models.ForeignKey(Product,on_delete=models.CASCADE,related_name='available_variants')
-    # color = models.ForeignKey(ProductColor,  on_delete=models.CASCADE)
-    size = models.ForeignKey(ProductSize,on_delete=models.CASCADE,related_name='variant')
+    class Sizes(models.TextChoices):
+        SIX = '6', '6'
+        SIX_HALF = '6.5', '6.5'
+        SEVEN = '7', '7'
+        SEVEN_HALF = '7.5', '7.5'
+        EIGHT = '8', '8'
+        EIGHT_HALF = '8.5', '8.5'
+        NINE = '9', '9'
+    
+    product = models.ForeignKey(
+        Product, 
+        on_delete=models.CASCADE,
+        related_name='available_variants'
+    )
+    size = models.CharField(
+        max_length=20, 
+        choices=Sizes.choices
+    )
     stock = models.PositiveIntegerField(default=0)
 
     class Meta:
         unique_together = ('product', 'size')
-        ordering = ['product', 'size']
+        ordering = ['size']
 
     def __str__(self):        
-        return f"ID={self.id} -- {self.product.name} - {self.size.value}"
+        return f"ID={self.id} -- {self.product.name} - {self.size}"
 
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
