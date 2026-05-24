@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from products.models import Category, Product, ProductSize, Review, Variant
+from products.models import Category, Product, Review, Variant
 
 # Register your models here.
 
@@ -10,5 +10,4 @@ admin.site.index_title = "Welcome to the SoleDrop Admin Portal"
 admin.site.register(Category)
 admin.site.register(Product)    
 admin.site.register(Variant)
-admin.site.register(ProductSize)
 admin.site.register(Review)

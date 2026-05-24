@@ -27,15 +27,14 @@ def variant_add(request):
         size = request.POST.get('size_value') ## correct
         stock = request.POST.get('stock')
         product = get_object_or_404(Product, id=product_id)
-        print('####################################')
-        print(f"Product ID: {product_id}, Size: {size}, Stock: {stock}")
-        print('####################################')
-        # Variant.objects.create(product=product, name=name, price=price, stock=stock)
+        Variant.objects.create(product=product, size=size, stock=stock)
         return redirect('admin_panel:variants')
-    return HttpResponse('Variant add page')
+    return redirect('admin_panel:variants')
 
 def variant_delete(request, variant_id):
-    return HttpResponse(f'Variant delete page for variant ID: {variant_id}')
+    variant = get_object_or_404(Variant, id=variant_id)
+    variant.delete()
+    # return redirect('admin_panel:variants')
 
 def orders(request):
     orders = Order.objects.select_related('user').order_by('-created_at')
@@ -46,14 +45,17 @@ def orders(request):
     return render(request, 'admin_panel/orders.html', context)
 
 def order_detail(request, order_id):
-    return render(request, 'admin_panel/order_detail.html', {'order_id': order_id})
+    order = get_object_or_404(Order, id=order_id)
+    for item in order.items.all():
+        print(item)
+    context = {
+        'order': order,
+    }
+    return render(request, 'admin_panel/order_detail.html', context)
 
 def order_update_status(request):
     return HttpResponse('Order status updated')
 
-def order_detail(request, order_id):
-    print(f"Fetching details for order ID: {order_id}")
-    return HttpResponse(f"Order details for order ID: {order_id}")
 
 def products(request):
     categories = Category.objects.all()

@@ -62,7 +62,7 @@
                         </div>
                     </td>
                     <td>
-                        <span class="size-badge">{{ variant.size.value }}</span>
+                        <span class="size-badge">{{ variant.size }}</span>
                     </td>
                     <td class="text-bold">{{ variant.stock }}</td>
                     <td>
@@ -79,7 +79,7 @@
                                 onclick="openVariantEditModal(this)"
                                 data-variant-id="{{ variant.id }}"
                                 data-product-id="{{ variant.product.id }}"
-                                data-size-value="{{ variant.size.value }}"
+                                data-size-value="{{ variant.size }}"
                                 data-stock="{{ variant.stock }}"
                                 title="Edit">
                                 <i class="fas fa-pen"></i>
