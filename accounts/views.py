@@ -14,11 +14,16 @@ def user_registration(request):
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         email = request.POST.get('email')
+        print(email)
         phone_number = request.POST.get('phone')
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
         if password1 != password2:
-            return render(request, 'register.html', {'error': 'Passwords do not match.'})
+            messages.error(request, "Passwords do not match.")
+            return render(request, 'register.html')
+        if CustomUser.objects.filter(email=email).exists():
+            messages.error(request, "Email already exists.")
+            return render(request, "register.html")
         # Create the user
         user = CustomUser.objects.create_user(
             first_name=first_name,
