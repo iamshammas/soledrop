@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.http import HttpResponse
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate, login,logout
 from products.models import Product
@@ -123,6 +124,7 @@ def wishlist(request):
     }
     return render(request, 'wishlist.html', context)
 
+
 @login_required
 def wishlist_toggle(request, product_id):
     product = Product.objects.get(id=product_id)
@@ -140,6 +142,13 @@ def clear_wishlist(request):
     if request.method == 'POST':
         request.user.wishlist.clear()
     return redirect('accounts:wishlist')
+
+def address_list(request):
+    return render(request,'addresses.html')
+    # return HttpResponse('HELLO ADDRES')
+
+def address_add(request):
+    return render(request,'address_form.html')
 
 def user_logout(request):
     logout(request)

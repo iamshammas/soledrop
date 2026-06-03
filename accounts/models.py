@@ -40,21 +40,32 @@ class CustomUser(AbstractUser):
         return f'{self.first_name} {self.last_name}'
     
 class Address(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,related_name='addresses')
+    user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="addresses"
+    )
+
     full_name = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=20)
+
     address = models.CharField(max_length=255)
+
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=100)
     pin_code = models.CharField(max_length=20)
-    country = models.CharField(max_length=100,default='India')
-    label = models.CharField(max_length=50, blank=True, null=True)
+
+    country = models.CharField(
+        max_length=100,
+        default="India"
+    )
+
+    label = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True
+    )
+
     is_default = models.BooleanField(default=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ['-is_default', '-created_at']
-
-    def save(self, *args, **kwargs):
-        if self.is_default:
-            Address.objects.filter(user=self.user, is_default=True).update(is_default=False)
-        super().save(*args, **kwargs)

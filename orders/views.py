@@ -94,8 +94,6 @@ def checkout(request):
         country = request.POST.get('country')
         payment_method = request.POST.get('payment_method')
         cart_items = CartItem.objects.filter(cart__user=request.user)
-        # for item in cart_items:
-        #     print(item)
         with transaction.atomic():
             order = Order.objects.create(
             user=request.user,
@@ -123,7 +121,8 @@ def checkout(request):
                     order.total_amount+= order_item.total_price
                     order.save()
                 cart=Cart.objects.get(user=request.user)
-                cart.delete()
+                # cart.delete()
+                cart.cart_items.all().delete()
                 return redirect('orders:order_confirmation',order_id=order.id)
             else:
                 print("Order creation failed")

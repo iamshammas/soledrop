@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
 from products.models import Variant
 from cart.models import Cart, CartItem
+from products.models import Product
 
 
 @login_required
@@ -19,22 +20,11 @@ def cart_detail(request):
  
 def add_to_cart(request):
     if request.method == 'POST':
-        item = request.POST.get('product_id')
-        size = request.POST.get('size')
-        # print(item)
-        # print(size)
-        # variant_id = ProductSize.variant.get(id=size)
-        # print(variant_id)
-        # variant = Variant.objects.filter(product=item,size=size)
-        variant=get_object_or_404(Variant,product=item,size=size)
-        # print(variant)
+        variant_id = request.POST.get("variant_id")
+        variant=get_object_or_404(Variant,id=variant_id)
         if not variant:
-            # print('Variant not found')
             return render(request, '404.html', status=404)
         else:
-            # size = request.POST.get('size')
-            # quantity = int(request.POST.get('quantity', 1))
-            # if quantity < variant.stock:
             cart = Cart.objects.get_or_create(user=request.user)[0]
             item, created = CartItem.objects.get_or_create(cart=cart, variant=variant)
             messages.success(request,'Added to cart')
@@ -42,8 +32,6 @@ def add_to_cart(request):
                 item.quantity += 1
                 item.save()
                 return redirect('cart:cart_detail')
-                # item,created = CartItem.objects.create(cart=cart, product=product, size=size, quantity=quantity)
-                # item.save()
             return redirect('cart:cart_detail')
     return render(request, 'cart_detail.html')
 
@@ -87,7 +75,10 @@ def remove_from_cart(request, product_id):
             # print('Item not found in cart')
             return render(request, '404.html', status=404)
         else:
+            messages.success(request, "Item removed from cart.")
             item.delete()
+            # print('HELOOOe$$$$')    
+            # messages.info(request, "Item removed from cart.")
     return redirect('cart:cart_detail')
 
 def clear_cart(request):

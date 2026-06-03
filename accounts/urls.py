@@ -15,4 +15,7 @@ urlpatterns = [
     path('logout/', views.user_logout, name='logout'),  # Placeholder for logout view
     path('profile/change-password/', views.change_password, name='change_password'),  # Placeholder for change password view
     ##################### Add more authentication-related URLs here (e.g., login, logout, password reset)
+    #Address
+    path('accounts/address_list/',views.address_list,name='address_list'),
+    path('accounts/address_add/',views.address_add,name='address_add'),
 ]

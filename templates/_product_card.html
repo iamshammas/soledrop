@@ -27,10 +27,10 @@
           
           {# Size selector - hidden by default, shown when Add to Cart is clicked #}
           <div class="size-selector" id="size-selector-{{ product.id }}" style="display: none; margin-bottom: 8px;">
-            <select name="size" required style="width: 100%; padding: 8px; font-size: 0.75rem; border: 1px solid var(--gray); background: var(--light); color: var(--dark);">
+            <select name="variant_id" required style="width: 100%; padding: 8px; font-size: 0.75rem; border: 1px solid var(--gray); background: var(--light); color: var(--dark);">
               <option value="" disabled selected>Select Size</option>
               {% for variant in product.available_variants.all %}
-                  <option value="{{ variant.size.id }}" name="size_id">{{ variant.size.value }}</option>
+                  <option value="{{ variant.id }}">{{ variant.size }}</option>
               {% endfor %}
             </select>
           </div>

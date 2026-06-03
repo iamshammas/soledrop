@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Addresses — SOLE DROP{% endblock %}
+
+{% block content %}
+
+<div class="page-hero">
+  <div class="breadcrumb">
+    <a href="{% url 'products:home' %}">Home</a>
+    <span>›</span>
+    <a href="{% url 'accounts:profile' %}">Account</a>
+    <span>›</span>
+    <span>Addresses</span>
+  </div>
+
+  <h1 class="page-hero-title">My Addresses</h1>
+</div>
+
+<div class="profile-layout">
+
+  <aside>
+    <div class="profile-avatar">
+      {{ user.first_name.0|upper }}{{ user.last_name.0|upper }}
+    </div>
+<p class="profile-name">
+  {{ user.get_full_name|default:user.username }}
+</p>
+
+<p class="profile-email">{{ user.email }}</p>
+
+<ul class="profile-nav">
+  <li><a href="{% url 'accounts:profile' %}">Dashboard</a></li>
+  <li><a href="{% url 'orders:order_list' %}">My Orders</a></li>
+  <li><a href="{% url 'accounts:profile_edit' %}">Profile Settings</a></li>
+  <li><a href="{% url 'accounts:address_list' %}" class="active">Addresses</a></li>
+  <li><a href="{% url 'accounts:wishlist' %}">Wishlist</a></li>
+
+  <li>
+    <form action="{% url 'accounts:logout' %}" method="POST">
+      {% csrf_token %}
+      <button type="submit">Logout</button>
+    </form>
+  </li>
+</ul>
+
+  </aside>
+
+  <div>
+
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">
+  <h2 style="margin:0;">Saved Addresses</h2>
+
+  <a href="{% url 'accounts:address_add' %}" class="btn-primary">
+    Add Address
+  </a>
+</div>
+
+{% for address in addresses %}
+
+  <div class="order-card">
+
+    <div class="order-head">
+
+      <div>
+        <span class="order-id">
+          {{ address.label|default:"Address" }}
+        </span>
+      </div>
+
+      {% if address.is_default %}
+        <span class="order-status status-delivered">
+          Default
+        </span>
+      {% endif %}
+
+    </div>
+
+    <p style="font-weight:600;color:var(--white);margin-bottom:8px;">
+      {{ address.full_name }}
+    </p>
+
+    <p class="order-items">
+      {{ address.address }}
+    </p>
+
+    <p class="order-items">
+      {{ address.city }}, {{ address.state }} - {{ address.pin_code }}
+    </p>
+
+    <p class="order-items">
+      {{ address.country }}
+    </p>
+
+    <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;">
+
+      <a href="{% url 'accounts:address_edit' address.id %}"
+         class="btn-outline">
+        Edit
+      </a>
+
+      <form method="POST"
+            action="{% url 'accounts:address_delete' address.id %}"
+            style="display:inline;">
+        {% csrf_token %}
+        <button type="submit"
+                class="btn-outline">
+          Delete
+        </button>
+      </form>
+
+    </div>
+
+  </div>
+
+{% empty %}
+
+  <div class="feature-card" style="text-align:center;padding:60px 30px;">
+    <div class="feature-icon">📍</div>
+    <h3>No Saved Addresses</h3>
+    <p style="margin-top:10px;">
+      Add an address for faster checkout.
+    </p>
+
+    <a href="{% url 'accounts:address_add' %}"
+       class="btn-primary"
+       style="margin-top:24px;">
+      Add Address
+    </a>
+  </div>
+
+{% endfor %}
+
+  </div>
+
+</div>
+
+{% endblock %}
