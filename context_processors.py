@@ -6,7 +6,7 @@ def cart_data(request):
     if cart:
         cart_count = cart.items.count()
         cart_items = cart.items.all()
-        cart_total = cart.total_price
+        cart_total = cart.total
         # cart_subtotal = Cart.objects.filter(user=request.user).first().total_price if cart_items else 0
     else:
         cart_count = None

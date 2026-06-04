@@ -1,9 +1,11 @@
 from django.shortcuts import get_object_or_404, render,redirect
 # from .models import Coupon
+from accounts.models import Address
 from cart.models import Cart,CartItem
 from .models import Order,OrderItem
 from django.http import HttpResponse
 from django.db import transaction
+from .services.order_service import create_order
 
 # Create your views here.
 
@@ -79,7 +81,7 @@ def apply_coupon(request):
 
 
 #another function to checkout | Order creation working properly
-def checkout(request):
+def checkouttt(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
@@ -129,12 +131,42 @@ def checkout(request):
                 return redirect('orders:checkout')
     cart_subtotal = Cart.objects.filter(user=request.user).first().total_price
     cart_total = cart_subtotal if cart_subtotal >= 4999 else cart_subtotal+199
+    addresses = Address.objects.filter(user=request.user)
     context = {
         'cart_subtotal' : cart_subtotal,
-        'cart_total' : cart_total
+        'cart_total' : cart_total,
+        'addresses' : addresses
     }
     return render(request, 'checkout.html',context)
 
+def checkout(request):
+    if request.method == 'POST':
+        cart = get_object_or_404(Cart, user=request.user)
+        address_id = request.POST.get('address_id')
+        if address_id:
+            address = Address.objects.get(id=address_id)
+        else:
+            address = Address(
+                full_name=request.POST.get("full_name"),
+                phone_number=request.POST.get("phone"),
+                address=request.POST.get("address"),
+                city=request.POST.get("city"),
+                state=request.POST.get("state"),
+                pin_code=request.POST.get("pin_code"),
+                country=request.POST.get("country"),
+            )
+        payment_method = request.POST.get('payment_method')
+        create_order(request.user,address,payment_method)
+        return HttpResponse('HELLo worked')
+    
+    cart = Cart.objects.get(user=request.user)
+    addresses = Address.objects.filter(user=request.user)
+    context = {
+        'cart_subtotal' : cart.subtotal,
+        'cart_total' : cart.total,
+        'addresses' : addresses
+    }
+    return render(request, 'checkout.html',context)
 
 def order_confirmation(request,order_id):
     order = get_object_or_404(Order,id=order_id)

@@ -11,10 +11,18 @@ class Cart(models.Model):
     @property
     def total_items(self):
         return sum(item.quantity for item in self.items.all())
-
+    
     @property
-    def total_price(self):
+    def subtotal(self):
         return sum(item.total_price for item in self.items.all())
+    
+    @property
+    def shipping_charge(self):
+        return 0 if self.subtotal >= 4999 else 199
+    
+    @property
+    def total(self):
+        return self.subtotal + self.shipping_charge
 
     def __str__(self):
         return f"Cart of {self.user.email} with {self.total_items} items"
@@ -32,7 +40,7 @@ class CartItem(models.Model):
 
     @property
     def total_price(self):
-        return self.variant.product.new_price * self.quantity  # Use new_price for total calculation
+        return self.variant.product.new_price * self.quantity  
 
     @property
     def in_stock(self):

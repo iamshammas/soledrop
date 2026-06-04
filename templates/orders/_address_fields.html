@@ -1,0 +1,78 @@
+<div class="form-group">
+  <label>Full Name</label>
+  <input
+    type="text"
+    name="full_name"
+    value="{{ form.full_name.value|default:user.get_full_name }}"
+    placeholder="John Doe"
+    required
+  />
+</div>
+
+<div class="form-group">
+  <label>Phone</label>
+  <input
+    type="tel"
+    name="phone"
+    value="{{ form.phone.value|default:'' }}"
+    placeholder="9876543210"
+    required
+  />
+</div>
+
+<div class="form-group">
+  <label>Address</label>
+  <textarea
+    name="address"
+    rows="3"
+    placeholder="House / Flat No, Street, Area"
+    required
+  >{{ form.address.value|default:'' }}</textarea>
+</div>
+
+<div class="form-row">
+  <div class="form-group">
+    <label>City</label>
+    <input
+      type="text"
+      name="city"
+      value="{{ form.city.value|default:'' }}"
+      placeholder="Bangalore"
+      required
+    />
+  </div>
+
+  <div class="form-group">
+    <label>State</label>
+    <input
+      type="text"
+      name="state"
+      value="{{ form.state.value|default:'' }}"
+      placeholder="Karnataka"
+      required
+    />
+  </div>
+</div>
+
+<div class="form-row">
+  <div class="form-group">
+    <label>PIN Code</label>
+    <input
+      type="text"
+      name="pin_code"
+      value="{{ form.pin_code.value|default:'' }}"
+      placeholder="560001"
+      required
+    />
+  </div>
+
+  <div class="form-group">
+    <label>Country</label>
+    <input
+      type="text"
+      name="country"
+      value="{{ form.country.value|default:'India' }}"
+      required
+    />
+  </div>
+</div>
