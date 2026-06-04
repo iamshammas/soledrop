@@ -18,4 +18,6 @@ urlpatterns = [
     #Address
     path('accounts/address_list/',views.address_list,name='address_list'),
     path('accounts/address_add/',views.address_add,name='address_add'),
+    path('accounts/address_edit/<int:id>/',views.address_edit,name='address_edit'),
+    path('accounts/address_delete/<int:id>/',views.address_delete,name='address_delete'),
 ]

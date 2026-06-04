@@ -1,9 +1,9 @@
 from django.contrib import messages
 from django.http import HttpResponse
-from django.shortcuts import render,redirect
+from django.shortcuts import get_object_or_404, render,redirect
 from django.contrib.auth import authenticate, login,logout
 from products.models import Product
-from .models import CustomUser
+from .models import Address, CustomUser
 from orders.models import Order
 from cart.models import Cart
 from django.contrib.auth.decorators import login_required
@@ -144,11 +144,70 @@ def clear_wishlist(request):
     return redirect('accounts:wishlist')
 
 def address_list(request):
-    return render(request,'addresses.html')
+    addresses = Address.objects.filter(user=request.user)
+    return render(request,'addresses.html',{'addresses':addresses})
     # return HttpResponse('HELLO ADDRES')
 
 def address_add(request):
+    if request.method == 'POST':
+        label = request.POST.get('label') 
+        name = request.POST.get('full_name')
+        phone_no = request.POST.get('phone_number')
+        address = request.POST.get('address')
+        city = request.POST.get('city')
+        state = request.POST.get('state')
+        pincode = request.POST.get('pin_code')
+        country = request.POST.get('country')
+        is_default = request.POST.get('is_default') == 'on'
+
+        if is_default:
+            Address.objects.filter(
+                user=request.user,
+                is_default=True
+            ).update(is_default=False)
+
+        Address.objects.create(
+            user=request.user,
+            label=label,
+            full_name=name,
+            phone_number=phone_no,
+            address=address,
+            city=city,
+            state=state,
+            pin_code=pincode,
+            country=country,
+            is_default=is_default
+        )
+        return redirect('accounts:address_list')
     return render(request,'address_form.html')
+
+def address_edit(request,id):
+    address = get_object_or_404(Address,id=id,user=request.user)
+    if request.method == 'POST':
+        is_default = request.POST.get('is_default') == 'on'
+        if is_default:
+            Address.objects.filter(user=request.user,is_default=True).exclude(id=address.id).update(is_default=False)
+        address.label = request.POST.get('label')
+        address.full_name = request.POST.get('full_name')
+        address.phone_number = request.POST.get('phone_number')
+        address.address = request.POST.get('address')
+        address.city = request.POST.get('city')
+        address.state = request.POST.get('state')
+        address.pin_code = request.POST.get('pin_code')
+        address.country = request.POST.get('country')
+        address.is_default = is_default
+
+        address.save()
+        return redirect('accounts:address_list')
+    return render(request,'address_form.html',{'address':address})
+
+def address_delete(request,id):
+    address = get_object_or_404(Address,id=id,user=request.user)
+    if request.method == 'POST':
+        address.delete()
+        messages.success(request, "Address deleted successfully.")
+        return redirect('accounts:address_list')
+    return redirect('accounts:address_list')
 
 def user_logout(request):
     logout(request)
