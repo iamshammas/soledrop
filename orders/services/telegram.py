@@ -4,7 +4,7 @@ from django.conf import settings
 
 def send_telegram_message(message):
     url = f"https://api.telegram.org/bot{settings.BOT_TOKEN}/sendMessage"
-    print('SEND TELEGRAM MESSAGE FUNCTION CALLED')
+
     requests.post(
         url,
         data={
@@ -22,7 +22,7 @@ def send_order_notification(order):
         f"Amount: ₹{order.total_amount}\n"
         f"Payment: {order.payment_method}"
     )
-    print('SEND ORDER NOTIFICATION FUNCTION CALLED')
+
     send_telegram_message(message)
 
     

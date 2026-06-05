@@ -77,6 +77,7 @@ def checkouttt(request):
     }
     return render(request, 'checkout.html',context)
 
+@login_required
 def checkout(request):
     if request.method == 'POST':
         # cart = get_object_or_404(Cart, user=request.user)
@@ -103,15 +104,22 @@ def checkout(request):
             messages.error(request, str(e))
             return redirect('orders:checkout')
     
-    cart = Cart.objects.get(user=request.user)
-    addresses = Address.objects.filter(user=request.user)
-    context = {
-        'cart_subtotal' : cart.subtotal,
-        'cart_total' : cart.total,
-        'addresses' : addresses
-    }
-    return render(request, 'checkout.html',context)
+    else:
+        # cart = Cart.objects.get(user=request.user)
+        cart, _ = Cart.objects.get_or_create(user=request.user)
 
+        if not cart.items.exists():
+            messages.error(request, "Your cart is empty.")
+            return redirect('cart:cart_detail')
+        addresses = Address.objects.filter(user=request.user)
+        context = {
+            'cart_subtotal' : cart.subtotal,
+            'cart_total' : cart.total,
+            'addresses' : addresses
+        }
+        return render(request, 'checkout.html',context)
+
+@login_required
 def order_confirmation(request,order_id):
     order = get_object_or_404(Order,id=order_id)
     context = {
