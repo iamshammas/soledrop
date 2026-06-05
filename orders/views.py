@@ -6,6 +6,8 @@ from .models import Order,OrderItem
 from django.http import HttpResponse
 from django.db import transaction
 from .services.order_service import create_order
+from django.contrib import messages
+from django.core.exceptions import ValidationError
 
 # Create your views here.
 
@@ -156,8 +158,13 @@ def checkout(request):
                 country=request.POST.get("country"),
             )
         payment_method = request.POST.get('payment_method')
-        create_order(request.user,address,payment_method)
-        return HttpResponse('HELLo worked')
+        try:
+            order = create_order(request.user,address,payment_method,cart)
+            messages.success(request, "Order placed successfully.")
+            return redirect('orders:order_confirmation',order_id=order.id)
+        except ValidationError as e:
+            messages.error(request, str(e))
+            return redirect('orders:checkout')
     
     cart = Cart.objects.get(user=request.user)
     addresses = Address.objects.filter(user=request.user)

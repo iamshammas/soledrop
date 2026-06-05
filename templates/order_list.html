@@ -15,7 +15,7 @@
       </div>
       <p class="order-items">
         {% for item in order.items.all %}
-          {{ item.variant.product.name }} (Size {{ item.variant.size.value }}) × {{ item.quantity }}{% if not forloop.last %}, {% endif %}
+          {{ item.variant.product.name }} (Size {{ item.variant.size }}) × {{ item.quantity }}{% if not forloop.last %}, {% endif %}
         {% endfor %}
       </p>
       <div class="order-footer">
