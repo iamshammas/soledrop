@@ -8,78 +8,14 @@ from django.db import transaction
 from .services.order_service import create_order
 from django.contrib import messages
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
 def apply_coupon(request):
     return HttpResponse("Coupon applied successfully!")
 
-# def checkout(request):
-#     if request.method == 'POST':
-#         first_name = request.POST.get('first_name')
-#         last_name = request.POST.get('last_name')
-#         full_name = first_name + ' ' +last_name
-#         address_line1 = request.POST.get('address_line1')
-#         address_line2 = request.POST.get('address_line2')
-#         email = request.POST.get('email')
-#         phone = request.POST.get('phone')
-#         city = request.POST.get('city')
-#         state = request.POST.get('state')
-#         pin_code = request.POST.get('pin_code')
-#         country = request.POST.get('country')
-#         payment_method = request.POST.get('payment_method')
-#         cart_items = CartItem.objects.filter(cart__user=request.user) 
-#         # price_at_purchase = cart_total
-#         # print(cart_total)
-#         # print(payment_method)
-#         # Process the order placement logic here
-#         order = Order.objects.create(
-#             user=request.user,
-#             name=full_name,
-#             email=email,
-#             phone=phone,
-#             address_line1=address_line1,
-#             address_line2=address_line2,
-#             city=city,
-#             state=state,
-#             pin_code=pin_code,
-#             country=country,
-#             payment_method=payment_method
-#         )
-#         if order:
-#             order.save()
-#             total = 0
-#             for item in cart_items:
-#                 OrderItem.objects.create(
-#                     order=order,
-#                     variant=item.variant,
-#                     quantity=item.quantity,
-#                     price_at_purchase=item.variant.product.new_price,
-#                 )
-#                 total+=item.variant.product.new_price
-#                 item.cart.items.remove(item)
-#         # For example, you might want to create an Order object, save it to the database, etc.
-        
-#         # After processing the order, you can redirect to a confirmation page or render a success message
-#         return render(request, 'order_confirmation.html', {'message': 'Order placed successfully!'})
-#     else:
-#         # If it's a GET request, simply render the checkout page
-#         cart = Cart.objects.filter(user=request.user).first()
-#         cart_items = cart.items.all() if cart else []
-#         cart_count = cart.items.count() if cart else 0
-#         cart_total = cart.total_price if cart else 0
-#         j = 0
-#         # j1 means no stock, j0 means it is available
-#         for i in cart_items:
-#             if not i.in_stock:
-#                 j = 1
-#         print('Stock available' if j==0 else 'Stock Not available')
-#         context = {
-#             'cart_items': cart_items,
-#             'cart_count': cart_count,
-#             'cart_total': cart_total,
-#         }
-#         return render(request, 'checkout.html', context)
 
 
 #another function to checkout | Order creation working properly
@@ -143,7 +79,8 @@ def checkouttt(request):
 
 def checkout(request):
     if request.method == 'POST':
-        cart = get_object_or_404(Cart, user=request.user)
+        # cart = get_object_or_404(Cart, user=request.user)
+        cart, created = Cart.objects.get_or_create(user=request.user)
         address_id = request.POST.get('address_id')
         if address_id:
             address = Address.objects.get(id=address_id)
@@ -182,10 +119,12 @@ def order_confirmation(request,order_id):
     }
     return render(request,'order_confirmation.html',context)
 
+@login_required
 def order_list(request):
-    orders=Order.objects.filter(user=request.user)
-    # print(request.user.id)
-    return render(request,'order_list.html',{'orders':orders})
+    qs = Order.objects.filter(user=request.user).order_by('-created_at')
+    paginator = Paginator(qs, 5)  # 5 orders per page
+    page_obj  = paginator.get_page(request.GET.get('page', 1))
+    return render(request,'order_list.html',{'orders':page_obj})
 
 def order_detail(request,order_id):
     order = get_object_or_404(Order,id=order_id)

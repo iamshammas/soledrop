@@ -1,6 +1,7 @@
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from orders.models import Order, OrderItem
+from .telegram import send_order_notification
 
 def create_order(user, address, payment_method,cart):
     if payment_method == 'COD':
@@ -43,6 +44,10 @@ def create_order(user, address, payment_method,cart):
 
             # CART CLEARING
             cart.items.all().delete()
+            try:
+                send_order_notification(order)
+            except Exception:
+                pass
             return order
     return 'payment is by RAZORPAY'
 

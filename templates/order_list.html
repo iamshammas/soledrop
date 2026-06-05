@@ -2,11 +2,18 @@
 {% load static %}
 {% block title %}My Orders — SOLE DROP{% endblock %}
 {% block content %}
+
 <div class="page-hero">
-  <div class="breadcrumb"><a href="{% url 'products:home' %}">Home</a><span>›</span><a href="{% url 'accounts:profile' %}">Account</a><span>›</span><span>My Orders</span></div>
+  <div class="breadcrumb">
+    <a href="{% url 'products:home' %}">Home</a><span>›</span>
+    <a href="{% url 'accounts:profile' %}">Account</a><span>›</span>
+    <span>My Orders</span>
+  </div>
   <h1 class="page-hero-title">My Orders</h1>
 </div>
+
 <div style="max-width:900px;margin:0 auto;padding:48px 80px">
+
   {% for order in orders %}
     <div class="order-card">
       <div class="order-head">
@@ -22,14 +29,77 @@
         <span>{{ order.created_at|date:"M j, Y" }}</span>
         <span class="order-total">₹{{ order.total_amount }}</span>
       </div>
-      <a href="{% url 'orders:order_detail' order.id %}" style="font-size:.75rem;color:var(--accent);display:inline-block;margin-top:10px;letter-spacing:.08em;text-transform:uppercase">View Details →</a>
+      <a href="{% url 'orders:order_detail' order.id %}"
+         style="font-size:.75rem;color:var(--accent);display:inline-block;margin-top:10px;letter-spacing:.08em;text-transform:uppercase">
+        View Details →
+      </a>
     </div>
   {% empty %}
     <div style="text-align:center;padding:80px 0">
       <div style="font-size:3rem;margin-bottom:16px">📦</div>
       <h3 style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--mid)">No orders yet</h3>
-      <a href="{% url 'products:product_list' %}" class="btn-primary" style="margin-top:24px;display:inline-block">Start Shopping</a>
+      <a href="{% url 'products:product_list' %}" class="btn-primary"
+         style="margin-top:24px;display:inline-block">Start Shopping</a>
     </div>
   {% endfor %}
+
+  {# ── PAGINATION ── #}
+  {% if orders.paginator.num_pages > 1 %}
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:40px;flex-wrap:wrap;gap:12px">
+
+      <p style="font-size:.78rem;color:var(--muted)">
+        Showing {{ orders.start_index }}–{{ orders.end_index }} of {{ orders.paginator.count }} orders
+      </p>
+
+      <div style="display:flex;gap:6px">
+
+        {# Previous #}
+        {% if orders.has_previous %}
+          <a href="?page={{ orders.previous_page_number }}"
+             style="width:36px;height:36px;background:var(--dark);border:1px solid var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all .2s"
+             onmouseover="this.style.background='var(--accent)';this.style.borderColor='var(--accent)'"
+             onmouseout="this.style.background='var(--dark)';this.style.borderColor='var(--border)'">
+            ‹
+          </a>
+        {% else %}
+          <span style="width:36px;height:36px;background:var(--dark);border:1px solid var(--border);color:var(--mid);display:flex;align-items:center;justify-content:center;font-size:.85rem;opacity:.4">
+            ‹
+          </span>
+        {% endif %}
+
+        {# Page numbers #}
+        {% for num in orders.paginator.page_range %}
+          {% if orders.number == num %}
+            <span style="width:36px;height:36px;background:var(--accent);border:1px solid var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700">
+              {{ num }}
+            </span>
+          {% elif num > orders.number|add:'-3' and num < orders.number|add:'3' %}
+            <a href="?page={{ num }}"
+               style="width:36px;height:36px;background:var(--dark);border:1px solid var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all .2s"
+               onmouseover="this.style.background='var(--accent)';this.style.borderColor='var(--accent)';this.style.color='#fff'"
+               onmouseout="this.style.background='var(--dark)';this.style.borderColor='var(--border)';this.style.color='var(--text)'">
+              {{ num }}
+            </a>
+          {% endif %}
+        {% endfor %}
+
+        {# Next #}
+        {% if orders.has_next %}
+          <a href="?page={{ orders.next_page_number }}"
+             style="width:36px;height:36px;background:var(--dark);border:1px solid var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all .2s"
+             onmouseover="this.style.background='var(--accent)';this.style.borderColor='var(--accent)'"
+             onmouseout="this.style.background='var(--dark)';this.style.borderColor='var(--border)'">
+            ›
+          </a>
+        {% else %}
+          <span style="width:36px;height:36px;background:var(--dark);border:1px solid var(--border);color:var(--mid);display:flex;align-items:center;justify-content:center;font-size:.85rem;opacity:.4">
+            ›
+          </span>
+        {% endif %}
+
+      </div>
+    </div>
+  {% endif %}
+
 </div>
 {% endblock %}

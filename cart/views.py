@@ -24,7 +24,7 @@ def add_to_cart(request):
         if not variant:
             return render(request, '404.html', status=404)
         else:
-            cart = Cart.objects.get_or_create(user=request.user)[0]
+            cart, created = Cart.objects.get_or_create(user=request.user)
             item, created = CartItem.objects.get_or_create(cart=cart, variant=variant)
             messages.success(request,'Added to cart')
             if not created:

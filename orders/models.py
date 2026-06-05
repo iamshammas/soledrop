@@ -50,7 +50,7 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True,db_index=True)
 
     def __str__(self):
-        return f"Order #{self.id} by {self.user.first_name}"
+        return f"Order #{self.order_number} by {self.user.first_name}"
 
     def save(self, *args, **kwargs):
         if not self.order_number:
