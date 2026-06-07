@@ -111,7 +111,7 @@ def wishlist(request):
     if cart:
         cart_count = cart.items.count()
         cart_items = cart.items.all()
-        cart_total = cart.total_price
+        cart_total = cart.total
     else:
         cart_count = 0
         cart_items = []

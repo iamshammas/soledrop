@@ -147,7 +147,7 @@
             <h3 class="modal-title" id="coupon-modal-title">Add Coupon</h3>
             <button class="modal-close" onclick="closeModal('coupon-modal')"><i class="fas fa-times"></i></button>
         </div>
-        <form method="POST" action="{% url 'admin_coupon_add' %}" id="coupon-form">
+        <form method="POST" action="{% url 'admin_panel:coupon_add' %}" id="coupon-form">
             {% csrf_token %}
             <div class="modal-body">
                 <input type="hidden" name="coupon_id" id="cpn-id">

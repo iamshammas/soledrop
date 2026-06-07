@@ -8,9 +8,21 @@ def generate_order_number():
         return f"ORD-{uuid.uuid4().hex[:8].upper()}"
 
 class Coupon(models.Model):
+
+    COUPON_TYPES = [
+        ("percentage", "Percentage"),
+        ("fixed", "Fixed Amount"),
+    ]
+
     code = models.CharField(max_length=50, unique=True)
-    discount_percentage = models.DecimalField(max_digits=10, decimal_places=2)
+    coupon_type = models.CharField(max_length=20,choices=COUPON_TYPES,default="percentage")
+    discount = models.DecimalField(max_digits=10, decimal_places=2)
+    minimum_order_amount = models.DecimalField(max_digits=10,decimal_places=2,default=0)
+    usage_limit = models.PositiveIntegerField(default=1)
+    used_count = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
     expiration_date = models.DateTimeField()
+
 
     def __str__(self):
         return self.code

@@ -2,8 +2,8 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from accounts.models import CustomUser
 from products.models import Category, Product, Variant
-from orders.models import Order
-from django.db.models import Count, Sum
+from orders.models import Order, OrderItem
+from django.db.models import F, Count, DecimalField, ExpressionWrapper, Sum
 from django.contrib.auth import logout
 from django.contrib import messages 
 
@@ -19,9 +19,20 @@ def dashboard(request):
         .select_related('product')
         .order_by('stock')[:6]
     )
+    top_products = (OrderItem.objects
+        .values(
+            name=F('variant__product__name')
+        )
+        .annotate(
+            sold=Sum('quantity'),
+            revenue=Sum(ExpressionWrapper(F('quantity') * F('price_at_purchase'),output_field=DecimalField()))
+        )
+        .order_by('-sold')[:5]
+    )
     context = {
         'active_page'   :  'dashboard',
         'total_orders'  : orders.count(),
+        'top_items' : OrderItem.objects.order_by('-quantity')[:5],
         'total_revenue':      orders.aggregate(t=Sum('total_amount'))['t'] or 0,
         'pending_orders': orders.filter(status='pending').count(),
         'shipped_orders': orders.filter(status='shipped').count(),
@@ -32,6 +43,7 @@ def dashboard(request):
         'total_products': total_products,
         'recent_orders' : recent_orders,
         'low_stock_variants': low_stock_variants,
+        'top_products' : top_products
     }
     return render(request, 'admin_panel/dashboard.html',context)
 
@@ -247,6 +259,9 @@ def coupons(request):
         'active_page': 'coupons',
     }
     return render(request, 'admin_panel/coupons.html',context)
+
+def coupon_add(request):
+    return HttpResponse('COUPON ADD PAGE')
 
 def admin_logout(request):
     logout(request)
