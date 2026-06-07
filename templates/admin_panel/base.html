@@ -29,43 +29,43 @@
         <nav class="sidebar-nav">
             <ul>
                 <li>
-                    <a href="{% url 'admin_panel:dashboard' %}" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}" id="nav-dashboard">
+                    <a href="{% url 'admin_panel:dashboard' %}" class="nav-link {% if active_page == 'dashboard' %}active{% endif %}">
                         <i class="fas fa-th-large"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'admin_panel:orders' %}" class="nav-link {% if active_page == 'orders' %}active{% endif %}" id="nav-orders">
+                    <a href="{% url 'admin_panel:orders' %}" class="nav-link {% if active_page == 'orders' %}active{% endif %}">
                         <i class="fas fa-shopping-bag"></i>
                         <span>Orders</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'admin_panel:products' %}" class="nav-link {% if active_page == 'products' %}active{% endif %}" id="nav-products">
+                    <a href="{% url 'admin_panel:products' %}" class="nav-link {% if active_page == 'products' %}active{% endif %}">
                         <i class="fas fa-box"></i>
                         <span>Products</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'admin_panel:variants' %}" class="nav-link {% if active_page == 'variants' %}active{% endif %}" id="nav-variants">
+                    <a href="{% url 'admin_panel:variants' %}" class="nav-link {% if active_page == 'variants' %}active{% endif %}">
                         <i class="fas fa-cubes"></i>
                         <span>Variants</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'admin_panel:users' %}" class="nav-link {% if active_page == 'users' %}active{% endif %}" id="nav-users">
+                    <a href="{% url 'admin_panel:users' %}" class="nav-link {% if active_page == 'users' %}active{% endif %}">
                         <i class="fas fa-users"></i>
                         <span>Users</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'admin_panel:categories' %}" class="nav-link {% if active_page == 'categories' %}active{% endif %}" id="nav-categories">
+                    <a href="{% url 'admin_panel:categories' %}" class="nav-link {% if active_page == 'categories' %}active{% endif %}">
                         <i class="fas fa-layer-group"></i>
                         <span>Categories</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{% url 'admin_panel:coupons' %}" class="nav-link {% if active_page == 'coupons' %}active{% endif %}" id="nav-coupons">
+                    <a href="{% url 'admin_panel:coupons' %}" class="nav-link {% if active_page == 'coupons' %}active{% endif %}">
                         <i class="fas fa-ticket-alt"></i>
                         <span>Coupons</span>
                     </a>
@@ -83,9 +83,14 @@
                     <span class="admin-role">Administrator</span>
                 </div>
             </div>
-            <a href="{% url 'admin_panel:logout' %}" class="logout-link" id="btn-logout">
-                <i class="fas fa-sign-out-alt"></i>
-            </a>
+
+            {# Logout must be POST — never a GET link #}
+            <form action="{% url 'admin_panel:logout' %}" method="POST" style="display:inline">
+                {% csrf_token %}
+                <button type="submit" class="logout-link" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </form>
         </div>
     </aside>
 
@@ -106,7 +111,9 @@
                 </div>
                 <button class="topbar-icon" id="btn-notifications" aria-label="Notifications">
                     <i class="fas fa-bell"></i>
-                    <span class="badge">3</span>
+                    {% if pending_orders %}
+                        <span class="badge">{{ pending_orders }}</span>
+                    {% endif %}
                 </button>
             </div>
         </header>
@@ -118,7 +125,7 @@
                 {% for message in messages %}
                 <div class="alert alert-{{ message.tags }}" id="alert-{{ forloop.counter }}">
                     <span>{{ message }}</span>
-                    <button class="alert-close" onclick="this.parentElement.remove()" aria-label="Close alert">
+                    <button class="alert-close" onclick="this.parentElement.remove()" aria-label="Close">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>

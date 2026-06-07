@@ -1,20 +1,45 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from accounts.models import CustomUser
 from products.models import Category, Product, Variant
 from orders.models import Order
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.contrib.auth import logout
+from django.contrib import messages 
 
 # Create your views here.
 
 def dashboard(request):
-    return render(request, 'admin_panel/dashboard.html')
+    orders = Order.objects.all()
+    total_users = CustomUser.objects.filter(is_staff=False).count()
+    total_products = Product.objects.count()
+    recent_orders = Order.objects.order_by('-created_at')[:8]
+    low_stock_variants = (Variant.objects
+        .filter(stock__gt=0, stock__lte=5)
+        .select_related('product')
+        .order_by('stock')[:6]
+    )
+    context = {
+        'active_page'   :  'dashboard',
+        'total_orders'  : orders.count(),
+        'total_revenue':      orders.aggregate(t=Sum('total_amount'))['t'] or 0,
+        'pending_orders': orders.filter(status='pending').count(),
+        'shipped_orders': orders.filter(status='shipped').count(),
+        'cancelled_orders': orders.filter(status='cancelled').count(),
+        'confirmed_orders': orders.filter(status='confirmed').count(),
+        'delivered_orders': orders.filter(status='delivered').count(),
+        'total_users'   : total_users,
+        'total_products': total_products,
+        'recent_orders' : recent_orders,
+        'low_stock_variants': low_stock_variants,
+    }
+    return render(request, 'admin_panel/dashboard.html',context)
 
 def variants(request):
     variants = Variant.objects.select_related('product').all()
     products = Product.objects.all()
     context = {
+        'active_page': 'variants',
         'variants': variants,
         'variants_count': variants.count(),
         'products': products,
@@ -28,17 +53,31 @@ def variant_add(request):
         stock = request.POST.get('stock')
         product = get_object_or_404(Product, id=product_id)
         Variant.objects.create(product=product, size=size, stock=stock)
+        messages.success(request, f'Variant "{size}" added to "{product.name}" successfully.')
         return redirect('admin_panel:variants')
     return redirect('admin_panel:variants')
 
 def variant_delete(request, variant_id):
     variant = get_object_or_404(Variant, id=variant_id)
     variant.delete()
-    # return redirect('admin_panel:variants')
+    messages.info(request, f'Variant {variant.product.name} deleted successfully.')
+    return redirect('admin_panel:variants')
+
+def variant_edit(request, variant_id):
+    variant = get_object_or_404(Variant, id=variant_id)
+    if request.method == 'POST':
+        product_id = request.POST.get('product')
+        variant.product = get_object_or_404(Product,id=product_id)
+        variant.size = request.POST.get('size_value')
+        variant.stock = request.POST.get('stock')
+        variant.save()
+        return redirect('admin_panel:variants')
+    return redirect('admin_panel:variants')
 
 def orders(request):
     orders = Order.objects.select_related('user').order_by('-created_at')
     context = {
+        'active_page': 'orders',
         'orders': orders,
         'orders_count': orders.count(),
     }
@@ -46,21 +85,28 @@ def orders(request):
 
 def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id)
-    for item in order.items.all():
-        print(item)
+    # for item in order.items.all():
+    #     print(item)
     context = {
         'order': order,
     }
     return render(request, 'admin_panel/order_detail.html', context)
 
-def order_update_status(request):
-    return HttpResponse('Order status updated')
+def order_update_status(request, order_id):
+    order = get_object_or_404(Order,id=order_id)
+    if request.method == 'POST':
+        status = request.POST.get('status')
+        order.status = status
+        order.save()
+        messages.success(request, "Order status updated successfully.")
+    return redirect('admin_panel:orders')
 
 
 def products(request):
     categories = Category.objects.all()
     products = Product.objects.all()
     context = {
+        'active_page': 'products',
         'categories': categories,
         'products': products,
         'products_count': products.count()
@@ -69,6 +115,7 @@ def products(request):
 
 def product_add(request):
     if request.method == 'POST':
+        print('ADD PRODUCT POST METHOD')
         name = request.POST.get('name')
         description = request.POST.get('description')
         category_id = request.POST.get('category')
@@ -94,8 +141,20 @@ def product_add(request):
     return redirect('admin_panel:products')
 
 def product_edit(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    if request.method == 'GET':
+        return JsonResponse({
+            'name': product.name,
+            'description': product.description,
+            'category_id': product.category_id,
+            'old_price': str(product.old_price or ''),
+            'new_price': str(product.new_price or ''),
+            'badge': product.badge or '',
+            'is_active': product.is_active,
+            'is_featured': product.is_featured,
+            'image_url': product.image.url if product.image else '',
+        })
     if request.method == 'POST':
-        product = get_object_or_404(Product, id=product_id)
         product.name = request.POST.get('name')
         product.description = request.POST.get('description')
         category_id = request.POST.get('category')
@@ -103,7 +162,7 @@ def product_edit(request, product_id):
         product.new_price = request.POST.get('new_price')
         product.badge = request.POST.get('badge')
         image = request.FILES.get('image')
-        if image:
+        if image:   
             product.image = image
         product.is_active = request.POST.get('is_active', None) == 'on'
         product.is_featured = request.POST.get('is_featured', None) == 'on'
@@ -111,7 +170,6 @@ def product_edit(request, product_id):
             product.category = get_object_or_404(Category, id=category_id)
         product.save()
         return redirect('admin_panel:products')
-    return redirect('admin_panel:products')
 
 def product_delete(request, product_id):
     product = get_object_or_404(Product, id=product_id)
@@ -152,8 +210,11 @@ def toggle_user_status(request, user_id):
 
 
 def categories(request):
-    categories = Category.objects.all()
-    return render(request, 'admin_panel/categories.html', {'categories': categories})
+    context = {
+        'active_page': 'categories',
+        'categories' : Category.objects.all()
+    }
+    return render(request, 'admin_panel/categories.html', context)
 
 def category_add(request):
     if request.method == 'POST':
@@ -182,7 +243,10 @@ def category_delete(request, category_id):
     return redirect('admin_panel:categories')
 
 def coupons(request):
-    return render(request, 'admin_panel/coupons.html')
+    context = {
+        'active_page': 'coupons',
+    }
+    return render(request, 'admin_panel/coupons.html',context)
 
 def admin_logout(request):
     logout(request)

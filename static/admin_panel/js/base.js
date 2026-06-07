@@ -70,12 +70,20 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('product-form').reset();
 
         // Fetch product data from Django
-        fetch('/admin-panel/products/' + productId + '/data/')
+        fetch('/admin_panel/products/' + productId + '/edit/')
             .then(function (res) {
                 if (!res.ok) throw new Error('Failed to fetch product data');
                 return res.json();
             })
             .then(function (data) {
+                const img = document.getElementById('current-product-image');
+
+                if (data.image_url) {
+                    img.src = data.image_url;
+                    img.style.display = 'block';
+                } else {
+                    img.style.display = 'none';
+                }
                 document.getElementById('prod-name').value      = data.name      || '';
                 document.getElementById('prod-old-price').value = data.old_price || '';
                 document.getElementById('prod-new-price').value = data.new_price || '';
@@ -89,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // Point form action to edit URL
                 document.getElementById('product-form').action =
-                    '/admin-panel/products/' + productId + '/edit/';
+                    '/admin_panel/products/' + productId + '/edit/';
 
                 openModal('product-modal');
             })
@@ -101,10 +109,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ── Open Add Modal (reset form to blank) ──
     document.getElementById('btn-add-product')?.addEventListener('click', function () {
+        const img = document.getElementById('current-product-image');
+        img.src = '';
+        img.style.display = 'none';
         document.getElementById('product-modal-title').textContent = 'Add New Product';
         document.getElementById('btn-save-product').textContent    = 'Save Product';
         document.getElementById('product-form').reset();
-        document.getElementById('product-form').action = '/admin-panel/products/add/';
+        document.getElementById('product-form').action = '/admin_panel/products/add/';
         openModal('product-modal');
     });
 

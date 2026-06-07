@@ -7,13 +7,13 @@ urlpatterns = [
     
     # Orders 
     path('orders/', views.orders, name='orders'),
-    path('orders/update-status/', views.order_update_status, name='order_update_status'),
+    path('orders/update-status/<uuid:order_id>/', views.order_update_status, name='order_update_status'),
     path('orders/<uuid:order_id>/detail/', views.order_detail, name='order_detail'),
 
     # Variants
     path('variants/', views.variants, name='variants'),
     path('variants/add/', views.variant_add, name='variant_add'),
-    # path('variants/<int:variant_id>/edit/', views.variant_edit, name='variant_edit'),
+    path('variants/<int:variant_id>/edit/', views.variant_edit, name='variant_edit'),
     path('variants/<int:variant_id>/delete/', views.variant_delete, name='variant_delete'),
 
     # Products
