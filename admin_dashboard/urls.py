@@ -34,7 +34,8 @@ urlpatterns = [
 
     # Coupons
     path('coupons/', views.coupons, name='coupons'),
-    path('coupon_add/', views.coupon_add, name='coupon_add'),
+    path('coupon/add/', views.coupon_add, name='coupon_add'),
+    path('coupon/<int:id>/delete/', views.coupon_delete, name='coupon_delete'),
 
     # Auth
     path('logout/', views.admin_logout, name='logout'),

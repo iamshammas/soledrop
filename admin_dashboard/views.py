@@ -1,8 +1,9 @@
+from datetime import datetime, time
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from accounts.models import CustomUser
 from products.models import Category, Product, Variant
-from orders.models import Order, OrderItem
+from orders.models import Coupon, Order, OrderItem
 from django.db.models import F, Count, DecimalField, ExpressionWrapper, Sum
 from django.contrib.auth import logout
 from django.contrib import messages 
@@ -255,13 +256,57 @@ def category_delete(request, category_id):
     return redirect('admin_panel:categories')
 
 def coupons(request):
+    coupons = Coupon.objects.all()
     context = {
         'active_page': 'coupons',
+        'coupons' : coupons ,
+        'coupons_count' : coupons.count() ,
     }
     return render(request, 'admin_panel/coupons.html',context)
 
 def coupon_add(request):
-    return HttpResponse('COUPON ADD PAGE')
+    if request.method == 'POST':
+        coupon_id = request.POST.get('coupon_id')
+        code = request.POST.get('code')
+        coupon_type = request.POST.get('coupon_type')
+        discount = request.POST.get('discount')
+        minimum_order_amount = request.POST.get('minimum_order_amount')
+        usage_limit = request.POST.get('usage_limit')
+        date_str = request.POST.get('expiration_date')
+        expiration_date = datetime.combine(datetime.strptime(date_str, '%Y-%m-%d').date(),time(23, 59, 59))
+        today = datetime.today()
+        if expiration_date <= today:
+            messages.error(request,"Expiration date must be later than today.")
+            return redirect('admin_panel:coupon_add')
+        
+        if coupon_id:
+            coupon = Coupon.objects.get(id=coupon_id)
+            coupon.code = code
+            coupon.coupon_type = coupon_type
+            coupon.discount = discount
+            coupon.minimum_order_amount = minimum_order_amount
+            coupon.usage_limit = usage_limit
+            coupon.expiration_date = expiration_date
+            coupon.save()
+            messages.success(request, "Coupon updated successfully.")
+            return redirect('admin_panel:coupons')
+        else:
+            Coupon.objects.create(
+                code = code,
+                coupon_type = coupon_type,
+                discount = discount,
+                minimum_order_amount = minimum_order_amount,
+                usage_limit = usage_limit,
+                expiration_date = expiration_date
+            )
+            messages.success(request, "Coupon created successfully.")
+            return redirect('admin_panel:coupons')
+
+def coupon_delete(request,id):
+    coupon = get_object_or_404(Coupon,id=id)
+    coupon.delete()
+    messages.success(request, "Coupon deleted successfully.")
+    return redirect('admin_panel:coupons')
 
 def admin_logout(request):
     logout(request)

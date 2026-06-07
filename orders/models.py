@@ -3,6 +3,7 @@ from django.db import models
 import uuid
 from products.models import Variant
 from django.db import IntegrityError
+from django.utils import timezone
 
 def generate_order_number():
         return f"ORD-{uuid.uuid4().hex[:8].upper()}"
@@ -18,12 +19,23 @@ class Coupon(models.Model):
     coupon_type = models.CharField(max_length=20,choices=COUPON_TYPES,default="percentage")
     discount = models.DecimalField(max_digits=10, decimal_places=2)
     minimum_order_amount = models.DecimalField(max_digits=10,decimal_places=2,default=0)
-    usage_limit = models.PositiveIntegerField(default=1)
+    usage_limit = models.PositiveIntegerField(default=1,null=True)
     used_count = models.PositiveIntegerField(default=0)
     is_active = models.BooleanField(default=True)
     expiration_date = models.DateTimeField()
 
+    @property
+    def is_expired(self):
+        return timezone.now() > self.expiration_date
+    
+    @property
+    def is_usage_limit_reached(self):
+        return self.used_count >= self.usage_limit
 
+    @property
+    def is_valid(self):
+        return (self.is_active and not self.is_expired and not self.is_usage_limit_reached)
+    
     def __str__(self):
         return self.code
     
