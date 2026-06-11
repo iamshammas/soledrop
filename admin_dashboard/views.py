@@ -2,7 +2,7 @@ from datetime import datetime, time
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from accounts.models import CustomUser
-from products.models import Category, Product, Variant
+from products.models import Brand, Product, Variant
 from orders.models import Coupon, Order, OrderItem
 from django.db.models import F, Count, DecimalField, ExpressionWrapper, Sum
 from django.contrib.auth import logout
@@ -125,11 +125,11 @@ def order_update_status(request, order_id):
 
 @admin_required 
 def products(request):
-    categories = Category.objects.all()
+    brands = Brand.objects.all()
     products = Product.objects.all()
     context = {
         'active_page': 'products',
-        'categories': categories,
+        'brands': brands,
         'products': products,
         'products_count': products.count()
     }
@@ -141,18 +141,18 @@ def product_add(request):
         print('ADD PRODUCT POST METHOD')
         name = request.POST.get('name')
         description = request.POST.get('description')
-        category_id = request.POST.get('category')
+        brand_id = request.POST.get('brand')
         old_price = request.POST.get('old_price')
         new_price = request.POST.get('new_price')
         badge = request.POST.get('badge')
         image = request.FILES.get('image')
         is_active = request.POST.get('is_active', None) == 'on'
         is_featured = request.POST.get('is_featured', None) == 'on'
-        category = get_object_or_404(Category, id=category_id)
+        brand = get_object_or_404(Brand, id=brand_id)
         Product.objects.create(
             name=name,
             description=description,
-            category=category,
+            brand=brand,
             old_price=old_price,
             new_price=new_price,
             badge=badge,
@@ -170,7 +170,7 @@ def product_edit(request, product_id):
         return JsonResponse({
             'name': product.name,
             'description': product.description,
-            'category_id': product.category_id,
+            'brand_id': product.brand_id,
             'old_price': str(product.old_price or ''),
             'new_price': str(product.new_price or ''),
             'badge': product.badge or '',
@@ -181,7 +181,7 @@ def product_edit(request, product_id):
     if request.method == 'POST':
         product.name = request.POST.get('name')
         product.description = request.POST.get('description')
-        category_id = request.POST.get('category')
+        brand_id = request.POST.get('brand')
         product.old_price = request.POST.get('old_price')
         product.new_price = request.POST.get('new_price')
         product.badge = request.POST.get('badge')
@@ -190,8 +190,8 @@ def product_edit(request, product_id):
             product.image = image
         product.is_active = request.POST.get('is_active', None) == 'on'
         product.is_featured = request.POST.get('is_featured', None) == 'on'
-        if category_id:
-            product.category = get_object_or_404(Category, id=category_id)
+        if brand_id:
+            product.brand = get_object_or_404(Brand, id=brand_id)
         product.save()
         return redirect('admin_panel:products')
 
@@ -237,40 +237,40 @@ def toggle_user_status(request, user_id):
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 @admin_required
-def categories(request):
+def brands(request):
     context = {
-        'active_page': 'categories',
-        'categories' : Category.objects.all()
+        'active_page': 'brands',
+        'brands' : Brand.objects.all()
     }
-    return render(request, 'admin_panel/categories.html', context)
+    return render(request, 'admin_panel/brands.html', context)
 
 @admin_required
-def category_add(request):
+def brand_add(request):
     if request.method == 'POST':
-        category_id = request.POST.get('category_id')
+        brand_id = request.POST.get('brand_id')
         name = request.POST.get('name')
         image = request.FILES.get('image')
         active = int(request.POST.get('is_active', 0)) == 1
         
-        if category_id:
-            category = get_object_or_404(Category, id=category_id)
-            category.name = name
-            category.is_active = active
-            category.slug = category.generate_slug()
+        if brand_id:
+            brand = get_object_or_404(Brand, id=brand_id)
+            brand.name = name
+            brand.is_active = active
+            brand.slug = brand.generate_slug()
             if image:
-                category.image = image
-            category.save()
+                brand.image = image
+            brand.save()
         else:
-            Category.objects.create(name=name, image=image, is_active=active)
+            Brand.objects.create(name=name, image=image, is_active=active)
             
-        return redirect('admin_panel:categories')
+        return redirect('admin_panel:brands')
     return HttpResponse('hello')
 
 @admin_required
-def category_delete(request, category_id):
-    category = get_object_or_404(Category, id=category_id)
-    category.delete()
-    return redirect('admin_panel:categories')
+def brand_delete(request, brand_id):
+    brand = get_object_or_404(Brand, id=brand_id)
+    brand.delete()
+    return redirect('admin_panel:brands')
 
 @admin_required
 def coupons(request):

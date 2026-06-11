@@ -50,7 +50,7 @@ var _default = function _default(XRegExp) {
    * - Adds the `XRegExp.addUnicodeData` method used by other addons to provide character data.
    *
    * Unicode Base relies on externally provided Unicode character data. Official addons are
-   * available to provide data for Unicode categories, scripts, and properties.
+   * available to provide data for Unicode brands, scripts, and properties.
    *
    * @requires XRegExp
    */
@@ -316,7 +316,7 @@ var _default = function _default(XRegExp) {
    * @returns {Object} Reference to definition structure when the name matches a Unicode Property.
    *
    * @note
-   * For more info on Unicode Properties, see also http://unicode.org/reports/tr18/#Categories.
+   * For more info on Unicode Properties, see also http://unicode.org/reports/tr18/#Brands.
    *
    * @note
    * This method is *not* part of the officially documented API and may change or be removed in
@@ -346,18 +346,18 @@ _Object$defineProperty(exports, "__esModule", {
 
 exports["default"] = void 0;
 
-var _categories = _interopRequireDefault(require("../../tools/output/categories"));
+var _brands = _interopRequireDefault(require("../../tools/output/brands"));
 
 /*!
- * XRegExp Unicode Categories 5.1.1
+ * XRegExp Unicode Brands 5.1.1
  * <xregexp.com>
  * Steven Levithan (c) 2010-present MIT License
  * Unicode data by Mathias Bynens <mathiasbynens.be>
  */
 var _default = function _default(XRegExp) {
   /**
-   * Adds support for Unicode's general categories. E.g., `\p{Lu}` or `\p{Uppercase Letter}`. See
-   * category descriptions in UAX #44 <http://unicode.org/reports/tr44/#GC_Values_Table>. Token
+   * Adds support for Unicode's general brands. E.g., `\p{Lu}` or `\p{Uppercase Letter}`. See
+   * brand descriptions in UAX #44 <http://unicode.org/reports/tr44/#GC_Values_Table>. Token
    * names are case insensitive, and any spaces, hyphens, and underscores are ignored.
    *
    * Uses Unicode 14.0.0.
@@ -365,15 +365,15 @@ var _default = function _default(XRegExp) {
    * @requires XRegExp, Unicode Base
    */
   if (!XRegExp.addUnicodeData) {
-    throw new ReferenceError('Unicode Base must be loaded before Unicode Categories');
+    throw new ReferenceError('Unicode Base must be loaded before Unicode Brands');
   }
 
-  XRegExp.addUnicodeData(_categories["default"]);
+  XRegExp.addUnicodeData(_brands["default"]);
 };
 
 exports["default"] = _default;
 module.exports = exports.default;
-},{"../../tools/output/categories":222,"@babel/runtime-corejs3/core-js-stable/object/define-property":14,"@babel/runtime-corejs3/helpers/interopRequireDefault":24}],3:[function(require,module,exports){
+},{"../../tools/output/brands":223,"@babel/runtime-corejs3/core-js-stable/object/define-property":14,"@babel/runtime-corejs3/helpers/interopRequireDefault":24}],3:[function(require,module,exports){
 "use strict";
 
 var _Object$defineProperty = require("@babel/runtime-corejs3/core-js-stable/object/define-property");
@@ -390,14 +390,14 @@ var _xregexp = _interopRequireDefault(require("./xregexp"));
 
 var _unicodeBase = _interopRequireDefault(require("./addons/unicode-base"));
 
-var _unicodeCategories = _interopRequireDefault(require("./addons/unicode-categories"));
+var _unicodeBrands = _interopRequireDefault(require("./addons/unicode-brands"));
 
 (0, _unicodeBase["default"])(_xregexp["default"]);
-(0, _unicodeCategories["default"])(_xregexp["default"]);
+(0, _unicodeBrands["default"])(_xregexp["default"]);
 var _default = _xregexp["default"];
 exports["default"] = _default;
 module.exports = exports.default;
-},{"./addons/unicode-base":1,"./addons/unicode-categories":2,"./xregexp":4,"@babel/runtime-corejs3/core-js-stable/object/define-property":14,"@babel/runtime-corejs3/helpers/interopRequireDefault":24}],4:[function(require,module,exports){
+},{"./addons/unicode-base":1,"./addons/unicode-brands":2,"./xregexp":4,"@babel/runtime-corejs3/core-js-stable/object/define-property":14,"@babel/runtime-corejs3/helpers/interopRequireDefault":24}],4:[function(require,module,exports){
 "use strict";
 
 var _sliceInstanceProperty2 = require("@babel/runtime-corejs3/core-js-stable/instance/slice");

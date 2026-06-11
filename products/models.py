@@ -4,17 +4,17 @@ from accounts.models import CustomUser
 from autoslug import AutoSlugField
 
 
-class Category(models.Model):
+class Brand(models.Model):
     def generate_slug(self):
         return self.name.lower().replace(' ', '-')
 
     name = models.CharField(max_length=100)
     slug = AutoSlugField(populate_from=generate_slug, unique=True)
-    image = models.ImageField(upload_to='category_images/', blank=True, null=True)
+    image = models.ImageField(upload_to='brand_images/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
 
     class Meta:
-        verbose_name_plural = 'Categories'
+        verbose_name_plural = 'Brands'
         ordering = ['name']
 
     def __str__(self):
@@ -26,7 +26,7 @@ class Category(models.Model):
 
 class Product(models.Model):
     def generate_slug(self):
-        return f'{self.category.name.lower()}-{self.name.lower()}'.replace(' ', '-')
+        return f'{self.brand.name.lower()}-{self.name.lower()}'.replace(' ', '-')
 
     BADGE_CHOICES = [
     ('',     'None'),
@@ -37,7 +37,7 @@ class Product(models.Model):
     name = models.CharField(max_length=255)
     slug = AutoSlugField(populate_from=generate_slug, unique=True)
     description = models.TextField()
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, related_name='products', null=True)
+    brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, related_name='products', null=True)
     image = models.ImageField(upload_to='product_images/', blank=True, null=True)
     # stock = models.PositiveIntegerField(default=0)
     old_price = models.DecimalField(max_digits=10, decimal_places=2)

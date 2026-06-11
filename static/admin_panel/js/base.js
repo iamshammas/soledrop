@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('prod-name').value      = data.name      || '';
                 document.getElementById('prod-old-price').value = data.old_price || '';
                 document.getElementById('prod-new-price').value = data.new_price || '';
-                document.getElementById('prod-category').value  = data.category_id || '';
+                document.getElementById('prod-brand').value  = data.brand_id || '';
                 document.getElementById('prod-badge').value     = data.badge     || '';
                 document.getElementById('prod-desc').value      = data.description || '';
 

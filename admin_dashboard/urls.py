@@ -27,10 +27,10 @@ urlpatterns = [
     path('users/<int:user_id>/', views.user_detail, name='user_detail'),
     path('toggle_user_status/<int:user_id>/', views.toggle_user_status, name='toggle_user_status'),
 
-    # Categories
-    path('categories/', views.categories, name='categories'),
-    path('categories/add/', views.category_add, name='category_add'),
-    path('categories/<int:category_id>/delete/', views.category_delete, name='category_delete'),
+    # Brands
+    path('brands/', views.brands, name='brands'),
+    path('brand/add/', views.brand_add, name='brand_add'),
+    path('brand/<int:brand_id>/delete/', views.brand_delete, name='brand_delete'),
 
     # Coupons
     path('coupons/', views.coupons, name='coupons'),

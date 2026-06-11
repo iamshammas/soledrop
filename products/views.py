@@ -1,16 +1,16 @@
 from django.shortcuts import render
-from .models import Category, Product
+from .models import Brand, Product
 from django.core.paginator import Paginator
 from cart.models import Cart
 from django.contrib.auth.decorators import login_required
 
 def product_list(request):
-    all_categories = Category.objects.filter(is_active=True)
-    category_slug = request.GET.get('category')
-    if category_slug:
-        category = Category.objects.filter(slug=category_slug, is_active=True).first()
-        if category:
-            qs = category.products.filter(is_active=True)
+    all_brands = Brand.objects.filter(is_active=True)
+    brand_slug = request.GET.get('brand')
+    if brand_slug:
+        brand = Brand.objects.filter(slug=brand_slug, is_active=True).first()
+        if brand:
+            qs = brand.products.filter(is_active=True)
         else:
             qs = Product.objects.filter(is_active=True)
     else:
@@ -30,7 +30,7 @@ def product_list(request):
         cart_items = []
         cart_total = 0
     context = {
-        'all_categories': all_categories,
+        'all_brands': all_brands,
         'paginator': paginator,
         'page_obj': page_obj,
         'cart_count': cart_count,
@@ -40,7 +40,7 @@ def product_list(request):
     return render(request, 'product_list.html', context)
 
 def home_page(request):
-    categories = Category.objects.filter(is_active=True)
+    brands = Brand.objects.filter(is_active=True)
     featured_products = Product.objects.filter(is_active=True, is_featured=True)
     # cart = Cart.objects.filter(user=request.user).first()
     # if cart:
@@ -53,7 +53,7 @@ def home_page(request):
     #     cart_total = 0
     # cart_items = []
     context = {
-        'categories': categories,
+        'brands': brands,
         'featured_products': featured_products,
         # 'cart_count': cart_count,
         # 'cart_items': cart_items,

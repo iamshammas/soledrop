@@ -82,8 +82,8 @@ button { font-family: inherit; }
 .eyebrow { font-size: .7rem; letter-spacing: .22em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; font-weight: 600; }
 .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2rem, 4vw, 3.5rem); color: var(--white); line-height: 1; }
 
-/* CATEGORIES */
-.categories-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+/* BRANDS */
+.brands-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .cat-card { aspect-ratio: 4/3; background-size: cover; background-position: center; display: flex; align-items: flex-end; position: relative; overflow: hidden; transition: transform .3s; }
 .cat-card:hover { transform: scale(1.02); }
 .cat-card:hover .cat-overlay { background: rgba(255,59,0,.55); }
@@ -341,7 +341,7 @@ footer { background: var(--off-black); border-top: 1px solid var(--border); padd
   .footer-inner { grid-template-columns: 1fr 1fr; }
   .features-row { grid-template-columns: 1fr 1fr; }
   .profile-layout { grid-template-columns: 1fr; padding: 32px 40px; }
-  .categories-grid { grid-template-columns: repeat(2, 1fr); }
+  .brands-grid { grid-template-columns: repeat(2, 1fr); }
   .checkout-summary { position: static; }
 }
 @media (max-width: 768px) {

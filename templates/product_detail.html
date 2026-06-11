@@ -9,7 +9,7 @@
   <div class="breadcrumb">
     <a href="{% url 'products:home' %}">Home</a><span>›</span>
     <a href="{% url 'products:product_list' %}">Shop</a><span>›</span>
-    <a href="{% url 'products:product_list' %}?category={{ product.brand }}">{{ product.brand }}</a><span>›</span>
+    <a href="{% url 'products:product_list' %}?brand={{ product.brand }}">{{ product.brand }}</a><span>›</span>
     <span>{{ product.name }}</span>
   </div>
 </div>
@@ -158,7 +158,7 @@
         <table style="width:100%;border-collapse:collapse">
           <tr><td class="spec-label">Brand</td><td>{{ product.brand }}</td></tr>
           <tr><td class="spec-label">SKU</td><td>{{ product.sku }}</td></tr>
-          <tr><td class="spec-label">Category</td><td>{{ product.category }}</td></tr>
+          <tr><td class="spec-label">Brand</td><td>{{ product.brand }}</td></tr>
           <tr><td class="spec-label">Rating</td><td>{{ product.avg_rating }}/5</td></tr>
           <tr><td class="spec-label">Availability</td>
             <td style="color:{% if product.in_stock %}var(--green){% else %}var(--accent){% endif %}">
