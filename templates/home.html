@@ -99,23 +99,23 @@
       {% endfor %}
     {% else %}
       {# Static fallback #}
-      <a href="# url 'products:product_list' #?category=Nike" class="cat-card"
+      <a href="{% url 'products:product_list' %}?category=Nike" class="cat-card"
          style="background-image:url('https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80')">
         <div class="cat-overlay"><span>Nike</span></div>
       </a>
-      <a href="# url 'products:product_list' #?category=Adidas" class="cat-card"
+      <a href="{% url 'products:product_list' %}?category=Adidas" class="cat-card"
          style="background-image:url('https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=600&q=80')">
         <div class="cat-overlay"><span>Adidas</span></div>
       </a>
-      <a href="# url 'products:product_list' #?category=Jordan" class="cat-card"
+      <a href="{% url 'products:product_list' %}?category=Jordan" class="cat-card"
          style="background-image:url('https://images.unsplash.com/photo-1556906781-9a412961a28c?w=600&q=80')">
         <div class="cat-overlay"><span>Jordan</span></div>
       </a>
-      <a href="# url 'products:product_list' #?category=New+Balance" class="cat-card"
+      <a href="{% url 'products:product_list' %}?category=New+Balance" class="cat-card"
          style="background-image:url('https://images.unsplash.com/photo-1539185441755-769473a23570?w=600&q=80')">
         <div class="cat-overlay"><span>New Balance</span></div>
       </a>
-      <a href="# url 'products:product_list' #?category=Puma" class="cat-card"
+      <a href="{% url 'products:product_list' %}?category=Puma" class="cat-card"
          style="background-image:url('https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=600&q=80')">
         <div class="cat-overlay"><span>Puma</span></div>
       </a>
