@@ -7,9 +7,10 @@ from orders.models import Coupon, Order, OrderItem
 from django.db.models import F, Count, DecimalField, ExpressionWrapper, Sum
 from django.contrib.auth import logout
 from django.contrib import messages 
-
+from .decorators import admin_required
 # Create your views here.
 
+@admin_required
 def dashboard(request):
     orders = Order.objects.all()
     total_users = CustomUser.objects.filter(is_staff=False).count()
@@ -48,6 +49,7 @@ def dashboard(request):
     }
     return render(request, 'admin_panel/dashboard.html',context)
 
+@admin_required
 def variants(request):
     variants = Variant.objects.select_related('product').all()
     products = Product.objects.all()
@@ -59,6 +61,7 @@ def variants(request):
     }
     return render(request, 'admin_panel/variants.html', context)
 
+@admin_required
 def variant_add(request):
     if request.method == 'POST':
         product_id = request.POST.get('product') ## correct
@@ -70,12 +73,14 @@ def variant_add(request):
         return redirect('admin_panel:variants')
     return redirect('admin_panel:variants')
 
+@admin_required
 def variant_delete(request, variant_id):
     variant = get_object_or_404(Variant, id=variant_id)
     variant.delete()
     messages.info(request, f'Variant {variant.product.name} deleted successfully.')
     return redirect('admin_panel:variants')
 
+@admin_required
 def variant_edit(request, variant_id):
     variant = get_object_or_404(Variant, id=variant_id)
     if request.method == 'POST':
@@ -87,6 +92,7 @@ def variant_edit(request, variant_id):
         return redirect('admin_panel:variants')
     return redirect('admin_panel:variants')
 
+@admin_required
 def orders(request):
     orders = Order.objects.select_related('user').order_by('-created_at')
     context = {
@@ -96,6 +102,7 @@ def orders(request):
     }
     return render(request, 'admin_panel/orders.html', context)
 
+@admin_required
 def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     # for item in order.items.all():
@@ -105,6 +112,7 @@ def order_detail(request, order_id):
     }
     return render(request, 'admin_panel/order_detail.html', context)
 
+@admin_required
 def order_update_status(request, order_id):
     order = get_object_or_404(Order,id=order_id)
     if request.method == 'POST':
@@ -115,6 +123,7 @@ def order_update_status(request, order_id):
     return redirect('admin_panel:orders')
 
 
+@admin_required 
 def products(request):
     categories = Category.objects.all()
     products = Product.objects.all()
@@ -126,6 +135,7 @@ def products(request):
     }
     return render(request, 'admin_panel/products.html', context)
 
+@admin_required
 def product_add(request):
     if request.method == 'POST':
         print('ADD PRODUCT POST METHOD')
@@ -153,6 +163,7 @@ def product_add(request):
         return redirect('admin_panel:products')
     return redirect('admin_panel:products')
 
+@admin_required
 def product_edit(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     if request.method == 'GET':
@@ -184,11 +195,13 @@ def product_edit(request, product_id):
         product.save()
         return redirect('admin_panel:products')
 
+@admin_required
 def product_delete(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     product.delete()
     return redirect('admin_panel:products')
 
+@admin_required
 def users(request):
     users = CustomUser.objects.annotate(order_count=Count('order')).order_by('-date_joined')
     return render(
@@ -201,6 +214,7 @@ def users(request):
         },
     )
 
+@admin_required
 def user_detail(request, user_id):
     user = get_object_or_404(CustomUser, id=user_id)
     recent_orders = Order.objects.filter(user=user).order_by('-created_at')[:10]
@@ -215,13 +229,14 @@ def user_detail(request, user_id):
         },
     )
 
+@admin_required
 def toggle_user_status(request, user_id):   
     user = get_object_or_404(CustomUser, id=user_id)
     user.is_active = not user.is_active
     user.save()
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
-
+@admin_required
 def categories(request):
     context = {
         'active_page': 'categories',
@@ -229,6 +244,7 @@ def categories(request):
     }
     return render(request, 'admin_panel/categories.html', context)
 
+@admin_required
 def category_add(request):
     if request.method == 'POST':
         category_id = request.POST.get('category_id')
@@ -250,11 +266,13 @@ def category_add(request):
         return redirect('admin_panel:categories')
     return HttpResponse('hello')
 
+@admin_required
 def category_delete(request, category_id):
     category = get_object_or_404(Category, id=category_id)
     category.delete()
     return redirect('admin_panel:categories')
 
+@admin_required
 def coupons(request):
     coupons = Coupon.objects.all()
     context = {
@@ -264,6 +282,7 @@ def coupons(request):
     }
     return render(request, 'admin_panel/coupons.html',context)
 
+@admin_required
 def coupon_add(request):
     if request.method == 'POST':
         coupon_id = request.POST.get('coupon_id')
@@ -302,12 +321,14 @@ def coupon_add(request):
             messages.success(request, "Coupon created successfully.")
             return redirect('admin_panel:coupons')
 
+@admin_required
 def coupon_delete(request,id):
     coupon = get_object_or_404(Coupon,id=id)
     coupon.delete()
     messages.success(request, "Coupon deleted successfully.")
     return redirect('admin_panel:coupons')
 
+@admin_required
 def admin_logout(request):
     logout(request)
     return redirect('accounts:home')
