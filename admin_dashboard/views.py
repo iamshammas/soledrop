@@ -8,7 +8,7 @@ from django.db.models import F, Count, DecimalField, ExpressionWrapper, Sum
 from django.contrib.auth import logout
 from django.contrib import messages 
 from .decorators import admin_required
-# Create your views here.
+from django.core.paginator import Paginator
 
 @admin_required
 def dashboard(request):
@@ -94,11 +94,13 @@ def variant_edit(request, variant_id):
 
 @admin_required
 def orders(request):
-    orders = Order.objects.select_related('user').order_by('-created_at')
+    qs = Order.objects.select_related('user').order_by('-created_at')
+    paginator = Paginator(qs, 10)
+    page_obj  = paginator.get_page(request.GET.get('page', 1))
     context = {
         'active_page': 'orders',
-        'orders': orders,
-        'orders_count': orders.count(),
+        'orders':       page_obj,
+        'orders_count': paginator.count,
     }
     return render(request, 'admin_panel/orders.html', context)
 
