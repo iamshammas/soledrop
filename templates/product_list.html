@@ -99,6 +99,10 @@
             <a href="?{% if request.GET.brand %}brand={{ request.GET.brand }}&{% endif %}stock=new"
               {% if request.GET.stock == 'new' %}class="active"{% endif %}>New Arrivals</a>
           </li>
+          <li>
+              <a href="?{% if request.GET.brand %}brand={{ request.GET.brand }}&{% endif %}stock=hot"
+                {% if request.GET.stock == 'hot' %}class="active"{% endif %}>Hot</a>
+          </li>
         </ul>
       </div>
     </aside>

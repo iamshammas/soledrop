@@ -1,5 +1,4 @@
 from django.contrib import messages
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render,redirect
 from django.contrib.auth import authenticate, login,logout
 from products.models import Product
@@ -8,7 +7,6 @@ from orders.models import Order
 from cart.models import Cart
 from django.contrib.auth.decorators import login_required
 
-# Create your views here.
 
 def user_registration(request):
     if request.method == 'POST':

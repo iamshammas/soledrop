@@ -14,7 +14,7 @@ import os
 from pathlib import Path
 import dj_database_url
 from dotenv import load_dotenv
-
+from decouple import config
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     'orders',
     'django_extensions',
     'mathfilters',
+    "cloudinary",
+    "cloudinary_storage",
 ]
 
 MIDDLEWARE = [
@@ -69,6 +71,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'soledrop.urls'
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": config("CLOUD_NAME"),
+    "API_KEY": config("API_KEY"),
+    "API_SECRET": config("API_SECRET"),
+}
 
 TEMPLATES = [
     {
@@ -88,7 +96,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'soledrop.wsgi.application'
 
-
+LOGIN_URL = 'accounts:login'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
@@ -150,13 +158,26 @@ CHAT_ID = os.getenv("CHAT_ID")
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'    # collectstatic target
 STATICFILES_DIRS = [BASE_DIR / 'static']  # where we put our development static files
-STATICFILES_STORAGE = (
-    "whitenoise.storage.CompressedManifestStaticFilesStorage"
-)
+# STATICFILES_STORAGE = (
+#     "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# )
 
 # ── Media files (user uploads) ──
 MEDIA_URL = '/media/'                      # URL prefix
 MEDIA_ROOT = BASE_DIR / 'media'            # filesystem path
+
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+}
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.onrender.com",
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -176,10 +197,12 @@ LOGIN_REDIRECT_URL = 'accounts:home'
 LOGOUT_REDIRECT_URL = 'accounts:login'
  
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_AUTHENTICATION_METHOD = "email" 
+# ACCOUNT_AUTHENTICATION_METHOD = "email" 
+ACCOUNT_LOGIN_METHODS = {'email'}
 
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+# ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_USERNAME_REQUIRED = False
  
 SOCIALACCOUNT_PROVIDERS = {

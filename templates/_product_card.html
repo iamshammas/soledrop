@@ -69,7 +69,7 @@
   </div>
 
   <div class="card-info">
-    <p class="card-brand">{{ product.brand }}</p>
+    <p class="card-brand">{{ product.brand.name }}</p>
     <a href="{% url 'products:product_detail' product.slug %}">
       <p class="card-name">{{ product.name }}</p>
     </a>

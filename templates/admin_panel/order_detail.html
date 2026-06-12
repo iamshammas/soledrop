@@ -74,7 +74,7 @@
                 </div>
                 <div class="summary-row">
                     <span>Shipping</span>
-                    <span>₹{{ order.shipping|default:"0" }}</span>
+                    <span>₹{{ order.shipping_charge }}</span>
                 </div>
                 <div class="summary-row">
                     <span>Discount</span>
@@ -135,7 +135,8 @@
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Status</span>
-                    <span class="status-badge active">Paid</span>
+                    <span class="status-badge {{order.status}}">{{order.get_status_display}}</span>
+                     
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Date</span>

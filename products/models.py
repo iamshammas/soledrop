@@ -20,9 +20,9 @@ class Brand(models.Model):
     def __str__(self):
         return f'{self.name} and id={self.id}'
     
-    @property
-    def product_count(self):
-        return self.products.filter(is_active=True).count()
+    # @property
+    # def product_count(self):
+    #     return self.products.filter(is_active=True).count()
 
 class Product(models.Model):
     def generate_slug(self):
@@ -59,7 +59,7 @@ class Product(models.Model):
         return sum(variant.stock for variant in self.available_variants.all())
 
     def __str__(self):
-        return f'ID={self.id} -- {self.name}'
+        return self.name
     
     class Meta:
         ordering = ['-created_at']
