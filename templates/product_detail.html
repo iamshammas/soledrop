@@ -77,11 +77,12 @@
         <a href="#" style="color:var(--accent);font-size:.7rem;margin-left:10px">Size Guide</a>
       </p>
       <div class="size-grid">
-        {% for size in product.available_sizes.all %}
+        {% for variant in product.available_variants.all %}
           <label class="size-label">
-            <input type="radio" name="size" value="{{ size.value }}"
-                   {% if not size.in_stock %}disabled{% endif %} required/>
-            <span class="size-btn {% if not size.in_stock %}out{% endif %}">{{ size.value }}</span>
+            <input type="radio" name="size" value="{{ variant.size }}"
+                    style="display:none" {% if not variant.in_stock %}disabled{% endif %}
+                    required/>
+            <span class="size-btn {% if not variant.in_stock %}out{% endif %}">{{ variant.size }}</span>
           </label>
         {% empty %}
           {# Fallback static sizes #}
@@ -157,9 +158,9 @@
       <div class="tab-pane" id="tab-specs">
         <table style="width:100%;border-collapse:collapse">
           <tr><td class="spec-label">Brand</td><td>{{ product.brand }}</td></tr>
-          <tr><td class="spec-label">SKU</td><td>{{ product.sku }}</td></tr>
+          <tr><td class="spec-label">SKU</td><td>{{ product.id }}</td></tr>
           <tr><td class="spec-label">Brand</td><td>{{ product.brand }}</td></tr>
-          <tr><td class="spec-label">Rating</td><td>{{ product.avg_rating }}/5</td></tr>
+          <tr><td class="spec-label">Rating</td><td>{{ product.avg_rating|default:'0' }}/5</td></tr>
           <tr><td class="spec-label">Availability</td>
             <td style="color:{% if product.in_stock %}var(--green){% else %}var(--accent){% endif %}">
               {% if product.in_stock %}In Stock{% else %}Out of Stock{% endif %}

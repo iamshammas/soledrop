@@ -33,7 +33,8 @@ def user_registration(request):
         )
         if user is not None:
             user.save()
-            return render(request, 'login.html', {'success': 'Account created successfully. Please log in.'})
+            messages.success(request, 'Account created successfully. Please log in.')
+            return redirect('accounts:login')
     return render(request, 'register.html')
 
 def user_login(request):

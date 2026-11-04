@@ -28,3 +28,6 @@ clean_data.json
 .cursor
 .github
 .agents/
+
+AGENTS.md
+RULES.md

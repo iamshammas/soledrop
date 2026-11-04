@@ -16,7 +16,7 @@
       </div>
     {% endif %}
 
-    <form action="#" method="POST">
+    <form action="{% url 'accounts:login' %}" method="POST">
       {% csrf_token %}
       {# Redirect after login #}
       <input type="hidden" name="next" value="{{ next|default:'/' }}"/>
@@ -41,7 +41,6 @@
           <p class="form-error">{{ form.password.errors.0 }}</p>
         {% endif %}
       </div>
-
       <a href="# url 'accounts:forgot_password' #" class="forgot-link">Forgot password?</a>
 
       <button type="submit" class="btn-primary w100">Log In</button>

@@ -18,7 +18,7 @@ class Brand(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return f'{self.name} and id={self.id}'
+        return self.name
     
     # @property
     # def product_count(self):
@@ -136,6 +136,10 @@ class Variant(models.Model):
 
     def __str__(self):        
         return f"ID={self.id} -- {self.product.name} - {self.size}"
+    
+    @property
+    def in_stock(self):
+        return self.stock > 0
 
 class Review(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
