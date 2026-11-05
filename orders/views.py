@@ -132,14 +132,18 @@ def order_list(request):
     qs = Order.objects.filter(user=request.user).order_by('-created_at')
     paginator = Paginator(qs, 5)  # 5 orders per page
     page_obj  = paginator.get_page(request.GET.get('page', 1))
-    return render(request,'order_list.html',{'orders':page_obj})
+    return render(request, 'order_list.html', {
+        'orders': page_obj,
+        'active_tab': 'orders',
+    })
 
 def order_detail(request,order_id):
     order = get_object_or_404(Order,id=order_id)
     context = {
-        'order': order
+        'order': order,
+        'active_tab': 'orders',
     }
-    return render(request,'order_detail.html',context)
+    return render(request, 'order_detail.html', context)
 
 # def order_history(request):
     # Fetch the user's order history from the database

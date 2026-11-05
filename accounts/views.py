@@ -1,8 +1,22 @@
+from decimal import Decimal, InvalidOperation
+
+from django.conf import settings
 from django.contrib import messages
-from django.shortcuts import get_object_or_404, render,redirect
-from django.contrib.auth import authenticate, login,logout
+from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.urls import reverse
+from django.utils import timezone
+from django.views.decorators.http import require_POST
 from products.models import Product
-from .models import Address, CustomUser
+from .models import Address, CustomUser, WalletTopup, WalletTransaction
+from .services import (
+    PaymentGatewayNotConfigured,
+    claim_daily_reward,
+    create_razorpay_topup,
+    get_wallet,
+    verify_razorpay_topup,
+)
 from orders.models import Order
 from cart.models import Cart
 from django.contrib.auth.decorators import login_required
@@ -83,12 +97,134 @@ def profile(request):
     order_count = Order.objects.filter(user=request.user).count()
     wishlist_count = request.user.wishlist.count() if request.user.is_authenticated else 0
     recent_orders = Order.objects.filter(user=request.user).order_by('-created_at')[:3]
+
+    wallet = get_wallet(request.user)
+    wallet_transactions = wallet.transactions.all()[:20]
+    daily_reward_claimed = wallet.transactions.filter(
+        transaction_type=WalletTransaction.TransactionType.REWARD,
+        created_at__date=timezone.localdate(),
+    ).exists()
+
+    active_tab = request.GET.get('tab', 'dashboard')
+    if active_tab not in ('dashboard', 'wallet'):
+        active_tab = 'dashboard'
+
+    pending_topup = None
+    topup_id = request.GET.get('topup')
+    if topup_id:
+        try:
+            topup_id = int(topup_id)
+        except (TypeError, ValueError):
+            topup_id = None
+        if topup_id:
+            pending_topup = WalletTopup.objects.filter(
+                pk=topup_id,
+                wallet=wallet,
+                status=WalletTopup.Status.PENDING,
+            ).first()
+
     context = {
         'order_count': order_count,
         'wishlist_count':wishlist_count,
-        'recent_orders':recent_orders
+        'recent_orders':recent_orders,
+        'wallet': wallet,
+        'wallet_balance': wallet.balance,
+        'wallet_transactions': wallet_transactions,
+        'daily_reward_claimed': daily_reward_claimed,
+        'active_tab': active_tab,
+        'pending_topup': pending_topup,
+        'razorpay_configured': bool(
+            settings.RAZORPAY_KEY_ID and settings.RAZORPAY_KEY_SECRET
+        ),
+        'razorpay_key_id': settings.RAZORPAY_KEY_ID or '',
     }
     return render(request, 'profile.html',context)
+
+
+def _wallet_redirect():
+    return redirect(f"{reverse('accounts:profile')}?tab=wallet")
+
+
+@login_required
+@require_POST
+def wallet_topup_create(request):
+    amount_raw = request.POST.get('amount', '').strip()
+
+    try:
+        amount = Decimal(amount_raw)
+    except (InvalidOperation, TypeError, ValueError):
+        messages.error(request, 'Enter a valid top-up amount.')
+        return _wallet_redirect()
+
+    wallet = get_wallet(request.user)
+
+    try:
+        topup = create_razorpay_topup(wallet, amount)
+    except PaymentGatewayNotConfigured:
+        messages.error(
+            request,
+            'Razorpay is not configured yet. Add the gateway keys and try again.',
+        )
+        return _wallet_redirect()
+    except ValidationError as exc:
+        messages.error(request, exc.messages[0] if exc.messages else 'Invalid top-up amount.')
+        return _wallet_redirect()
+
+    return redirect(f"{reverse('accounts:profile')}?tab=wallet&topup={topup.pk}")
+
+
+@login_required
+@require_POST
+def wallet_topup_verify(request):
+    topup_id = request.POST.get('topup_id')
+
+    if not topup_id:
+        messages.error(request, 'Missing top-up reference.')
+        return _wallet_redirect()
+
+    topup = get_object_or_404(
+        WalletTopup,
+        pk=topup_id,
+        wallet__user=request.user,
+    )
+
+    try:
+        verified = verify_razorpay_topup(
+            topup,
+            request.POST.get('razorpay_order_id'),
+            request.POST.get('razorpay_payment_id'),
+            request.POST.get('razorpay_signature'),
+        )
+    except PaymentGatewayNotConfigured:
+        messages.error(
+            request,
+            'Razorpay is not configured yet. Add the gateway keys and try again.',
+        )
+        return _wallet_redirect()
+
+    if verified:
+        messages.success(request, f'₹{topup.amount} added to your wallet.')
+    else:
+        messages.error(
+            request,
+            'Payment could not be verified. Please contact support if money was deducted.',
+        )
+
+    return _wallet_redirect()
+
+
+@login_required
+@require_POST
+def wallet_daily_reward(request):
+    wallet = get_wallet(request.user)
+    transaction = claim_daily_reward(wallet)
+
+    if transaction:
+        messages.success(request, f'₹{transaction.amount} daily login reward added.')
+    else:
+        messages.warning(request, 'Daily reward already claimed today.')
+
+    return _wallet_redirect()
 
 @login_required
 def profile_edit(request):
@@ -102,7 +238,7 @@ def profile_edit(request):
         user.phone_number = phone_number
         user.save()
         return redirect('accounts:profile')
-    return render(request, 'profile_edit.html')
+    return render(request, 'profile_edit.html', {'active_tab': 'settings'})
 
 def wishlist(request):
     wishlist_items = request.user.wishlist.all() if request.user.is_authenticated else []
@@ -119,7 +255,8 @@ def wishlist(request):
         'wishlist_items': wishlist_items,
         'cart_count': cart_count,
         'cart_items': cart_items,
-        'cart_total': cart_total
+        'cart_total': cart_total,
+        'active_tab': 'wishlist',
     }
     return render(request, 'wishlist.html', context)
 
@@ -144,7 +281,10 @@ def clear_wishlist(request):
 
 def address_list(request):
     addresses = Address.objects.filter(user=request.user)
-    return render(request,'addresses.html',{'addresses':addresses})
+    return render(request, 'addresses.html', {
+        'addresses': addresses,
+        'active_tab': 'addresses',
+    })
     # return HttpResponse('HELLO ADDRES')
 
 def address_add(request):
@@ -178,7 +318,7 @@ def address_add(request):
             is_default=is_default
         )
         return redirect('accounts:address_list')
-    return render(request,'address_form.html')
+    return render(request, 'address_form.html', {'active_tab': 'addresses'})
 
 def address_edit(request,id):
     address = get_object_or_404(Address,id=id,user=request.user)
@@ -198,7 +338,10 @@ def address_edit(request,id):
 
         address.save()
         return redirect('accounts:address_list')
-    return render(request,'address_form.html',{'address':address})
+    return render(request, 'address_form.html', {
+        'address': address,
+        'active_tab': 'addresses',
+    })
 
 def address_delete(request,id):
     address = get_object_or_404(Address,id=id,user=request.user)

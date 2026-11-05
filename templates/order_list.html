@@ -12,7 +12,9 @@
   <h1 class="page-hero-title">My Orders</h1>
 </div>
 
-<div style="max-width:900px;margin:0 auto;padding:48px 80px">
+<div class="profile-layout">
+  {% include '_account_sidebar.html' %}
+  <div>
 
   {% for order in orders %}
     <div class="order-card">
@@ -101,5 +103,6 @@
     </div>
   {% endif %}
 
+  </div>
 </div>
 {% endblock %}

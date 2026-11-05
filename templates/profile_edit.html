@@ -7,18 +7,7 @@
   <h1 class="page-hero-title">Profile Settings</h1>
 </div>
 <div class="profile-layout">
-  <aside>
-    <div class="profile-avatar">{{ user.first_name.0|upper }}{{ user.last_name.0|upper }}</div>
-    <p class="profile-name">{{ user.get_full_name|default:user.username }}</p>
-    <p class="profile-email">{{ user.email }}</p>
-    <ul class="profile-nav">
-      <li><a href="{% url 'accounts:profile' %}">Dashboard</a></li>
-      <li><a href="{% url 'orders:order_list' %}">My Orders</a></li>
-      <li><a href="{% url 'accounts:profile_edit' %}" class="active">Profile Settings</a></li>
-      <li><a href="{% url 'accounts:wishlist' %}">Wishlist</a></li>
-      <li><form action="{% url 'accounts:logout' %}" method="POST" style="display:inline">{% csrf_token %}<button type="submit">Logout</button></form></li>
-    </ul>
-  </aside>
+  {% include '_account_sidebar.html' %}
   <div>
     <div class="profile-section active">
       <h2>Profile Settings</h2>

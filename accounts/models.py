@@ -72,3 +72,93 @@ class Address(models.Model):
 
     def __str__(self):
         return f'{self.user} -- {self.label}'
+
+
+class Wallet(models.Model):
+    user = models.OneToOneField(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="wallet"
+    )
+
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.user} — ₹{self.balance}'
+
+
+class WalletTransaction(models.Model):
+    class TransactionType(models.TextChoices):
+        CREDIT = 'credit', 'Credit'
+        DEBIT = 'debit', 'Debit'
+        REFUND = 'refund', 'Refund'
+        REWARD = 'reward', 'Daily Reward'
+
+    wallet = models.ForeignKey(
+        Wallet,
+        on_delete=models.CASCADE,
+        related_name='transactions'
+    )
+
+    transaction_type = models.CharField(
+        max_length=20,
+        choices=TransactionType.choices
+    )
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    balance_before = models.DecimalField(max_digits=10, decimal_places=2)
+    balance_after = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.get_transaction_type_display()} ₹{self.amount} — {self.wallet.user}'
+
+
+class WalletTopup(models.Model):
+    class Status(models.TextChoices):
+        PENDING = 'pending', 'Pending'
+        PAID = 'paid', 'Paid'
+        FAILED = 'failed', 'Failed'
+        CANCELLED = 'cancelled', 'Cancelled'
+
+    wallet = models.ForeignKey(
+        Wallet,
+        on_delete=models.CASCADE,
+        related_name='topups'
+    )
+
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING
+    )
+    provider = models.CharField(max_length=30, default='razorpay')
+    provider_order_id = models.CharField(
+        max_length=100,
+        unique=True,
+        blank=True,
+        null=True
+    )
+    provider_payment_id = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    @property
+    def amount_in_paise(self):
+        return int(self.amount * 100)
+
+    def __str__(self):
+        return f'{self.wallet.user} — ₹{self.amount} ({self.get_status_display()})'

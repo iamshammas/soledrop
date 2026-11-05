@@ -9,7 +9,9 @@
   <h1 class="page-hero-title">My Wishlist</h1>
 </div>
 
-<div class="wishlist-page">
+<div class="profile-layout">
+  {% include '_account_sidebar.html' %}
+  <div>
   {% if wishlist_items %}
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
       <p style="color:var(--light);font-size:.88rem">
@@ -72,5 +74,6 @@
       <a href="{% url 'products:product_list' %}" class="btn-primary" style="margin-top:24px;display:inline-block">Browse Sneakers</a>
     </div>
   {% endif %}
+  </div>
 </div>
 {% endblock %}

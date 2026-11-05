@@ -6,7 +6,9 @@
   <div class="breadcrumb"><a href="{% url 'products:home' %}">Home</a><span>›</span><a href="{% url 'orders:order_list' %}">Orders</a><span>›</span><span>#{{ order.order_number }}</span></div>
   <h1 class="page-hero-title">Order #{{ order.order_number }}</h1>
 </div>
-<div style="max-width:900px;margin:0 auto;padding:48px 80px">
+<div class="profile-layout">
+  {% include '_account_sidebar.html' %}
+  <div>
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;flex-wrap:wrap;gap:12px">
     <div>
       <p style="color:var(--light);font-size:.82rem">Placed on {{ order.created_at|date:"F j, Y" }}</p>
@@ -60,5 +62,6 @@
   </div>
 
   <a href="{% url 'orders:order_list' %}" class="btn-ghost" style="display:inline-block;margin-top:28px">← Back to Orders</a>
+  </div>
 </div>
 {% endblock %}
