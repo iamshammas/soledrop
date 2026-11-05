@@ -16,11 +16,17 @@ def cart_detail(request):
         'cart_subtotal': cart.subtotal
     }
     return render(request, 'cart_detail.html', context)
- 
+
+@login_required
 def add_to_cart(request):
     if request.method == 'POST':
         variant_id = request.POST.get("variant_id")
         variant=get_object_or_404(Variant,id=variant_id)
+        try:
+            quantity = int(request.POST.get("quantity") or 1)
+        except (TypeError, ValueError):
+            quantity = 1
+        quantity = max(1, quantity)
         if not variant:
             return render(request, '404.html', status=404)
         else:
@@ -28,12 +34,15 @@ def add_to_cart(request):
             item, created = CartItem.objects.get_or_create(cart=cart, variant=variant)
             messages.success(request,'Added to cart')
             if not created:
-                item.quantity += 1
+                item.quantity += quantity
                 item.save()
                 return redirect('cart:cart_detail')
+            item.quantity = quantity
+            item.save()
             return redirect('cart:cart_detail')
     return render(request, 'cart_detail.html')
 
+@login_required
 def update_cart(request,item_id):
     if request.method == 'POST':
         cart_item = CartItem.objects.filter(id=item_id).first() 

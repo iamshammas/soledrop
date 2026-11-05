@@ -79,7 +79,7 @@
       <div class="size-grid">
         {% for variant in product.available_variants.all %}
           <label class="size-label">
-            <input type="radio" name="size" value="{{ variant.size }}"
+            <input type="radio" name="variant_id" value="{{ variant.id }}"
                     style="display:none" {% if not variant.in_stock %}disabled{% endif %}
                     required/>
             <span class="size-btn {% if not variant.in_stock %}out{% endif %}">{{ variant.size }}</span>
@@ -119,24 +119,24 @@
         <input type="hidden" name="quantity" id="qtyInput" value="1"/>
         <button type="button" class="qty-btn" onclick="changeQty(1)">+</button>
       </div>
-
-      <div class="detail-actions">
-        {% if product.in_stock %}
-          <button type="submit" class="btn-primary">Add to Cart</button>
-        {% else %}
-          <button type="button" class="btn-primary" disabled style="opacity:.4;cursor:not-allowed">Out of Stock</button>
-        {% endif %}
-
-        {# Wishlist toggle #}
-        <form action="# url 'accounts:wishlist_toggle' product.id #" method="POST" style="display:inline">
-          {% csrf_token %}
-          <input type="hidden" name="next" value="{{ request.path }}"/>
-          <button type="submit" class="wish-icon {% if product.id in wishlist_ids %}liked{% endif %}">
-            {% if product.id in wishlist_ids %}♥{% else %}♡{% endif %}
-          </button>
-        </form>
-      </div>
     </form>
+
+    <div class="detail-actions">
+      {% if product.in_stock %}
+        <button type="submit" class="btn-primary" form="addToCartForm">Add to Cart</button>
+      {% else %}
+        <button type="button" class="btn-primary" disabled style="opacity:.4;cursor:not-allowed">Out of Stock</button>
+      {% endif %}
+
+      {# Wishlist toggle #}
+      <form action="{% url 'accounts:wishlist_toggle' product.id %}" method="POST" style="display:inline">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path }}"/>
+        <button type="submit" class="wish-icon {% if product.id in wishlist_ids %}liked{% endif %}">
+          {% if product.id in wishlist_ids %}♥{% else %}♡{% endif %}
+        </button>
+      </form>
+    </div>
 
     {# ── TABS ── #}
     <div class="detail-tabs">
@@ -262,7 +262,7 @@
     document.getElementById('tab-' + tab).classList.add('active');
   }
   // Highlight selected size button
-  document.querySelectorAll('input[name="size"]').forEach(radio => {
+  document.querySelectorAll('input[name="variant_id"]').forEach(radio => {
     radio.addEventListener('change', () => {
       document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
       radio.nextElementSibling.classList.add('active');
@@ -270,7 +270,7 @@
   });
   // Validate size before add-to-cart
   document.getElementById('addToCartForm')?.addEventListener('submit', e => {
-    if (!document.querySelector('input[name="size"]:checked')) {
+    if (!document.querySelector('input[name="variant_id"]:checked')) {
       e.preventDefault();
       document.getElementById('sizeError').style.display = 'block';
       document.querySelector('.size-grid').scrollIntoView({ behavior: 'smooth', block: 'center' });
