@@ -23,7 +23,7 @@
     <div class="profile-section{% if active_tab == 'dashboard' %} active{% endif %}">
       <h2>Dashboard</h2>
 
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:36px">
+      <div class="profile-stats">
 
         <div class="feature-card" style="text-align:center">
           <div class="feature-icon">📦</div>
@@ -87,7 +87,7 @@
     <div class="profile-section{% if active_tab == 'wallet' %} active{% endif %}">
       <h2>My Wallet</h2>
 
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:32px">
+      <div class="wallet-grid">
         <div class="feature-card" style="text-align:center">
           <div class="feature-icon">💰</div>
           <h3>₹{{ wallet.balance }}</h3>
@@ -100,7 +100,7 @@
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:32px">
+      <div class="wallet-grid">
         <div class="feature-card">
           <h3>Add Balance</h3>
           <p>Top up your wallet securely through Razorpay.</p>

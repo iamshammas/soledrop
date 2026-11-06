@@ -1,17 +1,28 @@
+from django.conf import settings
 from django.shortcuts import get_object_or_404, render,redirect
 # from .models import Coupon
 from accounts.models import Address
+from accounts.services import PaymentGatewayNotConfigured
 from cart.models import Cart,CartItem
 from .models import Order,OrderItem
 from django.http import HttpResponse
 from django.db import transaction
-from .services.order_service import create_order
+from .services.order_service import (
+    create_order,
+    create_order_after_payment,
+    notify_online_payment_issue,
+    start_online_payment,
+)
+from .services.razorpay import verify_razorpay_payment
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 
 # Create your views here.
+
+RAZORPAY_CHECKOUT_SESSION_KEY = 'razorpay_checkout'
 
 def apply_coupon(request):
     return HttpResponse("Coupon applied successfully!")
@@ -96,8 +107,26 @@ def checkout(request):
                 country=request.POST.get("country"),
             )
         payment_method = request.POST.get('payment_method')
+
+        if payment_method == Order.PaymentMethod.ONLINE:
+            try:
+                payment_data = start_online_payment(address, cart)
+            except PaymentGatewayNotConfigured:
+                messages.error(
+                    request,
+                    'Online payment is not configured yet. Please choose cash on delivery.',
+                )
+                return redirect('orders:checkout')
+            except (ValidationError, ValueError) as e:
+                messages.error(request, str(e))
+                return redirect('orders:checkout')
+
+            request.session[RAZORPAY_CHECKOUT_SESSION_KEY] = payment_data
+            return redirect('orders:order_payment')
+
         try:
             order = create_order(request.user,address,payment_method,cart)
+            request.session.pop(RAZORPAY_CHECKOUT_SESSION_KEY, None)
             messages.success(request, "Order placed successfully.")
             return redirect('orders:order_confirmation',order_id=order.id)
         except ValidationError as e:
@@ -115,9 +144,91 @@ def checkout(request):
         context = {
             'cart_subtotal' : cart.subtotal,
             'cart_total' : cart.total,
-            'addresses' : addresses
+            'addresses' : addresses,
+            'razorpay_configured': bool(
+                settings.RAZORPAY_KEY_ID and settings.RAZORPAY_KEY_SECRET
+            ),
         }
         return render(request, 'checkout.html',context)
+
+@login_required
+def order_payment(request):
+    payment_data = request.session.get(RAZORPAY_CHECKOUT_SESSION_KEY) or {}
+
+    if (
+        not payment_data.get('razorpay_order_id')
+        or not payment_data.get('amount_in_paise')
+        or not settings.RAZORPAY_KEY_ID
+        or not settings.RAZORPAY_KEY_SECRET
+    ):
+        messages.error(
+            request,
+            'Your payment session has expired. Please return to checkout.',
+        )
+        return redirect('orders:checkout')
+
+    context = {
+        'amount': payment_data.get('total_amount', ''),
+        'razorpay_key_id': settings.RAZORPAY_KEY_ID,
+        'razorpay_order_id': payment_data['razorpay_order_id'],
+        'amount_in_paise': payment_data['amount_in_paise'],
+    }
+    return render(request, 'order_payment.html', context)
+
+
+@login_required
+@require_POST
+def order_payment_verify(request):
+    payment_data = request.session.get(RAZORPAY_CHECKOUT_SESSION_KEY) or {}
+    expected_order_id = payment_data.get('razorpay_order_id')
+
+    if not expected_order_id:
+        messages.error(
+            request,
+            'Your payment session has expired. Please return to checkout.',
+        )
+        return redirect('orders:checkout')
+
+    try:
+        verified = verify_razorpay_payment(
+            expected_order_id,
+            request.POST.get('razorpay_order_id'),
+            request.POST.get('razorpay_payment_id'),
+            request.POST.get('razorpay_signature'),
+        )
+    except PaymentGatewayNotConfigured:
+        messages.error(
+            request,
+            'Online payment is not configured yet. Please contact support.',
+        )
+        return redirect('orders:checkout')
+
+    if not verified:
+        messages.error(
+            request,
+            'Payment could not be verified. Please try again or contact support.',
+        )
+        return redirect('orders:order_payment')
+
+    try:
+        order = create_order_after_payment(request.user, payment_data)
+    except ValidationError as e:
+        notify_online_payment_issue(
+            payment_data,
+            request.POST.get('razorpay_payment_id'),
+            str(e),
+        )
+        request.session.pop(RAZORPAY_CHECKOUT_SESSION_KEY, None)
+        messages.error(
+            request,
+            'Payment was received, but the order could not be created. '
+            'Please contact support with your payment reference.',
+        )
+        return redirect('cart:cart_detail')
+
+    request.session.pop(RAZORPAY_CHECKOUT_SESSION_KEY, None)
+    messages.success(request, 'Payment successful. Your order is confirmed.')
+    return redirect('orders:order_confirmation', order_id=order.id)
 
 @login_required
 def order_confirmation(request,order_id):

@@ -56,7 +56,7 @@
                   {{ address.address }}<br>
                   {{ address.city }}, {{ address.state }} — {{ address.pin_code }}<br>
                   {{ address.country }}<br>
-                  {{ address.phone }}
+                  {{ address.phone_number }}
                 </p>
 
                 <a href="{% url 'accounts:address_edit' address.id %}"
@@ -109,14 +109,19 @@
           <div style="font-size:1.4rem">💵</div>
           <p>Cash on Delivery</p>
         </div>
-        <div class="payment-method" onclick="selectPay(this, 'ONLINE')">
+        <div class="payment-method" id="onlinePaymentOption" onclick="selectPay(this, 'ONLINE')"
+             {% if not razorpay_configured %}style="opacity:.45"{% endif %}>
           <div style="font-size:1.4rem">💳</div>
-          <p>Online Payment</p>
+          <p>Online Payment{% if not razorpay_configured %} (Unavailable){% endif %}</p>
         </div>
       </div>
 
       <p id="paymentNote" style="font-size:.76rem;color:var(--muted);margin-top:8px">
-        💵 Pay in cash when your order arrives.
+        {% if razorpay_configured %}
+          💵 Pay in cash when your order arrives.
+        {% else %}
+          💵 Pay in cash when your order arrives. Online payment is unavailable right now.
+        {% endif %}
       </p>
 
       {# ── COUPON ── #}
@@ -176,9 +181,11 @@
 
 {% block extra_js %}
 <script>
+  const ONLINE_AVAILABLE = {{ razorpay_configured|yesno:"true,false" }};
+
   const NOTES = {
     COD: '💵 Pay in cash when your order arrives.',
-    ONLINE: '💳 You will be redirected to complete payment securely.',
+    ONLINE: '💳 You will pay securely via Razorpay. Your order is placed after payment.',
   };
 
   function toggleNewAddressFields(enable) {
@@ -295,6 +302,12 @@
   });
 
   function selectPay(el, method) {
+    if (method === 'ONLINE' && !ONLINE_AVAILABLE) {
+      document.getElementById('paymentNote').textContent =
+        '💳 Online payment is unavailable right now. Please choose cash on delivery.';
+      return;
+    }
+
     document.querySelectorAll('.payment-method')
       .forEach(m => m.classList.remove('active'));
 

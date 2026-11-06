@@ -7,15 +7,15 @@
   <h1 class="page-hero-title">Your Bag</h1>
 </div>
 
-<div style="max-width:1200px;margin:0 auto;padding:48px 80px;display:grid;grid-template-columns:1fr 380px;gap:48px" class="cart-page-layout">
+<div class="cart-page-layout">
 
   {# ── CART ITEMS ── #}
   <div>
     {% if cart_items %}
       {% for item in cart_items %}
-        <div class="cart-page-item" style="display:grid;grid-template-columns:100px 1fr auto;gap:20px;padding:20px 0;border-bottom:1px solid var(--border);align-items:start">
+        <div class="cart-page-item">
           <img src="{{ item.variant.product.image.url }}" alt="{{ item.variant.product.name }}"
-               style="width:100px;height:100px;object-fit:cover;background:var(--dark)"/>
+               class="cart-page-img"/>
           <div>
             <p style="font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--light)">{{ item.variant.product.brand }}</p>
             <p style="font-size:1.1rem;font-weight:600;color:var(--white);margin:4px 0">{{ item.variant.product.name }}</p>

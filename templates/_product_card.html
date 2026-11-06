@@ -1,5 +1,5 @@
-{# templates/products/_product_card.html #}
-{# Include with: {% include "products/_product_card.html" with product=product %} #}
+{# templates/_product_card.html #}
+{# Include with: {% include "_product_card.html" with product=product %} #}
 {% load static %}
 
 <div class="product-card">
@@ -27,7 +27,7 @@
           
           {# Size selector - hidden by default, shown when Add to Cart is clicked #}
           <div class="size-selector" id="size-selector-{{ product.id }}" style="display: none; margin-bottom: 8px;">
-            <select name="variant_id" required style="width: 100%; padding: 8px; font-size: 0.75rem; border: 1px solid var(--gray); background: var(--light); color: var(--dark);">
+            <select name="variant_id" class="size-select" required>
               <option value="" disabled selected>Select Size</option>
               {% for variant in product.available_variants.all %}
                   <option value="{{ variant.id }}">{{ variant.size }}</option>

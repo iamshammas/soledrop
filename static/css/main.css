@@ -106,6 +106,8 @@ button { font-family: inherit; }
 .card-actions { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(10,10,10,.85); padding: 12px 16px; display: flex; gap: 8px; opacity: 0; transform: translateY(8px); transition: all .25s ease; }
 .card-actions button, .card-actions .quick-add-btn { flex: 1; background: var(--accent); color: #fff; border: none; padding: 10px; font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; transition: opacity .2s; font-family: 'Barlow', sans-serif; }
 .card-actions button:hover { opacity: .85; }
+.size-select { width: 100%; padding: 8px; font-size: .75rem; border: 1px solid var(--gray); background: var(--light); color: var(--dark); font-family: inherit; }
+.size-select:focus { outline: none; border-color: var(--accent); }
 .wish-btn { background: var(--gray) !important; color: var(--text) !important; flex: 0 0 40px !important; font-size: 1rem !important; }
 .wish-btn.liked { color: var(--accent) !important; }
 .card-info { padding: 16px 20px; }
@@ -205,7 +207,7 @@ footer { background: var(--off-black); border-top: 1px solid var(--border); padd
 .search-filter-input:focus { border-color: var(--accent); }
 .sort-select { background: var(--dark); border: 1px solid var(--border); color: var(--light); padding: 10px 16px; font-family: inherit; font-size: .82rem; outline: none; cursor: pointer; }
 .results-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: .82rem; color: var(--light); }
-.pagination { display: flex; gap: 8px; justify-content: center; margin-top: 48px; }
+.pagination { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 48px; }
 .page-btn { width: 40px; height: 40px; background: var(--dark); border: 1px solid var(--border); color: var(--text); cursor: pointer; font-family: inherit; font-size: .88rem; transition: all .2s; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 40px; }
 .page-btn:hover, .page-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 
@@ -262,8 +264,8 @@ footer { background: var(--off-black); border-top: 1px solid var(--border); padd
 .auth-sub { font-size: .88rem; color: var(--light); margin-bottom: 36px; }
 .form-group { margin-bottom: 20px; }
 .form-group label { display: block; font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--light); margin-bottom: 8px; }
-.form-group input, .form-group textarea { width: 100%; background: var(--dark); border: 1px solid var(--border); color: var(--white); padding: 12px 16px; font-family: inherit; font-size: .9rem; outline: none; transition: border-color .2s; }
-.form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
+.form-group input, .form-group select, .form-group textarea { width: 100%; background: var(--dark); border: 1px solid var(--border); color: var(--white); padding: 12px 16px; font-family: inherit; font-size: .9rem; outline: none; transition: border-color .2s; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
 .form-group input.error { border-color: var(--accent); }
 .form-error { font-size: .75rem; color: var(--accent); margin-top: 4px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -279,6 +281,8 @@ footer { background: var(--off-black); border-top: 1px solid var(--border); padd
 
 /* PROFILE */
 .profile-layout { display: grid; grid-template-columns: 240px 1fr; gap: 32px; padding: 48px 80px; max-width: 1200px; margin: 0 auto; }
+.profile-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 36px; }
+.wallet-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 32px; }
 .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: #fff; margin-bottom: 16px; }
 .profile-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
 .profile-email { font-size: .82rem; color: var(--light); margin-bottom: 24px; }
@@ -306,6 +310,11 @@ footer { background: var(--off-black); border-top: 1px solid var(--border); padd
 .wishlist-page { padding: 48px 80px; max-width: 1400px; margin: 0 auto; }
 .wishlist-empty { text-align: center; padding: 80px; color: var(--light); }
 .wishlist-empty h3 { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--mid); margin-bottom: 12px; }
+
+/* CART PAGE */
+.cart-page-layout { display: grid; grid-template-columns: 1fr 380px; gap: 48px; max-width: 1200px; margin: 0 auto; padding: 48px 80px; }
+.cart-page-item { display: grid; grid-template-columns: 100px 1fr auto; gap: 20px; padding: 20px 0; border-bottom: 1px solid var(--border); align-items: start; }
+.cart-page-img { width: 100px; height: 100px; object-fit: cover; background: var(--dark); }
 
 /* CHECKOUT */
 .checkout-layout { display: grid; grid-template-columns: 1fr 400px; gap: 48px; padding: 64px 80px; max-width: 1300px; margin: 0 auto; }
@@ -335,17 +344,20 @@ footer { background: var(--off-black); border-top: 1px solid var(--border); padd
 
 /* RESPONSIVE */
 @media (max-width: 1024px) {
-  .shop-layout, .product-detail, .checkout-layout { grid-template-columns: 1fr; padding: 32px 40px; }
+  .shop-layout, .product-detail, .checkout-layout, .cart-page-layout { grid-template-columns: 1fr; padding: 32px 40px; }
   .sidebar { position: static; }
   .deal-banner, .deals-hero { grid-template-columns: 1fr; }
   .footer-inner { grid-template-columns: 1fr 1fr; }
   .features-row { grid-template-columns: 1fr 1fr; }
   .profile-layout { grid-template-columns: 1fr; padding: 32px 40px; }
+  .profile-stats { grid-template-columns: repeat(2, 1fr); }
   .brands-grid { grid-template-columns: repeat(2, 1fr); }
   .checkout-summary { position: static; }
+  .product-imgs { position: static; }
 }
 @media (max-width: 768px) {
-  .nav-inner { padding: 0 20px; }
+  .nav-inner { padding: 0 20px; gap: 12px; }
+  .nav-actions { gap: 8px; }
   .nav-links { display: none; position: fixed; top: 64px; left: 0; right: 0; bottom: 0; background: var(--off-black); flex-direction: column; padding: 40px 32px; gap: 24px; z-index: 199; overflow-y: auto; }
   .nav-links.open { display: flex; }
   .nav-links a { font-size: 1.4rem; }
@@ -353,7 +365,7 @@ footer { background: var(--off-black); border-top: 1px solid var(--border); padd
   .hero-content { padding: 0 24px 56px; }
   .section { padding: 48px 24px; }
   .dark-section { padding: 48px 24px; }
-  .shop-layout, .deals-page, .wishlist-page, .profile-layout, .checkout-layout { padding: 32px 24px; }
+  .shop-layout, .deals-page, .wishlist-page, .profile-layout, .checkout-layout, .cart-page-layout { padding: 32px 24px; }
   .page-hero { padding: 32px 24px; }
   footer { padding: 48px 24px 24px; }
   .footer-inner { grid-template-columns: 1fr; gap: 32px; }
@@ -362,4 +374,21 @@ footer { background: var(--off-black); border-top: 1px solid var(--border); padd
   .auth-card { padding: 32px 24px; }
   .product-detail { padding: 32px 24px; gap: 32px; }
   .features-row { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .messages-container { top: 72px; left: 16px; right: 16px; max-width: none; }
+  .form-group input, .form-group select, .form-group textarea,
+  .search-filter-input, .search-bar input, .sort-select,
+  .size-select, #couponInput { font-size: 16px; }
+}
+@media (max-width: 480px) {
+  .cart-page-item { grid-template-columns: 80px 1fr; gap: 14px; }
+  .cart-page-img { width: 80px; height: 80px; }
+  .cart-page-item > div:last-child { grid-column: 1 / -1; text-align: left; }
+  .profile-stats, .wallet-grid { grid-template-columns: 1fr; }
+  .deal-timer { flex-wrap: wrap; }
+  .timer-unit { min-width: 52px; padding: 10px 12px; }
+}
+/* Touch devices have no hover: keep product-card actions visible */
+@media (hover: none), (pointer: coarse) {
+  .card-actions { opacity: 1; transform: none; }
 }
