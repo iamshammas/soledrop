@@ -7,6 +7,7 @@
 }
 html { scroll-behavior: smooth; }
 body { font-family: 'Barlow', sans-serif; background: var(--black); color: var(--text); overflow-x: hidden; }
+body.menu-open { overflow: hidden; }
 a { text-decoration: none; color: inherit; }
 img { max-width: 100%; display: block; }
 button { font-family: inherit; }
@@ -356,12 +357,37 @@ footer { background: var(--off-black); border-top: 1px solid var(--border); padd
   .product-imgs { position: static; }
 }
 @media (max-width: 768px) {
-  .nav-inner { padding: 0 20px; gap: 12px; }
-  .nav-actions { gap: 8px; }
-  .nav-links { display: none; position: fixed; top: 64px; left: 0; right: 0; bottom: 0; background: var(--off-black); flex-direction: column; padding: 40px 32px; gap: 24px; z-index: 199; overflow-y: auto; }
+  /* backdrop-filter turns #navbar into the containing block for the fixed
+     menu panel, collapsing it to the navbar height — disable it on mobile */
+  #navbar { backdrop-filter: none; }
+  .nav-inner { padding: 0 20px; gap: 10px; }
+  .logo { font-size: 1.6rem; }
+  .nav-actions { gap: 4px; margin-left: auto; }
+  .icon-btn { padding: 8px; }
+  .nav-links {
+    display: none; position: fixed; top: 65px; left: 0; right: 0;
+    height: calc(100vh - 65px); height: calc(100dvh - 65px); bottom: auto;
+    background: var(--off-black); flex-direction: column;
+    padding: 8px 0 calc(24px + env(safe-area-inset-bottom));
+    gap: 0; border-top: 1px solid var(--border);
+    overflow-y: auto; overscroll-behavior: contain;
+    box-shadow: 0 24px 40px rgba(0,0,0,.55);
+  }
   .nav-links.open { display: flex; }
-  .nav-links a { font-size: 1.4rem; }
-  .hamburger { display: flex; }
+  .nav-links li { border-bottom: 1px solid var(--border); }
+  .nav-links a {
+    display: flex; align-items: center; min-height: 48px;
+    padding: 13px 24px; font-size: 1rem; letter-spacing: .12em;
+  }
+  .nav-links a.active {
+    color: var(--white);
+    background: rgba(255,59,0,.08);
+    box-shadow: inset 2px 0 0 var(--accent);
+  }
+  .hamburger { display: flex; padding: 9px; margin-left: -9px; }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
   .hero-content { padding: 0 24px 56px; }
   .section { padding: 48px 24px; }
   .dark-section { padding: 48px 24px; }

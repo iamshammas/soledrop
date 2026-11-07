@@ -42,7 +42,28 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── HAMBURGER MENU ──
   const menuToggle = document.getElementById('menuToggle');
   const navLinks   = document.getElementById('navLinks');
-  menuToggle?.addEventListener('click', () => navLinks?.classList.toggle('open'));
+
+  function setMenu(open) {
+    navLinks?.classList.toggle('open', open);
+    menuToggle?.classList.toggle('open', open);
+    menuToggle?.setAttribute('aria-expanded', String(open));
+    document.body.classList.toggle('menu-open', open);
+  }
+
+  menuToggle?.addEventListener('click', () =>
+    setMenu(!navLinks?.classList.contains('open'))
+  );
+
+  // Close after tapping a link, on Escape, and when leaving mobile widths
+  navLinks?.querySelectorAll('a').forEach(a =>
+    a.addEventListener('click', () => setMenu(false))
+  );
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') setMenu(false);
+  });
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) setMenu(false);
+  });
 
   // ── SEARCH TOGGLE ──
   const searchToggle = document.getElementById('searchToggle');
